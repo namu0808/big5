@@ -25,7 +25,7 @@
 - 모든 POST는 CSRF 검사 (`big5_csrf_field()` / `big5_csrf_check()`)
 - 스키마 단일 원본 `includes/big5_schema.php` (MariaDB·SQLite DDL 나란히, 멱등). 설치 `1time/install.php`(서버 `/big5/install.php`로 올려 1회 실행 후 삭제)
 - 앱 쿼리는 표준 SQL만 (SQLite 검증이 돌아야 함). `NOW()` 대신 `big5_now()`
-- 해석 문구는 `data/content/*.json`, 문항은 `data/items_*.json` — 코드와 분리. `data/`·`includes/`·`tests/`는 `Deny from all`
+- 해석 문구는 `data/content/*.json`, 문항은 `data/items_*.json` — 코드와 분리. 문항 JSON 은 `data/source/master_*.csv`(원문 대조 확정본, `php tests/source_compare.php`)로만 만든다. `data/`·`includes/`·`tests/`는 `Deny from all`
 - 버전 단일 원본 `includes/version.php` — 기능 추가 MINOR, 고침·문구 PATCH
 
 ## 코딩 원칙

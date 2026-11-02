@@ -1,10 +1,8 @@
-# data/source — 원문 자료 (배포하지 않음)
+# data/source — 원문 자료 (배포하지 않음, 웹 접근 차단)
 
-2단계 전에 아래 자료를 이 폴더에 넣는다.
+- 출처·SHA-256 기록: `SOURCES.md`
+- 대조 결과·미결: `COMPARISON_REPORT.md`
+- 추출·대조 재실행: `php tests/source_compare.php`
 
-1. `ipip_neo_120_en.csv` 또는 `.txt` — IPIP-NEO-120 영문 문항표 (ipip.ori.org).
-   문항 번호, 하위 요인(N1~C6), 정·역채점(+/−) 표시가 있어야 한다.
-2. 원고 『다섯 개의 다이얼』 — 1~4장, 6장, 9장, 11~12장, 부록 A(Mini-IPIP 번역)·C(용어 사전)·D(더 읽을거리).
-   형식은 .md / .txt / .docx / .pdf 어느 것이든 된다.
-
-문항 JSON(`data/items_*.json`)의 하위 요인 코드와 채점 방향은 이 원문에서 기계적으로 옮긴다. 기억으로 문항을 만들지 않는다.
+문항 JSON(`data/items_*.json`)은 확정 기준 파일 `master_120.csv` · `master_20.csv` 로만 만든다.
+기억으로 문항을 만들거나 고치지 않는다.
