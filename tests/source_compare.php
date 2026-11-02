@@ -267,6 +267,110 @@ if ($AP !== null) {
     line();
 }
 
+// ── 4) [A'] IPIP 공식 사이트 120문항 페이지 (Johnson, 2014) — 하위 요인·방향·문구 대조 ──
+// 페이지는 하위 요인마다 4문항을 싣고, '+ keyed'/'– keyed' 표시는 그 방향의 첫 문항에만 붙는다(다음 표시까지 같은 방향).
+// 실시 순서 번호(1~120)는 이 페이지에 없다 → 번호 순서는 원논문 표 1 로만 확정한다.
+$AW = null;
+$awOk = false; // [B] 가 [A'] 와 하위 요인·방향·문구 모두 일치하면 true
+$awFile = $src . '/ipip_neo120_items.html';
+if (is_file($awFile)) {
+    $html = (string) iconv('CP1252', 'UTF-8//IGNORE', (string) file_get_contents($awFile));
+    preg_match_all('#<td[^>]*>(.*?)</td>#su', $html, $cells);
+    $AW = [];
+    $facet = null;
+    $sign = null;
+    $pos = 0;
+    $cellsText = array_map(static fn($c) => trim(html_entity_decode(strip_tags($c), ENT_QUOTES | ENT_HTML5, 'UTF-8'), " \t\n\r\0\x0B\u{00A0}"), $cells[1]);
+    for ($i = 0; $i < count($cellsText); $i++) {
+        $t = $cellsText[$i];
+        if (preg_match('/^([NEOAC][1-6]):/u', $t, $fm)) {
+            $facet = $fm[1];
+            $sign = null;
+            $pos = 0;
+            continue;
+        }
+        if ($facet === null) {
+            continue;
+        }
+        if (preg_match('/^(\+|–|-)\s*keyed$/u', $t, $km)) {
+            $sign = $km[1] === '+' ? '+' : '-';
+            continue;
+        }
+        // 방향 칸(빈칸) 다음의 문장 칸
+        if ($t !== '' && $sign !== null && !str_starts_with($t, 'Johnson, J. A.') && !str_starts_with($t, 'Alphas') && !str_starts_with($t, 'Return to')) {
+            $pos++;
+            $AW[] = ['facet_code' => $facet, 'keyed' => $sign, 'text_en' => rtrim($t, '.'), 'order_in_facet' => (string) $pos];
+            if ($facet === 'C6' && $pos === 4) {
+                $facet = null; // 마지막 하위 요인 뒤 각주는 문항이 아니다
+            }
+        }
+    }
+    csv_write($src . '/extracted_A_ipip120page.csv', ['facet_code', 'keyed', 'text_en', 'order_in_facet'], $AW);
+    line("[A'] extracted_A_ipip120page.csv 작성 (" . count($AW) . '행)');
+    line("== [A'] IPIP 공식 120문항 페이지 구조 점검");
+    $fc = array_count_values(array_column($AW, 'facet_code'));
+    check(count($AW) === 120, '문항 120', $fail);
+    check(count($fc) === 30 && array_unique(array_values($fc)) === [4], '하위 요인 30 × 4문항', $fail);
+    $minusAW = count(array_filter($AW, static fn($r) => $r['keyed'] === '-'));
+    line("  정보  역채점 {$minusAW}개, 정채점 " . (count($AW) - $minusAW) . '개');
+    if ($B !== null) {
+        line("== [A'] 기준 [B] 대조 (하위 요인·방향·문구)");
+        $awBy = [];
+        foreach ($AW as $r) {
+            $awBy[$r['facet_code'] . '|' . norm_text($r['text_en'])] = $r;
+        }
+        $mis = ['facet_or_text' => 0, 'keyed' => 0];
+        foreach ($B as $r) {
+            $key = $r['facet_code'] . '|' . norm_text($r['text_en']);
+            if (!isset($awBy[$key])) {
+                $mis['facet_or_text']++;
+                line("  불일치 {$r['item_no_120']}번 [{$r['facet_code']}] \"{$r['text_en']}\" — A' 의 같은 하위 요인에 같은 문구 없음");
+                continue;
+            }
+            if ($awBy[$key]['keyed'] !== $r['keyed']) {
+                $mis['keyed']++;
+                line("  불일치 {$r['item_no_120']}번 방향: A'={$awBy[$key]['keyed']} B={$r['keyed']}");
+            }
+            unset($awBy[$key]);
+        }
+        check($mis['facet_or_text'] === 0, "120문항 모두 A' 와 하위 요인·문구 일치 (불일치 {$mis['facet_or_text']})", $fail);
+        check($mis['keyed'] === 0, "120문항 모두 A' 와 채점 방향 일치 (불일치 {$mis['keyed']})", $fail);
+        check($awBy === [], "A' 문항이 B 에 모두 있음 (남은 것 " . count($awBy) . ')', $fail);
+        $awOk = $mis === ['facet_or_text' => 0, 'keyed' => 0] && $awBy === [] && count($AW) === 120;
+        // 하위 요인 안 순서: B 의 실시 순서로 본 하위 요인 내 순서 = A' 페이지 순서인가 (정보)
+        $order = [];
+        foreach ($B as $r) {
+            $order[$r['facet_code']][] = norm_text($r['text_en']);
+        }
+        $sameOrder = 0;
+        foreach ($order as $f => $texts) {
+            $pageTexts = array_map(static fn($r) => norm_text($r['text_en']), array_values(array_filter($AW, static fn($r) => $r['facet_code'] === $f)));
+            $sameOrder += $texts === $pageTexts ? 1 : 0;
+        }
+        line("  정보  하위 요인 안 문항 순서가 A' 페이지와 같은 하위 요인: {$sameOrder} / 30 (실시 번호는 원논문 표 1 로 확정)");
+    }
+    line();
+}
+
+// [D'] Mini-IPIP 요약표 — 문항 문장은 없고, 요인별 정·역채점 문항 수만 있다
+$dtFile = $src . '/ipip_mini_ipip_table.html';
+if (is_file($dtFile) && $AP !== null) {
+    $html = (string) iconv('CP1252', 'UTF-8//IGNORE', (string) file_get_contents($dtFile));
+    $txt = preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    $txt = str_replace("\u{00A0}", ' ', (string) $txt);
+    line("== [D'] Mini-IPIP 요약표 기준 [부록 A] 요인별 +/− 문항 수 대조");
+    foreach (['Extraversion' => 'E', 'Agreeableness' => 'A', 'Conscientiousness' => 'C', 'Neuroticism' => 'N', 'Intellect' => 'O'] as $label => $code) {
+        if (!preg_match('/' . $label . '[a-z]?\s+(\d)\s*\+\s*(\d)\s*=/u', $txt, $m)) {
+            check(false, "{$label}: 요약표에서 문항 수를 읽지 못함", $fail);
+            continue;
+        }
+        $plus = count(array_filter($AP, static fn($r) => $r['factor'] === $code && $r['keyed'] === '+'));
+        $minus = count(array_filter($AP, static fn($r) => $r['factor'] === $code && $r['keyed'] === '-'));
+        check((int) $m[1] === $plus && (int) $m[2] === $minus, "{$code} {$label}: 요약표 +{$m[1]} −{$m[2]} / 부록 A +{$plus} −{$minus}", $fail);
+    }
+    line();
+}
+
 // ── 5) 확정 기준 파일 작성 ─────────────────────────────────
 if (in_array('--write-master', $argv, true)) {
     $today = (new DateTimeImmutable('now', new DateTimeZone('Asia/Seoul')))->format('Y-m-d');
@@ -277,7 +381,9 @@ if (in_array('--write-master', $argv, true)) {
         $srcLabel = 'A';
     } elseif ($B !== null) {
         $base = $B;
-        $meta = "# status: provisional — 임시 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 원논문(A) 대조 대기. 작성 {$today}";
+        $meta = $awOk
+            ? "# status: provisional — 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지(Johnson, 2014)와 모두 일치 확인. 실시 번호 순서만 원논문(A) 표 1 대조 대기. 작성 {$today}"
+            : "# status: provisional — 임시 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 원논문(A) 대조 대기. 작성 {$today}";
         $srcLabel = 'B';
     } else {
         $base = null;

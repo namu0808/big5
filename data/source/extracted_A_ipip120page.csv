@@ -1,0 +1,121 @@
+facet_code,keyed,text_en,order_in_facet
+N1,+,"Worry about things",1
+N1,+,"Fear for the worst",2
+N1,+,"Am afraid of many things",3
+N1,+,"Get stressed out easily",4
+N2,+,"Get angry easily",1
+N2,+,"Get irritated easily",2
+N2,+,"Lose my temper",3
+N2,-,"Am not easily annoyed",4
+N3,+,"Often feel blue",1
+N3,+,"Dislike myself",2
+N3,+,"Am often down in the dumps",3
+N3,-,"Feel comfortable with myself",4
+N4,+,"Find it difficult to approach others",1
+N4,+,"Am afraid to draw attention to myself",2
+N4,+,"Only feel comfortable with friends",3
+N4,-,"Am not bothered by difficult social situations",4
+N5,+,"Go on binges",1
+N5,-,"Rarely overindulge",2
+N5,-,"Easily resist temptations",3
+N5,-,"Am able to control my cravings",4
+N6,+,"Panic easily",1
+N6,+,"Become overwhelmed by events",2
+N6,+,"Feel that I'm unable to deal with things",3
+N6,-,"Remain calm under pressure",4
+E1,+,"Make friends easily",1
+E1,+,"Feel comfortable around people",2
+E1,-,"Avoid contacts with others",3
+E1,-,"Keep others at a distance",4
+E2,+,"Love large parties",1
+E2,+,"Talk to a lot of different people at parties",2
+E2,-,"Prefer to be alone",3
+E2,-,"Avoid crowds",4
+E3,+,"Take charge",1
+E3,+,"Try to lead others",2
+E3,+,"Take control of things",3
+E3,-,"Wait for others to lead the way",4
+E4,+,"Am always busy",1
+E4,+,"Am always on the go",2
+E4,+,"Do a lot in my spare time",3
+E4,-,"Like to take it easy",4
+E5,+,"Love excitement",1
+E5,+,"Seek adventure",2
+E5,+,"Enjoy being reckless",3
+E5,+,"Act wild and crazy",4
+E6,+,"Radiate joy",1
+E6,+,"Have a lot of fun",2
+E6,+,"Love life",3
+E6,+,"Look at the bright side of life",4
+O1,+,"Have a vivid imagination",1
+O1,+,"Enjoy wild flights of fantasy",2
+O1,+,"Love to daydream",3
+O1,+,"Like to get lost in thought",4
+O2,+,"Believe in the importance of art",1
+O2,+,"See beauty in things that others might not notice",2
+O2,-,"Do not like poetry",3
+O2,-,"Do not enjoy going to art museums",4
+O3,+,"Experience my emotions intensely",1
+O3,+,"Feel others' emotions",2
+O3,-,"Rarely notice my emotional reactions",3
+O3,-,"Don't understand people who get emotional",4
+O4,+,"Prefer variety to routine",1
+O4,-,"Prefer to stick with things that I know",2
+O4,-,"Dislike changes",3
+O4,-,"Am attached to conventional ways",4
+O5,+,"Love to read challenging material",1
+O5,-,"Avoid philosophical discussions",2
+O5,-,"Have difficulty understanding abstract ideas",3
+O5,-,"Am not interested in theoretical discussions",4
+O6,+,"Tend to vote for liberal political candidates",1
+O6,+,"Believe that there is no absolute right and wrong",2
+O6,-,"Tend to vote for conservative political candidates",3
+O6,-,"Believe that we should be tough on crime",4
+A1,+,"Trust others",1
+A1,+,"Believe that others have good intentions",2
+A1,+,"Trust what people say",3
+A1,-,"Distrust people",4
+A2,-,"Use others for my own ends",1
+A2,-,"Cheat to get ahead",2
+A2,-,"Take advantage of others",3
+A2,-,"Obstruct others' plans",4
+A3,+,"Am concerned about others",1
+A3,+,"Love to help others",2
+A3,-,"Am indifferent to the feelings of others",3
+A3,-,"Take no time for others",4
+A4,-,"Love a good fight",1
+A4,-,"Yell at people",2
+A4,-,"Insult people",3
+A4,-,"Get back at others",4
+A5,-,"Believe that I am better than others",1
+A5,-,"Think highly of myself",2
+A5,-,"Have a high opinion of myself",3
+A5,-,"Boast about my virtues",4
+A6,+,"Sympathize with the homeless",1
+A6,+,"Feel sympathy for those who are worse off than myself",2
+A6,-,"Am not interested in other people's problems",3
+A6,-,"Try not to think about the needy",4
+C1,+,"Complete tasks successfully",1
+C1,+,"Excel in what I do",2
+C1,+,"Handle tasks smoothly",3
+C1,+,"Know how to get things done",4
+C2,+,"Like to tidy up",1
+C2,-,"Often forget to put things back in their proper place",2
+C2,-,"Leave a mess in my room",3
+C2,-,"Leave my belongings around",4
+C3,+,"Keep my promises",1
+C3,+,"Tell the truth",2
+C3,-,"Break rules",3
+C3,-,"Break my promises",4
+C4,+,"Do more than what's expected of me",1
+C4,+,"Work hard",2
+C4,-,"Put little time and effort into my work",3
+C4,-,"Do just enough work to get by",4
+C5,+,"Am always prepared",1
+C5,+,"Carry out my plans",2
+C5,-,"Waste my time",3
+C5,-,"Have difficulty starting tasks",4
+C6,-,"Jump into things without thinking",1
+C6,-,"Make rash decisions",2
+C6,-,"Rush into things",3
+C6,-,"Act without thinking",4
