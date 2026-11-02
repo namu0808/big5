@@ -45,6 +45,7 @@
   - 해석 문구: `data/content/*.json` 7개(키 구조는 `includes/content_loader.php` 머리 주석). 점검 `includes/content_check.php`(CLI `tests/content_test.php`·관리자 `admin/content.php` 공유), 검수본 `php tests/build_review_content.php` → `data/review_content.md`. 문구를 고치면 둘 다 다시 돌린다
   - 리포트: 데이터 구성 `includes/report_builder.php`(순수 함수, `tests/report_test.php`), 차트 `includes/report_charts.php`(CSS 막대·SVG 레이더), 인쇄 `assets/print.css` + `report.php` 의 `@page @bottom-center` 꼬리말. 샘플 검사 `php doc/dev-seed-reports.php`(all3·random·extreme·mini·nhigh)
   - 재검사·타인 평가: `includes/others.php`(초대 토큰 해시·14일, 평가 채점, 리포트 9장·10장 데이터), `includes/user_delete.php`(내 데이터 전체 삭제), 검사 화면 마크업 `includes/test_ui.php`(test.php·rate.php 공용). CLI `tests/others_test.php`
+  - 관리자: 집계·분포·규준·익명 CSV 는 `includes/admin_stats.php`(CLI `tests/admin_test.php` — /admin 첫 문장 규칙도 검사). 규준은 품질 통과 정식 검사 300건 이상일 때만 계산, 저장 시 비활성
   - 브라우저: `doc/pw/*-smoke.js` — 개발 서버를 스스로 띄움(`BIG5_DB_CONFIG=doc/dev-db-sqlite.php php -S 127.0.0.1:8093 doc/dev-router.php`, 주소 `http://127.0.0.1:8093/big5/`). 라우터가 운영 .htaccess 의 403 차단을 흉내 낸다
   - 손으로 띄울 때: `php doc/dev-sqlite-setup.php` 후 위 서버 명령
 - 전건 PASS 후 커밋. 커밋 메시지·코드에 모델 식별자 넣지 않음
