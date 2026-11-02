@@ -56,6 +56,8 @@ function csv_read(string $path): ?array
 /** 문구 비교용 정규화 — 대소문자·구두점·공백 차이 무시 */
 function norm_text(string $s): string
 {
+    // PDF 추출의 합자(ﬁ ﬂ)·굽은 따옴표를 보통 글자로
+    $s = str_replace(['ﬁ', 'ﬂ', '’', '‘'], ['fi', 'fl', "'", "'"], $s);
     $s = strtolower($s);
     $s = preg_replace('/[^a-z0-9 ]+/', ' ', $s);
     return trim(preg_replace('/\s+/', ' ', $s));
@@ -245,7 +247,28 @@ if (is_file($dFile) && is_file($mapFile) && $AP !== null) {
 }
 
 // ── 3) 구조 점검과 대조 ─────────────────────────────────────
-$A = csv_read($src . '/extracted_A_johnson.csv');
+// [A] 원논문 PDF 표 1 추출 (pdftotext). 열: IPIP-300 번호, IPIP-120 번호, 하위 요인 키(+N1 = 정채점, 부호 없음 = 역채점), 문항, 알파
+$aPdf = $src . '/johnson2014_ipip_neo_120.pdf';
+$aCsv = $src . '/extracted_A_johnson.csv';
+if (is_file($aPdf) && trim((string) shell_exec('command -v pdftotext')) !== '') {
+    $txt = (string) shell_exec('pdftotext -layout ' . escapeshellarg($aPdf) . ' - 2>/dev/null');
+    preg_match_all('/^\s+(\d{1,3})\s+(\d{1,3})\s+(\+?)([NEOAC][1-6])\s+(.+?)\s{2,}\.\d+\s*$/mu', $txt, $mm, PREG_SET_ORDER);
+    $rowsA = [];
+    foreach ($mm as $m) {
+        $rowsA[] = [
+            'item_no_120' => $m[2],
+            'facet_code' => $m[4],
+            'keyed' => $m[3] === '+' ? '+' : '-',
+            'text_en' => str_replace(['ﬁ', 'ﬂ', '’'], ['fi', 'fl', "'"], trim($m[5])),
+            'ipip300_no' => $m[1],
+            'note' => '',
+        ];
+    }
+    usort($rowsA, static fn($x, $y) => (int) $x['item_no_120'] <=> (int) $y['item_no_120']);
+    csv_write($aCsv, ['item_no_120', 'facet_code', 'keyed', 'text_en', 'ipip300_no', 'note'], $rowsA);
+    line('[A] extracted_A_johnson.csv 작성 (' . count($rowsA) . '행, 원논문 표 1, pdftotext)');
+}
+$A = csv_read($aCsv);
 $C = csv_read($src . '/extracted_C_uga.csv');
 // $D 는 2-2) 에서 [D] 페이지로 만든다
 
@@ -523,7 +546,7 @@ if (in_array('--write-master', $argv, true)) {
     // 120문항
     if ($A !== null) {
         $base = $A;
-        $meta = "# status: final — 기준: [A] Johnson (2014) 원논문 표 1. 작성 {$today}";
+        $meta = "# status: final — 기준: [A] Johnson (2014) 원논문 표 1 (번호·하위 요인·방향·문구). 교차 확인: [A'] IPIP 공식 페이지, [A''] NovoPsych 검사지. 58번은 원논문대로 'right or wrong'(B·[A']는 'and'). 작성 {$today}";
         $srcLabel = 'A';
     } elseif ($B !== null) {
         $base = $B;

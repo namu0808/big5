@@ -1,6 +1,6 @@
 # 원문 자료 출처 기록 (data/source)
 
-> **status: provisional** — 120문항 기준 파일 `master_120.csv`는 [B]로 만들었고, 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지와 모두 일치함을 확인했다(2026-11-02). 실시 번호와 채점 방향은 [A''] NovoPsych 검사지와 120/120 일치함을 확인했다. 원논문 [A] 표 1 대조가 끝나면 final 로 바꾼다. 20문항 `master_20.csv`는 **status: final** — 요인·방향·영문은 [D] IPIP 공식 Mini-IPIP 페이지, 실시 번호·한국어는 원고 부록 A(2026-11-02). 원논문 대조가 끝나면 status: final 로 바꾼다. (승인 2026-11-02)
+> **status: final** — 120문항 `master_120.csv`는 원논문 [A] Johnson (2014) 표 1 기준(번호·하위 요인·방향·문구), [A'] IPIP 공식 페이지·[A''] NovoPsych 검사지로 교차 확인. 20문항 `master_20.csv`는 [D] IPIP 공식 Mini-IPIP 페이지(요인·방향·영문) + 원고 부록 A(번호·한국어). 원문 대조 미결 0건 (2026-11-02).
 
 - 기록일: 2026-11-02 12:56 KST (갱신 13:05 KST)
 - 이 폴더는 `data/.htaccess`(Deny from all)로 웹에서 직접 열 수 없다. FTP 배포 대상도 아니다.
@@ -43,14 +43,15 @@
 - 저장: `data/source/ipip_mini_ipip_table.html` — 15,032바이트, SHA-256 `a04f724f76652d49a15dd225855627b401925b3c2505e79fd81ccd568a07f0a4`
 - 내용: 요인별 문항 수(+/−)·신뢰도·각주. **문항 문장은 없다.** 문장과 번호가 있는 페이지는 [D] `MiniIPIPKey.htm`이다(아직 미확보).
 
-## [A] Johnson (2014) IPIP-NEO-120 원논문 — 실패
+## [A] Johnson (2014) IPIP-NEO-120 원논문 — 확보 (대표님 업로드)
 
 - 원본 URL: https://bpb-us-e1.wpmucdn.com/sites.psu.edu/dist/1/163537/files/2023/07/IPIPNEO120.pdf
-- 저장 예정 경로: `data/source/johnson2014_ipip_neo_120.pdf`
-- 시도: 2026-11-02 12:50 KST 무렵
-  - `curl`: 프록시가 연결 거부(CONNECT 403)
-  - 웹 가져오기 도구: 호스트 이름 조회 실패(허용 도메인 밖)
-- 파일 크기·SHA-256: 없음 (받지 못함)
+  - 처음에는 네트워크 차단으로 받지 못했다. 2026-11-02 21:50 KST 무렵 대표님이 올렸다.
+- 저장: `data/source/johnson2014_ipip_neo_120.pdf` — 348,081바이트(12쪽), SHA-256 `c4eb1633688dd36664ab4fc586beb244a2c5d4b9e90a16c3d06af67f94e9a10b`
+- 표 1 "Item assignments and alphas for IPIP-NEO-120 Scales"
+  - 열: IPIP-300 번호, IPIP-120 번호, 하위 요인 키, 문항, 알파
+  - 정채점은 '+N1'처럼 부호가 붙고, 역채점은 부호 없이 'N2'로 적혀 있다.
+- 추출: `extracted_A_johnson.csv` — `pdftotext -layout` 기계 추출, 합자(ﬁ ﬂ)·굽은 따옴표 정규화
 
 ## [B] bigfive-org 문항 데이터 — 성공
 
@@ -97,16 +98,17 @@
 | 파일 | 만든 방법 | 바이트 | SHA-256 |
 |---|---|---:|---|
 | `extracted_B_bigfiveorg.csv` | `php tests/source_compare.php` (B의 en·ko JSON에서 기계 추출) | 15,901 | `26cdb5eb0b601f52436d0df00d8e60b1263c2256bdf86b33222fe96fc6a97c87` |
+| `extracted_A_johnson.csv` | 같은 스크립트 ([A] 원논문 표 1, pdftotext. 열: item_no_120, facet_code, keyed, text_en, ipip300_no, note) | 4,956 | `ca43ee90c9192df3b0465705434c117c832c605488839f2ce9e4249ec56e3897` |
 | `extracted_A_ipip120page.csv` | 같은 스크립트 ([A'] HTML에서 기계 추출, 열: facet_code, keyed, text_en, order_in_facet) | 4,272 | `f03e8448d22a31af0ae7140a955be29553eb9cba3c9a3b868929f09f5f76779c` |
 | `extracted_A2_novopsych.csv` | 같은 스크립트 ([A''] PDF를 `pdftotext -layout`으로 읽어 추출, 두 줄 문항 합침. 열: item_no_120, keyed, text_en) | 4,042 | `4a6430ccc43b6e8594b403bcabbc514ea19ef1f7eec61232ed2c66602816459a` |
 | `extracted_D_mini.csv` | 같은 스크립트 ([D] HTML에서 기계 추출 + `mini_order_map.csv` 번호) | 787 | `5f9dfd1131a9716439a9324fe15d9b2a6e6ee5126628226a4ed22fe36dd73bd5` |
 | `extracted_appendixA_mini.csv` | 같은 스크립트 (원고 부록 A의 문항표·뒤집는 문항·다이얼별 문항 표에서 기계 추출) | 1,043 | `a0ba606b50027cab0293bf42b9aa3a051eb093d948ca01de736ec5181c4860f2` |
 
-## 기준 파일 (확정 전)
+## 기준 파일
 
 | 파일 | status | 만든 방법 | 바이트 | SHA-256 |
 |---|---|---|---:|---|
-| `master_120.csv` | provisional | `php tests/source_compare.php --write-master` — [B] 추출본을 그대로 옮김, [A']·[A''] 와 일치 확인 표시 | 5,113 | `abb4049254b57b7e7567849f3953b42734bbf0bb3629090178ea36b9b4898103` |
+| `master_120.csv` | **final** | `php tests/source_compare.php --write-master` — [A] 원논문 표 1 기준 (58번 'right or wrong') | 5,025 | `6f92a3443d54dc444f9e16d09621b11269ba66703b0cb76127e19def402da30e` |
 | `master_20.csv` | **final** | 같은 명령 — 요인·방향·영문 [D], 번호·한국어 원고 부록 A | 2,111 | `f9a5bd779173ca4b556fe792dcde89dbb2f55335cc0824ba9de37989c434f44e` |
 
 문항 JSON(`data/items_120.json`, `data/items_20.json`)은 `php tests/build_items.php`가 위 두 파일과 번역 초안(`data/translate/`)으로만 만든다.

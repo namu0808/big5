@@ -2,8 +2,8 @@
     "version": "ipip-neo-120-ko-v0.1",
     "instrument": "IPIP-NEO-120 (Johnson, 2014)",
     "status": "draft",
-    "source_status": "provisional",
-    "source_note": "status: provisional — 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지와, 실시 번호·방향은 [A''] NovoPsych 검사지(Johnson 2014 인용)와 120/120 일치 확인(표기 차이 4건은 [A'] 문구 유지). 원논문(A) 표 1 대조 대기. 작성 2026-11-02",
+    "source_status": "final",
+    "source_note": "status: final — 기준: [A] Johnson (2014) 원논문 표 1 (번호·하위 요인·방향·문구). 교차 확인: [A'] IPIP 공식 페이지, [A''] NovoPsych 검사지. 58번은 원논문대로 'right or wrong'(B·[A']는 'and'). 작성 2026-11-02",
     "scale": [
         "전혀 아니다",
         "아닌 편이다",
@@ -620,7 +620,7 @@
             "no": 58,
             "facet": "O6",
             "keyed": "+",
-            "text_en": "Believe that there is no absolute right and wrong",
+            "text_en": "Believe that there is no absolute right or wrong",
             "text_ko": "세상에 절대적으로 옳고 그른 것은 없다고 생각한다.",
             "text_ko_other": "이 사람은 세상에 절대적으로 옳고 그른 것은 없다고 생각한다."
         },

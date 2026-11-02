@@ -1,7 +1,7 @@
 # 문항 번역 검수표
 
-- 만든 날: 2026-11-02 21:12 KST (`php tests/build_items.php`)
-- 원문 키 출처: `data/source/master_120.csv` — status: provisional — 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지와, 실시 번호·방향은 [A''] NovoPsych 검사지(Johnson 2014 인용)와 120/120 일치 확인(표기 차이 4건은 [A'] 문구 유지). 원논문(A) 표 1 대조 대기. 작성 2026-11-02
+- 만든 날: 2026-11-02 21:22 KST (`php tests/build_items.php`)
+- 원문 키 출처: `data/source/master_120.csv` — status: final — 기준: [A] Johnson (2014) 원논문 표 1 (번호·하위 요인·방향·문구). 교차 확인: [A'] IPIP 공식 페이지, [A''] NovoPsych 검사지. 58번은 원논문대로 'right or wrong'(B·[A']는 'and'). 작성 2026-11-02
 - 번역 초안: `data/translate/items_120_ko.csv` (status: draft)
 - 검수 방법: 번역이 원문과 같은 방향인지 봅니다. **방향** 열이 `−`인 문항은 "그렇다"고 답할수록 그 하위 요인 점수가 낮아집니다. 고칠 곳은 `data/translate/*.csv`에 적거나 이 표에 메모해 주세요.
 - 정식·간이 공통 문항: `data/translate/shared_items.csv` (status: final — 정식 검사(120)와 간이 검사(20)에서 같은 문항. 문장 기준은 원고 부록 A(20문항). [D] Mini-IPIP 원문과 영문이 똑같은 문항은 이 6쌍뿐임을 확인(2026-11-02) / 짝 근거: master_20.csv 영문([D]) = master_120.csv 영문. 채점 방향(keyed)도 같아야 한다 — tests/build_items.php 가 확인) — 문장은 원고 부록 A 기준으로 통일
@@ -68,7 +68,7 @@
 | 55 | C5 자기 규율 | + | Carry out my plans | 세운 계획을 실행에 옮긴다. | 이 사람은 세운 계획을 실행에 옮긴다. |  |
 | 56 | N6 취약성 | + | Become overwhelmed by events | 일이 닥치면 쉽게 압도된다. | 이 사람은 일이 닥치면 쉽게 압도된다. |  |
 | 57 | E6 긍정 정서 | + | Have a lot of fun | 재미있게 지낼 때가 많은 편이다. | 이 사람은 재미있게 지낼 때가 많은 편이다. |  |
-| 58 | O6 가치 개방 | + | Believe that there is no absolute right and wrong | 세상에 절대적으로 옳고 그른 것은 없다고 생각한다. | 이 사람은 세상에 절대적으로 옳고 그른 것은 없다고 생각한다. | 부정·회피 표현, 가치 개방(중립성) |
+| 58 | O6 가치 개방 | + | Believe that there is no absolute right or wrong | 세상에 절대적으로 옳고 그른 것은 없다고 생각한다. | 이 사람은 세상에 절대적으로 옳고 그른 것은 없다고 생각한다. | 부정·회피 표현, 가치 개방(중립성) |
 | 59 | A6 온정 | + | Feel sympathy for those who are worse off than myself | 나보다 형편이 어려운 사람에게 마음이 쓰인다. | 이 사람은 자기보다 형편이 어려운 사람에게 마음을 쓴다. |  |
 | 60 | C6 신중함 | − | Make rash decisions | 성급하게 결정을 내린다. | 이 사람은 성급하게 결정을 내린다. |  |
 | 61 | N1 불안 | + | Am afraid of many things | 두려워하는 것이 많은 편이다. | 이 사람은 두려워하는 것이 많은 편이다. |  |

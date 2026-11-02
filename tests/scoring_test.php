@@ -31,6 +31,7 @@ $emptyKo = array_filter($i120['items'], static fn($it) => $it['text_ko'] === '' 
 t_ok($emptyKo === [], '120문항 원문·번역·타인용 빈칸 없음');
 $otherPrefix = array_filter($i120['items'], static fn($it) => !str_starts_with($it['text_ko_other'], '이 사람은 '));
 t_ok($otherPrefix === [], "타인용 문장은 모두 '이 사람은'으로 시작");
+t_ok($i120['source_status'] === 'final' && $i120['items'][57]['text_en'] === 'Believe that there is no absolute right or wrong', '120문항 원문 대조 final (원논문 기준, 58번 \'right or wrong\')');
 
 // ── 구조: 20문항 ──
 $n20 = array_map(static fn($it) => $it['no'], $i20['items']);
