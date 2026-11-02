@@ -79,4 +79,19 @@ async function status(url) {
   });
 }
 
-module.exports = { ROOT, BASE, ORIGIN, OUT, DB, startServer, resetDb, openBrowser, ok, done, login, status };
+/** 개발 DB 에 SQL 조회 (php PDO sqlite) — 결과 행 배열 */
+function sql(query, params = []) {
+  const { execFileSync } = require('child_process');
+  const code = 'require $argv[1]; $st = $pdo->prepare($argv[2]); $st->execute(json_decode($argv[3], true)); echo json_encode($st->fetchAll());';
+  const env = { ...process.env, BIG5_DEV_SQLITE: DB, BIG5_DB_QUIET: '1' };
+  const out = execFileSync('php', ['-r', code, path.join(ROOT, 'doc', 'dev-db-sqlite.php'), query, JSON.stringify(params)], { env });
+  return JSON.parse(out.toString());
+}
+
+/** 새 DB 에 install.php 실행 */
+async function freshInstall(page) {
+  await page.goto(`${BASE}/1time/install.php`);
+  return (await page.textContent('body')).includes('설치 완료');
+}
+
+module.exports = { ROOT, BASE, ORIGIN, OUT, DB, startServer, resetDb, openBrowser, ok, done, login, status, sql, freshInstall };

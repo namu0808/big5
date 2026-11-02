@@ -39,7 +39,9 @@
 
 ## 검증
 - 일괄: `node doc/pw/run.js` (CLI + 브라우저) · `--cli` · `--pw`
-  - CLI: `php tests/run.php` (모든 PHP `php -l` + `tests/*_test.php`)
+  - CLI: `php tests/run.php` (모든 PHP `php -l` + `tests/*_test.php`: 스키마·인증, 채점·문항 구조·원문 키 일치)
+  - 원문 대조: `php tests/source_compare.php [--write-master]` → `data/source/master_*.csv` (A·D 추출본이 있으면 그 값 우선)
+  - 문항 JSON 빌드: `php tests/build_items.php` (master + `data/translate/*.csv` → `data/items_*.json`, `data/review_items.md`). 문항 JSON 을 손으로 고치지 않는다
   - 브라우저: `doc/pw/*-smoke.js` — 개발 서버를 스스로 띄움(`BIG5_DB_CONFIG=doc/dev-db-sqlite.php php -S 127.0.0.1:8093 doc/dev-router.php`, 주소 `http://127.0.0.1:8093/big5/`). 라우터가 운영 .htaccess 의 403 차단을 흉내 낸다
   - 손으로 띄울 때: `php doc/dev-sqlite-setup.php` 후 위 서버 명령
 - 전건 PASS 후 커밋. 커밋 메시지·코드에 모델 식별자 넣지 않음
