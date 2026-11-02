@@ -165,4 +165,37 @@ $q = big5_quality($i20['items'], make_resp($i20['items'], 5, 5), 30);
 t_ok($q['flags'] === ['fast', 'straightline', 'inconsistent'], '간이 검사 30초·모두 5점: fast, straightline, inconsistent');
 t_ok(big5_quality_message('fast') !== '' && big5_quality_message('inconsistent') !== '', '품질 안내 문구');
 
+// ── 부정문 문항의 응답 방향 (회귀 테스트, 2026-11-02 점검) ──
+// 문항은 질문이 아니라 서술문이고, 선지는 '이 문장이 나에게 해당하는가'를 묻는다.
+// 부정문에 '그런 편이다'(4)를 고르면 그 문장이 나에게 맞다는 뜻 → 역채점(−) 문항은 해당 점수를 낮춰야 한다.
+function one_item(array $items, int $no, int $value): array
+{
+    $r = make_resp($items, 3, 3);
+    $r[$no] = $value;
+    return $r;
+}
+$s = big5_score($i20['items'], one_item($i20['items'], 6, 4));
+t_ok($s['domains']['E']['pomp'] < 50, "20문항 6번 '말을 많이 하지 않는다'(E −)에 '그런 편이다' → 외향성 50 미만 ({$s['domains']['E']['pomp']})");
+$s = big5_score($i20['items'], one_item($i20['items'], 6, 2));
+t_ok($s['domains']['E']['pomp'] > 50, "20문항 6번에 '아닌 편이다' → 외향성 50 초과 ({$s['domains']['E']['pomp']})");
+$s = big5_score($i20['items'], one_item($i20['items'], 7, 4));
+t_ok($s['domains']['A']['pomp'] < 50, "20문항 7번 '다른 사람의 문제에는 별로 관심이 없다'(A −)에 '그런 편이다' → 친화성 50 미만 ({$s['domains']['A']['pomp']})");
+$it96 = $i120['items'][95];
+$s = big5_score($i120['items'], one_item($i120['items'], 96, 4));
+t_ok($it96['facet'] === 'N2' && $it96['keyed'] === '-' && $s['facets']['N2']['pomp'] < 50,
+    "120문항 96번 '{$it96['text_ko']}'(N2 −)에 '그런 편이다' → 분노 50 미만 ({$s['facets']['N2']['pomp']})");
+// 일반 규칙: 문항 하나만 5로 올리면 + 문항은 점수가 오르고, − 문항은 내려간다 (140문항 전부)
+$bad = [];
+foreach (['full120' => $i120, 'mini20' => $i20] as $type => $set) {
+    foreach ($set['items'] as $it) {
+        $s = big5_score($set['items'], one_item($set['items'], (int) $it['no'], 5));
+        $row = isset($it['facet']) ? $s['facets'][$it['facet']] : $s['domains'][$it['domain']];
+        $okDir = $it['keyed'] === '-' ? $row['pomp'] < 50 : $row['pomp'] > 50;
+        if (!$okDir) {
+            $bad[] = "{$type}#{$it['no']}";
+        }
+    }
+}
+t_ok($bad === [], '모든 문항: 하나만 5점 → + 문항은 점수 상승, − 문항은 하락 (140문항)' . ($bad ? ' — 어긋남: ' . implode(',', $bad) : ''));
+
 t_done();
