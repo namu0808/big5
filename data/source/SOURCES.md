@@ -1,6 +1,6 @@
 # 원문 자료 출처 기록 (data/source)
 
-> **status: provisional** — 120문항 기준 파일 `master_120.csv`는 [B]로 만들었고, 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지와 모두 일치함을 확인했다(2026-11-02). 실시 번호 순서만 원논문 [A] 표 1 대조가 남았다. 20문항 `master_20.csv`는 원고 부록 A로 만들었고, `text_en`은 비어 있다([D] 대기). 원논문 대조가 끝나면 status: final 로 바꾼다. (승인 2026-11-02)
+> **status: provisional** — 120문항 기준 파일 `master_120.csv`는 [B]로 만들었고, 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지와 모두 일치함을 확인했다(2026-11-02). 실시 번호 순서만 원논문 [A] 표 1 대조가 남았다. 20문항 `master_20.csv`는 **status: final** — 요인·방향·영문은 [D] IPIP 공식 Mini-IPIP 페이지, 실시 번호·한국어는 원고 부록 A(2026-11-02). 원논문 대조가 끝나면 status: final 로 바꾼다. (승인 2026-11-02)
 
 - 기록일: 2026-11-02 12:56 KST (갱신 13:05 KST)
 - 이 폴더는 `data/.htaccess`(Deny from all)로 웹에서 직접 열 수 없다. FTP 배포 대상도 아니다.
@@ -74,11 +74,15 @@
 - 저장 예정 경로: `data/source/uga_ipip_120.docx`
 - 시도 결과: [A]와 같음 (프록시 연결 거부, 호스트 이름 조회 실패)
 
-## [D] IPIP Mini-IPIP 공식 페이지 — 실패
+## [D] IPIP Mini-IPIP 공식 문항 페이지 — 확보 (대표님 업로드)
 
-- 원본 URL: https://ipip.ori.org/MiniIPIPKey.htm
-- 저장 예정 경로: `data/source/ipip_mini_ipip_key.html`
-- 시도 결과: [A]와 같음
+- 원본 URL: https://ipip.ori.org/MiniIPIPKey.htm (페이지 제목 "Mini-IPIP Scoring Key")
+- 처음에는 네트워크 차단으로 받지 못했다. 2026-11-02 21:20 KST 무렵 대표님이 브라우저로 저장해 올렸다(windows-1252, 저장한 그대로 보관).
+- 저장: `data/source/ipip_mini_ipip_key.html` — 7,505바이트, SHA-256 `96611ba05350844e912ac4fcb554e53ced6b00a4836e80f12e732d70532eb79c`
+- 내용: 요인 5개별 정·역채점 문항 영문 20개. **실시 번호는 없다.**
+- 번호 짝: `mini_order_map.csv` (1,930바이트, SHA-256 `ba458ac3dd3dcb623e6de35c53bc18c8f72a12a5529656f8317f896f41f65e4c`)
+  - 같은 요인·같은 방향 안에서 원고 부록 A 한국어 문장과 영문의 뜻을 대조해 정했다.
+  - 스크립트가 20문항이 빠짐없이 한 번씩 짝지어졌는지, 짝 파일의 한국어가 부록 A와 같은지 확인한다.
 
 ## 추출 파일
 
@@ -86,6 +90,7 @@
 |---|---|---:|---|
 | `extracted_B_bigfiveorg.csv` | `php tests/source_compare.php` (B의 en·ko JSON에서 기계 추출) | 15,901 | `26cdb5eb0b601f52436d0df00d8e60b1263c2256bdf86b33222fe96fc6a97c87` |
 | `extracted_A_ipip120page.csv` | 같은 스크립트 ([A'] HTML에서 기계 추출, 열: facet_code, keyed, text_en, order_in_facet) | 4,272 | `f03e8448d22a31af0ae7140a955be29553eb9cba3c9a3b868929f09f5f76779c` |
+| `extracted_D_mini.csv` | 같은 스크립트 ([D] HTML에서 기계 추출 + `mini_order_map.csv` 번호) | 787 | `5f9dfd1131a9716439a9324fe15d9b2a6e6ee5126628226a4ed22fe36dd73bd5` |
 | `extracted_appendixA_mini.csv` | 같은 스크립트 (원고 부록 A의 문항표·뒤집는 문항·다이얼별 문항 표에서 기계 추출) | 1,043 | `a0ba606b50027cab0293bf42b9aa3a051eb093d948ca01de736ec5181c4860f2` |
 
 ## 기준 파일 (확정 전)
@@ -93,7 +98,7 @@
 | 파일 | status | 만든 방법 | 바이트 | SHA-256 |
 |---|---|---|---:|---|
 | `master_120.csv` | provisional | `php tests/source_compare.php --write-master` — [B] 추출본을 그대로 옮김, [A'] 와 일치 확인 표시 | 5,033 | `59f62f9986d1a6f6cd577e4cb5c2ad020698a0f3694543d570082daacdd6c9f9` |
-| `master_20.csv` | provisional | 같은 명령 — 원고 부록 A 추출본, `text_en` 빈칸 | 1,425 | `95f642019ecd2f3b6b8ee2b105a63307c6cb005c2fee857c5f58c4c43d6c063c` |
+| `master_20.csv` | **final** | 같은 명령 — 요인·방향·영문 [D], 번호·한국어 원고 부록 A | 2,111 | `f9a5bd779173ca4b556fe792dcde89dbb2f55335cc0824ba9de37989c434f44e` |
 
 문항 JSON(`data/items_120.json`, `data/items_20.json`)은 `php tests/build_items.php`가 위 두 파일과 번역 초안(`data/translate/`)으로만 만든다.
 

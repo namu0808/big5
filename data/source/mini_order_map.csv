@@ -1,0 +1,23 @@
+# [D] Mini-IPIP 원문(번호 없음) ↔ 원고 부록 A 번호(1~20) 짝. 근거: 같은 요인·같은 채점 방향 안에서 부록 A 한국어 문장과 영문의 뜻 대조 (2026-11-02)
+# tests/source_compare.php 가 [D] 의 20문항이 빠짐없이 한 번씩 짝지어졌는지, 요인·방향이 부록 A 와 같은지 확인한다
+text_en,item_no_20,ko_appendix_a
+"Am the life of the party",1,"모임에서 분위기를 띄우는 편이다."
+"Sympathize with others' feelings",2,"다른 사람의 감정에 공감한다."
+"Get chores done right away",3,"해야 할 일을 바로바로 처리한다."
+"Have frequent mood swings",4,"기분이 자주 오락가락한다."
+"Have a vivid imagination",5,"상상력이 풍부하다."
+"Don't talk a lot",6,"말을 많이 하지 않는다."
+"Am not interested in other people's problems",7,"다른 사람의 문제에는 별로 관심이 없다."
+"Often forget to put things back in their proper place",8,"물건을 제자리에 두는 것을 자주 잊는다."
+"Am relaxed most of the time",9,"대체로 마음이 편안하다."
+"Am not interested in abstract ideas",10,"추상적인 생각에는 관심이 없다."
+"Talk to a lot of different people at parties",11,"모임에서 여러 사람과 두루 이야기한다."
+"Feel others' emotions",12,"다른 사람의 감정을 잘 느낀다."
+"Like order",13,"질서 정연한 것을 좋아한다."
+"Get upset easily",14,"쉽게 속상해진다."
+"Have difficulty understanding abstract ideas",15,"추상적인 생각을 이해하기 어렵다."
+"Keep in the background",16,"사람들 사이에서 뒤로 물러나 있는 편이다."
+"Am not really interested in others",17,"다른 사람에게 별로 관심이 없다."
+"Make a mess of things",18,"일을 엉망으로 만들 때가 많다."
+"Seldom feel blue",19,"우울한 기분이 드는 일이 드물다."
+"Do not have a good imagination",20,"상상력이 별로 없다."

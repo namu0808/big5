@@ -1,5 +1,5 @@
-# status: provisional — 정식 검사(120)와 간이 검사(20)에서 같은 문항. 문장 기준은 원고 부록 A(20문항). [D] Mini-IPIP 원문 확보 후 영문으로 다시 대조한다
-# 짝 근거: 부록 A 한국어 문장과 master_120.csv 영문 원문의 뜻 대조 (2026-11-02). 채점 방향(keyed)이 같아야 한다 — tests/build_items.php 가 확인
+# status: final — 정식 검사(120)와 간이 검사(20)에서 같은 문항. 문장 기준은 원고 부록 A(20문항). [D] Mini-IPIP 원문과 영문이 똑같은 문항은 이 6쌍뿐임을 확인(2026-11-02)
+# 짝 근거: master_20.csv 영문([D]) = master_120.csv 영문. 채점 방향(keyed)도 같아야 한다 — tests/build_items.php 가 확인
 item_no_20,item_no_120,text_en_120,note
 5,3,"Have a vivid imagination",
 7,89,"Am not interested in other people's problems",

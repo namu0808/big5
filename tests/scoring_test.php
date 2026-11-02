@@ -39,6 +39,8 @@ $d20 = array_count_values(array_map(static fn($it) => $it['domain'], $i20['items
 t_ok(count($d20) === 5 && array_unique(array_values($d20)) === [4], '20문항 요인 5개 × 4문항');
 $minus20 = array_values(array_map(static fn($it) => $it['no'], array_filter($i20['items'], static fn($it) => $it['keyed'] === '-')));
 t_ok($minus20 === [6, 7, 8, 9, 10, 15, 16, 17, 18, 19, 20], '20문항 역채점 번호 = 원고 부록 A');
+$empty20 = array_filter($i20['items'], static fn($it) => $it['text_en'] === '' || $it['text_ko'] === '' || $it['text_ko_other'] === '');
+t_ok($empty20 === [] && $i20['source_status'] === 'final', '20문항 영문([D])·본인용·타인용 빈칸 없음, 원문 대조 final');
 
 // ── 원문 키 일치: JSON 이 master_*.csv 와 한 글자도 다르지 않은가 ──
 function master_rows(string $path): array

@@ -173,10 +173,81 @@ if (is_file($ms)) {
 }
 line();
 
+// ── 2-2) [D] IPIP 공식 Mini-IPIP 문항 페이지 추출 → extracted_D_mini.csv ──
+// 페이지에는 요인·방향·영문만 있고 실시 번호가 없다. 번호는 mini_order_map.csv(부록 A 와 뜻 대조한 짝)로 붙인다.
+$dFile = $src . '/ipip_mini_ipip_key.html';
+$mapFile = $src . '/mini_order_map.csv';
+if (is_file($dFile) && is_file($mapFile) && $AP !== null) {
+    $html = (string) iconv('CP1252', 'UTF-8//IGNORE', (string) file_get_contents($dFile));
+    preg_match_all('#<td[^>]*>(.*?)</td>#su', $html, $cells);
+    $clean = static fn($c) => trim((string) preg_replace('/\s+/u', ' ', str_replace("\u{00A0}", ' ', html_entity_decode(strip_tags($c), ENT_QUOTES | ENT_HTML5, 'UTF-8'))));
+    $factorOf = ['I' => 'E', 'II' => 'A', 'III' => 'C', 'IV' => 'N', 'V' => 'O'];
+    $Draw = [];
+    $factor = null;
+    $sign = null;
+    $tx = array_map($clean, $cells[1]);
+    for ($i = 0; $i < count($tx); $i++) {
+        if (preg_match('/^Factor (I|II|III|IV|V)\b/u', $tx[$i], $fm)) {
+            $factor = $factorOf[$fm[1]];
+            $sign = null;
+            continue;
+        }
+        if ($factor === null || !preg_match('/^(\+|–|-)?\s*(keyed)?$/u', $tx[$i], $km) || !isset($tx[$i + 1])) {
+            continue;
+        }
+        // (방향 칸, 문장 칸) 짝: 방향 칸이 '+ keyed'/'– keyed' 이면 방향을 바꾸고, 빈칸이면 이어 간다
+        if (($km[2] ?? '') === 'keyed') {
+            $sign = $km[1] === '+' ? '+' : '-';
+        }
+        $text = rtrim($tx[$i + 1], '. ');
+        if ($sign !== null && $text !== '' && !preg_match('/^Factor /u', $text) && !preg_match('/^(\+|–|-)\s*keyed$/u', $text)) {
+            $Draw[] = ['factor' => $factor, 'keyed' => $sign, 'text_en' => $text];
+            $i++;
+        }
+    }
+    $map = csv_read($mapFile) ?? [];
+    $noOf = [];
+    foreach ($map as $m) {
+        $noOf[$m['text_en']] = $m;
+    }
+    $D = [];
+    $unmapped = [];
+    foreach ($Draw as $r) {
+        $m = $noOf[$r['text_en']] ?? null;
+        if ($m === null) {
+            $unmapped[] = $r['text_en'];
+            continue;
+        }
+        $D[] = ['item_no_20' => $m['item_no_20'], 'factor' => $r['factor'], 'keyed' => $r['keyed'], 'text_en' => $r['text_en']];
+    }
+    usort($D, static fn($x, $y) => (int) $x['item_no_20'] <=> (int) $y['item_no_20']);
+    csv_write($src . '/extracted_D_mini.csv', ['item_no_20', 'factor', 'keyed', 'text_en'], $D);
+    line('[D] extracted_D_mini.csv 작성 (' . count($Draw) . '문항 추출, 번호 짝 ' . count($D) . '개)');
+    line('== [D] 문항 페이지 구조와 번호 짝 점검');
+    check(count($Draw) === 20, '[D] 문항 20개', $fail);
+    $pm = [];
+    foreach ($Draw as $r) {
+        $pm[$r['factor']][$r['keyed']] = ($pm[$r['factor']][$r['keyed']] ?? 0) + 1;
+    }
+    line('  정보  요인별 +/− : ' . json_encode($pm));
+    check($unmapped === [], '[D] 문항이 모두 mini_order_map.csv 에 짝이 있음' . ($unmapped ? ' — 없음: ' . implode(' / ', $unmapped) : ''), $fail);
+    $nos = array_map(static fn($r) => (int) $r['item_no_20'], $D);
+    check($nos === range(1, 20), '짝지은 번호가 1~20 을 한 번씩', $fail);
+    $koOk = 0;
+    foreach ($map as $m) {
+        $ap = $AP[(int) $m['item_no_20'] - 1] ?? null;
+        $koOk += ($ap !== null && $ap['text_ko'] === $m['ko_appendix_a']) ? 1 : 0;
+    }
+    check($koOk === 20, "짝 파일의 한국어가 부록 A 추출본과 같음 ({$koOk}/20)", $fail);
+    line();
+} else {
+    $D = null;
+}
+
 // ── 3) 구조 점검과 대조 ─────────────────────────────────────
 $A = csv_read($src . '/extracted_A_johnson.csv');
 $C = csv_read($src . '/extracted_C_uga.csv');
-$D = csv_read($src . '/extracted_D_mini.csv');
+// $D 는 2-2) 에서 [D] 페이지로 만든다
 
 if ($B !== null) {
     structure_report('[B] bigfive-org', $B, $fail);
@@ -413,7 +484,7 @@ if (in_array('--write-master', $argv, true)) {
         }
         $status = $D !== null ? 'final' : 'provisional';
         $meta = $D !== null
-            ? "# status: final — 순서·방향·요인: [D] IPIP Mini-IPIP 공식 페이지, 한국어: 원고 부록 A. 작성 {$today}"
+            ? "# status: final — 요인·방향·영문: [D] IPIP 공식 Mini-IPIP 문항 페이지(MiniIPIPKey.htm). 실시 번호·한국어: 원고 부록 A(번호 짝 근거 mini_order_map.csv). 작성 {$today}"
             : "# status: provisional — 순서·방향·요인·한국어: 원고 부록 A. text_en 은 [D] 확보 후 채움(기억으로 채우지 않음). 작성 {$today}";
         $path = $src . '/master_20.csv';
         file_put_contents($path, $meta . "\n");
