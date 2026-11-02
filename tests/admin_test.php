@@ -14,7 +14,7 @@ require dirname(__DIR__) . '/includes/test_session.php';
 require dirname(__DIR__) . '/includes/admin_stats.php';
 require __DIR__ . '/lib.php';
 
-$pdo = new PDO('sqlite::memory:', null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
+$pdo = t_pdo();
 big5_ensure_schema($pdo);
 big5_seed_accounts($pdo);
 $uid = (int) $pdo->query("SELECT id FROM big5_users WHERE username = 'user'")->fetchColumn();

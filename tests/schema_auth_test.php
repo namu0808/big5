@@ -12,10 +12,7 @@ require dirname(__DIR__) . '/includes/big5_schema.php';
 require dirname(__DIR__) . '/includes/auth.php';
 require __DIR__ . '/lib.php';
 
-$pdo = new PDO('sqlite::memory:', null, null, [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-]);
+$pdo = t_pdo();
 
 $tables = big5_ensure_schema($pdo);
 t_ok(count($tables) === 9, '테이블 9개 생성');

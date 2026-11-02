@@ -38,6 +38,7 @@ $big5Nav = $layout_area === 'admin'
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<meta name="referrer" content="same-origin">
 <title><?= h($page_title !== '' ? $page_title . ' · 다이얼' : '다이얼 — 빅파이브 성격 검사') ?></title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="<?= h(big5_url('assets/style.css')) ?>?v=<?= h(BIG5_VERSION) ?>">

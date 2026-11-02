@@ -15,6 +15,9 @@ const PORT = Number(process.env.BIG5_PORT || 8093);
 const ORIGIN = `http://127.0.0.1:${PORT}`;
 const BASE = `${ORIGIN}/big5`;
 const DB = process.env.BIG5_DEV_SQLITE || path.join(ROOT, 'doc', 'pw-smoke.sqlite');
+// BIG5_TEST_DB=mysql 이면 로컬 MariaDB(doc/dev-db-mysql.php)로 검증한다 (운영과 같은 엔진)
+const USE_MYSQL = process.env.BIG5_TEST_DB === 'mysql';
+const DB_CONFIG = path.join(ROOT, 'doc', USE_MYSQL ? 'dev-db-mysql.php' : 'dev-db-sqlite.php');
 const OUT = path.join(ROOT, 'doc', 'pw', 'out');
 
 function ping() {
@@ -28,7 +31,7 @@ function ping() {
 /** 개발 서버 시작 — { stop() } 반환 */
 async function startServer() {
   if (await ping()) return { stop() {} };
-  const env = { ...process.env, BIG5_DB_CONFIG: path.join(ROOT, 'doc', 'dev-db-sqlite.php'), BIG5_DEV_SQLITE: DB };
+  const env = { ...process.env, BIG5_DB_CONFIG: DB_CONFIG, BIG5_DEV_SQLITE: DB };
   const proc = spawn('php', ['-S', `127.0.0.1:${PORT}`, path.join(ROOT, 'doc', 'dev-router.php')], { cwd: ROOT, env, stdio: ['ignore', 'ignore', 'pipe'] });
   let errLog = '';
   proc.stderr.on('data', (d) => { errLog += d.toString(); });
@@ -42,8 +45,14 @@ async function startServer() {
   };
 }
 
-/** 개발 DB 를 지운다 (install.php 검증 전) */
+/** 개발 DB 를 지운다 (install.php 검증 전) — SQLite 는 파일 삭제, MariaDB 는 big5_ 테이블 전부 삭제 */
 function resetDb() {
+  if (USE_MYSQL) {
+    const { execFileSync } = require('child_process');
+    const code = 'require $argv[1]; $pdo->exec("SET FOREIGN_KEY_CHECKS = 0"); foreach ($pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN) as $t) { if (str_starts_with((string) $t, "big5_")) { $pdo->exec("DROP TABLE `" . str_replace("`", "", (string) $t) . "`"); } } $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");';
+    execFileSync('php', ['-r', code, DB_CONFIG], { env: { ...process.env, BIG5_DB_QUIET: '1' } });
+    return;
+  }
   for (const f of [DB, DB + '-journal']) if (fs.existsSync(f)) fs.unlinkSync(f);
 }
 
@@ -84,14 +93,15 @@ function sql(query, params = []) {
   const { execFileSync } = require('child_process');
   const code = 'require $argv[1]; $st = $pdo->prepare($argv[2]); $st->execute(json_decode($argv[3], true)); echo json_encode($st->fetchAll());';
   const env = { ...process.env, BIG5_DEV_SQLITE: DB, BIG5_DB_QUIET: '1' };
-  const out = execFileSync('php', ['-r', code, path.join(ROOT, 'doc', 'dev-db-sqlite.php'), query, JSON.stringify(params)], { env });
+  const out = execFileSync('php', ['-r', code, DB_CONFIG, query, JSON.stringify(params)], { env });
   return JSON.parse(out.toString());
 }
 
 /** 새 DB 에 install.php 실행 */
 async function freshInstall(page) {
-  await page.goto(`${BASE}/1time/install.php`);
+  // 배포 묶음 검증 때는 운영처럼 앱 루트의 install.php (BIG5_INSTALL_PATH=install.php)
+  await page.goto(`${BASE}/${process.env.BIG5_INSTALL_PATH || '1time/install.php'}`);
   return (await page.textContent('body')).includes('설치 완료');
 }
 
-module.exports = { ROOT, BASE, ORIGIN, OUT, DB, startServer, resetDb, openBrowser, ok, done, login, status, sql, freshInstall };
+module.exports = { ROOT, BASE, ORIGIN, OUT, DB, DB_CONFIG, USE_MYSQL, startServer, resetDb, openBrowser, ok, done, login, status, sql, freshInstall };

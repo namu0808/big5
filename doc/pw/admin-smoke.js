@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const { chromium } = require('playwright');
-const { ROOT, BASE, OUT, DB, startServer, resetDb, openBrowser, ok, done, login, freshInstall, sql } = require('./lib');
+const { ROOT, BASE, OUT, DB, DB_CONFIG, startServer, resetDb, openBrowser, ok, done, login, freshInstall, sql } = require('./lib');
 
 const PAGES = ['index', 'users', 'items', 'content', 'norms', 'export'];
 
@@ -18,7 +18,7 @@ const PAGES = ['index', 'users', 'items', 'content', 'norms', 'export'];
   const { browser, context, page } = await openBrowser({ viewport: { width: 1280, height: 900 } });
   try {
     ok(await freshInstall(page), '설치');
-    const env = { ...process.env, BIG5_DB_CONFIG: path.join(ROOT, 'doc', 'dev-db-sqlite.php'), BIG5_DEV_SQLITE: DB };
+    const env = { ...process.env, BIG5_DB_CONFIG: DB_CONFIG, BIG5_DEV_SQLITE: DB };
     execFileSync('php', [path.join(ROOT, 'doc', 'dev-seed-reports.php')], { env });
 
     // ── 일반 사용자·로그인 없음 → 모든 관리자 화면 차단

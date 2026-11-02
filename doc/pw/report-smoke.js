@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
-const { ROOT, BASE, OUT, DB, startServer, resetDb, openBrowser, ok, done, login, freshInstall, sql } = require('./lib');
+const { ROOT, BASE, OUT, DB, DB_CONFIG, startServer, resetDb, openBrowser, ok, done, login, freshInstall, sql } = require('./lib');
 
 (async () => {
   resetDb();
@@ -15,7 +15,7 @@ const { ROOT, BASE, OUT, DB, startServer, resetDb, openBrowser, ok, done, login,
   let { browser, context, page } = await openBrowser({ viewport: { width: 1100, height: 900 } });
   try {
     ok(await freshInstall(page), '설치');
-    const env = { ...process.env, BIG5_DB_CONFIG: path.join(ROOT, 'doc', 'dev-db-sqlite.php'), BIG5_DEV_SQLITE: DB };
+    const env = { ...process.env, BIG5_DB_CONFIG: DB_CONFIG, BIG5_DEV_SQLITE: DB };
     const ids = JSON.parse(execFileSync('php', [path.join(ROOT, 'doc', 'dev-seed-reports.php')], { env }).toString());
     ok(ids.all3 && ids.random && ids.extreme && ids.mini && ids.nhigh, `샘플 검사 5건 생성 ${JSON.stringify(ids)}`);
     // 표시 이름에 따옴표·꺾쇠를 넣어 인쇄 꼬리말(CSS 문자열)·화면 이스케이프를 함께 확인한다

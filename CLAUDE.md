@@ -48,6 +48,9 @@
   - 관리자: 집계·분포·규준·익명 CSV 는 `includes/admin_stats.php`(CLI `tests/admin_test.php` — /admin 첫 문장 규칙도 검사). 규준은 품질 통과 정식 검사 300건 이상일 때만 계산, 저장 시 비활성
   - 브라우저: `doc/pw/*-smoke.js` — 개발 서버를 스스로 띄움(`BIG5_DB_CONFIG=doc/dev-db-sqlite.php php -S 127.0.0.1:8093 doc/dev-router.php`, 주소 `http://127.0.0.1:8093/big5/`). 라우터가 운영 .htaccess 의 403 차단을 흉내 낸다
   - 손으로 띄울 때: `php doc/dev-sqlite-setup.php` 후 위 서버 명령
+  - **운영과 같은 MariaDB 로 검증**: `BIG5_TEST_DB=mysql node doc/pw/run.js` (설정 `doc/dev-db-mysql.php`, 로컬 DB `big5_test`/계정 `big5dev`, sql_mode 에 ONLY_FULL_GROUP_BY). 클라우드 세션에서는 `apt-get install mariadb-server` 후 `mysqld_safe --user=mysql &` 로 띄우고 DB·계정을 만든다. 배포 전 SQLite·MariaDB 둘 다 전건 PASS
+  - 반응형: `doc/pw/responsive-smoke.js` (390·768·1280px)
+- 배포 묶음: `php doc/make-dist.php` → `dist/big5-deploy-YYYYMMDD.zip`(git 제외) + `doc/배포-파일목록.txt`. 설치·확인 순서 `doc/배포-안내.md`, 점검표 `doc/점검표-2026-11-02.md`
 - 전건 PASS 후 커밋. 커밋 메시지·코드에 모델 식별자 넣지 않음
 
 ## Git

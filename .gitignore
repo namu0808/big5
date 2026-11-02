@@ -17,3 +17,6 @@ desktop.ini
 *.bak
 .vscode/
 .idea/
+
+# 배포 묶음 (doc/make-dist.php)
+/dist/

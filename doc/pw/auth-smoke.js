@@ -12,7 +12,7 @@ const { BASE, OUT, startServer, resetDb, openBrowser, ok, done, login, status } 
   const { browser, context, page } = await openBrowser({ viewport: { width: 390, height: 844 } });
   try {
     // 1) 설치
-    await page.goto(`${BASE}/1time/install.php`);
+    await page.goto(`${BASE}/${process.env.BIG5_INSTALL_PATH || '1time/install.php'}`);
     const installText = await page.textContent('body');
     ok(installText.includes('설치 완료'), 'install.php 실행 → 설치 완료');
     ok(installText.includes('계정 sonbm 생성') && installText.includes('계정 user 생성'), '초기 계정 생성');
