@@ -10,6 +10,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/auth_check.php';
 require_once __DIR__ . '/includes/test_session.php';
 require_once __DIR__ . '/includes/not_found.php';
+require_once __DIR__ . '/includes/test_ui.php';
 
 $id = (int) big5_param('id', '0');
 $session = $id > 0 ? big5_session_get($pdo, $id, (int) $big5User['id']) : null;
@@ -68,38 +69,15 @@ if ($session['status'] === 'completed') {
     big5_redirect('report.php?id=' . $id);
 }
 
-// 화면에 실어 보낼 데이터 — 번호와 본인용 문장, 저장된 응답
-$payload = [
-    'items' => array_map(static fn($it) => ['no' => (int) $it['no'], 'text' => (string) $it['text_ko']], $items['items']),
-    'scale' => $items['scale'],
-    'answers' => (object) big5_responses_load($pdo, 'session', $id),
-    'perPage' => 10,
-];
-$b64 = base64_encode((string) json_encode($payload, JSON_UNESCAPED_UNICODE));
-
 $page_title = big5_test_label((string) $session['test_type']);
 $body_class = 'page-test';
 require __DIR__ . '/includes/header.php';
-?>
-<div class="test" id="test"
-     data-items-b64="<?= h($b64) ?>"
-     data-csrf="<?= h(big5_csrf_token()) ?>"
-     data-post="<?= h(big5_url('test.php?id=' . $id)) ?>">
-  <div class="test-head">
-    <p class="test-guide">오늘의 기분보다 평소의 나를 떠올려 답해 주세요.</p>
-    <div class="progress" role="progressbar" aria-label="진행" aria-valuemin="0" aria-valuemax="<?= count($items['items']) ?>" aria-valuenow="0">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-    <p class="progress-text"><span id="progressText">0 / <?= count($items['items']) ?></span><span id="saveState" class="save-state" aria-live="polite"></span></p>
-  </div>
-  <div id="questions" class="questions"></div>
-  <p id="testError" class="form-error" role="alert" hidden></p>
-  <div class="test-nav">
-    <button type="button" class="btn btn-outline" id="btnPrev">이전</button>
-    <button type="button" class="btn btn-primary" id="btnNext" disabled>다음</button>
-  </div>
-  <noscript><p class="form-error">이 검사는 자바스크립트가 켜져 있어야 진행할 수 있습니다.</p></noscript>
-</div>
-<?php
+big5_test_ui(
+    array_map(static fn($it) => ['no' => (int) $it['no'], 'text' => (string) $it['text_ko']], $items['items']),
+    $items['scale'],
+    big5_responses_load($pdo, 'session', $id),
+    big5_url('test.php?id=' . $id),
+    '오늘의 기분보다 평소의 나를 떠올려 답해 주세요.'
+);
 $extra_js = ['test.js'];
 require __DIR__ . '/includes/footer.php';

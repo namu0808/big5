@@ -272,3 +272,21 @@ ul.form-error { padding-left: 2rem; }
 .r-growth-actions { list-style: none; padding: 0; margin: 0 0 0.75rem; }
 .btn-sm { min-height: 38px; padding: 0.35rem 0.9rem; font-size: 0.9rem; }
 .print-footer { margin-top: 2.5rem; font-size: 0.85rem; text-align: center; }
+
+/* ── 내 기록·비교·초대·평가·계정 ── */
+.h-list { list-style: none; padding: 0; margin: 1rem 0; display: grid; gap: 0.5rem; }
+.h-item { display: grid; grid-template-columns: 2rem 1fr auto; align-items: center; gap: 0.6rem; border: 1px solid var(--line); border-radius: var(--radius); padding: 0.7rem 0.9rem; }
+.h-pick input { width: 20px; height: 20px; }
+.h-title { font-weight: 700; margin: 0; }
+.h-body p { margin: 0; }
+.c-list { display: grid; gap: 0.9rem; margin: 1rem 0; }
+.c-row.is-flag .dial-score strong { color: var(--accent); }
+.copy-input { width: 100%; min-height: 44px; padding: 0.5rem 0.7rem; font: inherit; font-size: 0.85rem; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 0.5rem; }
+.invite-form { margin: 1.5rem 0; max-width: none; }
+.field select { width: 100%; min-height: 48px; padding: 0.5rem 0.7rem; font: inherit; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); }
+.rate-box { padding-top: 1rem; }
+.danger-box { border: 1px solid var(--danger); border-radius: var(--radius); padding: 1rem 1.25rem; background: #fffafa; }
+.r-others-rel { color: var(--muted); font-size: 0.93rem; }
+.r-legend { display: flex; gap: 1rem; font-size: 0.85rem; color: var(--muted); margin: 0.25rem 0 0.75rem; }
+.r-legend i { display: inline-block; width: 2px; height: 12px; background: var(--ink); vertical-align: middle; margin-right: 0.35rem; }
+.r-legend b { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); vertical-align: middle; margin-right: 0.35rem; }

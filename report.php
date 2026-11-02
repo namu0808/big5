@@ -2,7 +2,7 @@
 /**
  * 결과 리포트 (PLAN 5장) — 한 페이지 안에서 위에서 아래로 읽는다. 상단 목차, 인쇄 시 장마다 새 페이지.
  *  표지 · 0 읽는 법 · 1 빅파이브란 · 2 일곱 가지 · 3 한눈에 · 4 다이얼별 · 5 조합 · 6 일터 · 7 관계 · 8 성장 · 부록
- *  (9 다른 사람이 본 나 · 10 지난번과 비교는 6단계)
+ *  9 다른 사람이 본 나(받은 타인 평가가 있을 때) · 10 지난번과 비교(앞선 완료 검사가 있을 때)
  * 본인 검사만 열람 — id 만 바꿔 남의 결과를 볼 수 없다.
  * 새로고침 없는 동작(ajax=1 POST): action=growth_add | growth_remove (domain, direction, action_key)
  */
@@ -14,6 +14,7 @@ require_once __DIR__ . '/includes/not_found.php';
 require_once __DIR__ . '/includes/content_loader.php';
 require_once __DIR__ . '/includes/report_builder.php';
 require_once __DIR__ . '/includes/report_charts.php';
+require_once __DIR__ . '/includes/others.php';
 
 const BIG5_GROWTH_MAX = 9; // 검사 한 번에 저장할 수 있는 성장 행동 수
 
@@ -98,7 +99,20 @@ foreach ($D as $d => $x) {
     $growthPayload['domains'][$d]['band'] = $x['band'];
 }
 
-// 장 번호 (9·10장은 6단계에서 데이터가 있을 때만 끼어든다)
+// 9장: 받은 타인 평가 (요인 단위, 평가자는 관계 범주로만)
+$others = big5_others_section(array_map(static fn($x) => $x['pomp'], $D), big5_ratings_received($pdo, $userId));
+// 10장: 바로 앞 완료 검사와 비교
+$prev = big5_session_previous($pdo, $session);
+$retest = null;
+if ($prev !== null) {
+    $retest = [
+        'prev' => $prev,
+        'cmp' => big5_compare_scores(big5_scores_load($pdo, 'session', (int) $prev['id']), $scores),
+        'growth' => array_values(array_filter(array_map(static fn($k) => big5_growth_text($growthContent, $k), big5_growth_keys($pdo, $userId, (int) $prev['id'])))),
+    ];
+}
+
+// 장 번호 (9·10장은 데이터가 있을 때만 끼어든다)
 $chapters = [
     'guide' => [0, $fx['reading_guide']['title']],
     'intro' => [1, $fx['intro']['title']],
@@ -109,8 +123,14 @@ $chapters = [
     'work' => [6, $fx['work']['title']],
     'relations' => [7, $fx['relations']['title']],
     'growth' => [8, $fx['growth']['title']],
-    'appendix' => [11, $fx['appendix']['title']],
 ];
+if ($others !== null) {
+    $chapters['others'] = [9, $fx['others']['title']];
+}
+if ($retest !== null) {
+    $chapters['retest'] = [10, $fx['retest']['title']];
+}
+$chapters['appendix'] = [11, $fx['appendix']['title']];
 $hd = static fn(string $k): string => $chapters[$k][0] . '. ' . $chapters[$k][1];
 
 $radar = big5_radar_svg(array_values(array_map(static fn($x) => ['label' => $x['name'], 'value' => $x['pomp'], 'color' => $x['color']], $D)));
@@ -411,6 +431,74 @@ foreach ($savedKeys as $k): if (!isset($savedText[$k])) { continue; } ?>
     <p class="muted" id="growthEmpty"<?= $savedText === [] ? '' : ' hidden' ?>>아직 저장한 행동이 없습니다.</p>
   </div>
 </section>
+
+<?php if ($others !== null): ?>
+<!-- 9. 다른 사람이 본 나 -->
+<section class="r-chapter" id="others">
+  <h2><?= h($hd('others')) ?></h2>
+<?php foreach ($fx['others']['guide'] as $g): ?>
+  <p><?= h((string) $g) ?></p>
+<?php endforeach; ?>
+  <p class="r-others-rel">받은 평가 <?= (int) $others['count'] ?>건 ·
+<?php $relTxt = []; foreach ($others['relations'] as $label => $cnt) { $relTxt[] = $label . ' ' . $cnt; } echo h(implode(', ', $relTxt)); ?>
+  </p>
+  <p class="r-legend"><span><b></b>나</span><span><i></i><?= h((string) ($others['single'] ? $fx['others']['single_rater_label'] : $fx['others']['average_label'])) ?></span></p>
+  <div class="c-list">
+<?php foreach ($others['rows'] as $d => $row): $x = $D[$d]; ?>
+    <div class="c-row<?= $row['flag'] ? ' is-flag' : '' ?>">
+      <div class="dial-head">
+        <span class="dial-name" style="--c: <?= h($x['color']) ?>"><?= h($x['name']) ?></span>
+        <span class="dial-score">나 <?= h(number_format($row['self'], 1)) ?> · <?= h((string) ($others['single'] ? '한 사람' : '평균')) ?> <strong><?= h(number_format($row['others'], 1)) ?></strong><?php if ($row['flag']): ?> <span class="tag-near"><?= h((string) $fx['others']['gap_label']) ?></span><?php endif; ?></span>
+      </div>
+      <?= big5_bar_html($row['self'], $x['color'], $x['name'], 'lg', $row['others']) ?>
+    </div>
+<?php endforeach; ?>
+  </div>
+  <p class="form-help"><?= h((string) $fx['others']['gap_note']) ?></p>
+</section>
+<?php endif; ?>
+
+<?php if ($retest !== null): $pv = $retest['prev']; ?>
+<!-- 10. 지난번의 나와 비교 -->
+<section class="r-chapter" id="retest">
+  <h2><?= h($hd('retest')) ?></h2>
+  <p class="muted">지난번: <?= h(substr((string) $pv['completed_at'], 0, 10)) ?> <?= h(big5_test_label((string) $pv['test_type'])) ?> → 이번: <?= h($R['date']) ?> <?= h($R['test_label']) ?></p>
+<?php foreach ($fx['retest']['guide'] as $g): ?>
+  <p><?= h((string) $g) ?></p>
+<?php endforeach; ?>
+  <p class="r-legend"><span><i></i>지난번</span><span><b></b>이번</span></p>
+  <div class="c-list">
+<?php foreach ($retest['cmp']['domains'] as $d => $row): if (!isset($D[$d])) { continue; } $x = $D[$d]; ?>
+    <div class="c-row<?= $row['flag'] ? ' is-flag' : '' ?>">
+      <div class="dial-head">
+        <span class="dial-name" style="--c: <?= h($x['color']) ?>"><?= h($x['name']) ?></span>
+        <span class="dial-score"><?= h(number_format($row['before'], 1)) ?> → <strong><?= h(number_format($row['after'], 1)) ?></strong> (<?= h(($row['diff'] > 0 ? '+' : '') . number_format($row['diff'], 1)) ?>)<?php if ($row['flag']): ?> <span class="tag-near">10점 이상</span><?php endif; ?></span>
+      </div>
+      <?= big5_bar_html($row['after'], $x['color'], $x['name'], 'lg', $row['before']) ?>
+    </div>
+<?php endforeach; ?>
+  </div>
+<?php $flagged = array_filter($retest['cmp']['facets'], static fn($r) => $r['flag']); if ($flagged !== []): ?>
+  <h3>10점 이상 움직인 하위 요인</h3>
+  <ul>
+<?php foreach ($flagged as $code => $row): ?>
+    <li><?= h($code . ' ' . (string) ($items['facets'][$code]['name'] ?? $code)) ?>: <?= h(number_format($row['before'], 1)) ?> → <?= h(number_format($row['after'], 1)) ?></li>
+<?php endforeach; ?>
+  </ul>
+<?php endif; ?>
+  <h3><?= h((string) $fx['retest']['growth_recall']) ?></h3>
+<?php if ($retest['growth'] === []): ?>
+  <p class="muted">지난번 검사에서 골라 둔 성장 행동이 없습니다.</p>
+<?php else: ?>
+  <ul id="growthRecall">
+<?php foreach ($retest['growth'] as $t): ?>
+    <li><?= h($t) ?></li>
+<?php endforeach; ?>
+  </ul>
+<?php endif; ?>
+  <p class="no-print"><a href="<?= h(big5_url('compare.php?pick[]=' . (int) $pv['id'] . '&pick[]=' . $id)) ?>">하위 요인까지 자세히 비교하기</a></p>
+</section>
+<?php endif; ?>
 
 <!-- 부록 -->
 <section class="r-chapter" id="appendix">
