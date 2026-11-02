@@ -1,6 +1,6 @@
 # 원문 자료 출처 기록 (data/source)
 
-> **status: provisional** — 120문항 기준 파일 `master_120.csv`는 [B]로 만들었고, 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지와 모두 일치함을 확인했다(2026-11-02). 실시 번호 순서만 원논문 [A] 표 1 대조가 남았다. 20문항 `master_20.csv`는 **status: final** — 요인·방향·영문은 [D] IPIP 공식 Mini-IPIP 페이지, 실시 번호·한국어는 원고 부록 A(2026-11-02). 원논문 대조가 끝나면 status: final 로 바꾼다. (승인 2026-11-02)
+> **status: provisional** — 120문항 기준 파일 `master_120.csv`는 [B]로 만들었고, 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지와 모두 일치함을 확인했다(2026-11-02). 실시 번호와 채점 방향은 [A''] NovoPsych 검사지와 120/120 일치함을 확인했다. 원논문 [A] 표 1 대조가 끝나면 final 로 바꾼다. 20문항 `master_20.csv`는 **status: final** — 요인·방향·영문은 [D] IPIP 공식 Mini-IPIP 페이지, 실시 번호·한국어는 원고 부록 A(2026-11-02). 원논문 대조가 끝나면 status: final 로 바꾼다. (승인 2026-11-02)
 
 - 기록일: 2026-11-02 12:56 KST (갱신 13:05 KST)
 - 이 폴더는 `data/.htaccess`(Deny from all)로 웹에서 직접 열 수 없다. FTP 배포 대상도 아니다.
@@ -28,6 +28,14 @@
 - 저장: `data/source/ipip_neo120_items.html` — 16,450바이트, SHA-256 `01bae0a670f714435be5f9e6f06c405d094e5d90d1662eaadc3b18ea40b65840`
 - 내용: 하위 요인 30개 × 4문항, 정·역채점 표시('+ keyed'/'– keyed'는 그 방향의 첫 문항에만 붙음). **실시 번호(1~120)는 없다.**
 - 이용 조건: IPIP 문항은 공유 저작물
+
+## [A''] NovoPsych IPIP-NEO-120 검사지 PDF — 확보 (대표님 업로드)
+
+- 원본 URL: https://novopsych.com/wp-content/uploads/2023/07/Personality-Assessment-IPIP-NEO-blank-form.pdf
+- 저장: `data/source/novopsych_ipip_neo120_form.pdf` — 74,914바이트, SHA-256 `f6df73cd130fea4e886501407f88145266b80b99dd549c3eec664ce380adf3fe`
+- 내용: 실제 검사지 형태로 1~120번 문항을 번호 순서대로 싣는다. 점수 칸이 '5 4 3 2 1'인 문항이 역채점이다. 개발자 참고 문헌으로 Johnson (2014)을 밝힌다. 하위 요인은 적혀 있지 않다.
+- 성격: IPIP 공식 사이트가 아니라 호주 임상 심리 평가 업체의 배포 양식이다. 그래서 **실시 번호와 채점 방향의 확인용**으로 쓰고, 문구는 [A'] 공식 페이지를 우선한다.
+- 안내문은 "how accurately each statement describes you"이다. 응답이 '예/아니오'가 아니라 '문장이 나를 얼마나 정확히 묘사하는가'라는 점을 다시 확인해 준다.
 
 ## [D'] IPIP 공식 사이트 Mini-IPIP 요약표 — 확보 (대표님 업로드)
 
@@ -90,6 +98,7 @@
 |---|---|---:|---|
 | `extracted_B_bigfiveorg.csv` | `php tests/source_compare.php` (B의 en·ko JSON에서 기계 추출) | 15,901 | `26cdb5eb0b601f52436d0df00d8e60b1263c2256bdf86b33222fe96fc6a97c87` |
 | `extracted_A_ipip120page.csv` | 같은 스크립트 ([A'] HTML에서 기계 추출, 열: facet_code, keyed, text_en, order_in_facet) | 4,272 | `f03e8448d22a31af0ae7140a955be29553eb9cba3c9a3b868929f09f5f76779c` |
+| `extracted_A2_novopsych.csv` | 같은 스크립트 ([A''] PDF를 `pdftotext -layout`으로 읽어 추출, 두 줄 문항 합침. 열: item_no_120, keyed, text_en) | 4,042 | `4a6430ccc43b6e8594b403bcabbc514ea19ef1f7eec61232ed2c66602816459a` |
 | `extracted_D_mini.csv` | 같은 스크립트 ([D] HTML에서 기계 추출 + `mini_order_map.csv` 번호) | 787 | `5f9dfd1131a9716439a9324fe15d9b2a6e6ee5126628226a4ed22fe36dd73bd5` |
 | `extracted_appendixA_mini.csv` | 같은 스크립트 (원고 부록 A의 문항표·뒤집는 문항·다이얼별 문항 표에서 기계 추출) | 1,043 | `a0ba606b50027cab0293bf42b9aa3a051eb093d948ca01de736ec5181c4860f2` |
 
@@ -97,7 +106,7 @@
 
 | 파일 | status | 만든 방법 | 바이트 | SHA-256 |
 |---|---|---|---:|---|
-| `master_120.csv` | provisional | `php tests/source_compare.php --write-master` — [B] 추출본을 그대로 옮김, [A'] 와 일치 확인 표시 | 5,033 | `59f62f9986d1a6f6cd577e4cb5c2ad020698a0f3694543d570082daacdd6c9f9` |
+| `master_120.csv` | provisional | `php tests/source_compare.php --write-master` — [B] 추출본을 그대로 옮김, [A']·[A''] 와 일치 확인 표시 | 5,113 | `abb4049254b57b7e7567849f3953b42734bbf0bb3629090178ea36b9b4898103` |
 | `master_20.csv` | **final** | 같은 명령 — 요인·방향·영문 [D], 번호·한국어 원고 부록 A | 2,111 | `f9a5bd779173ca4b556fe792dcde89dbb2f55335cc0824ba9de37989c434f44e` |
 
 문항 JSON(`data/items_120.json`, `data/items_20.json`)은 `php tests/build_items.php`가 위 두 파일과 번역 초안(`data/translate/`)으로만 만든다.

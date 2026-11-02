@@ -423,6 +423,81 @@ if (is_file($awFile)) {
     line();
 }
 
+// ── 4-2) [A''] NovoPsych IPIP-NEO-120 검사지 PDF — 실시 번호(1~120)·문구·방향 대조 ──
+// 검사지는 번호 순서대로 문항을 싣고, 점수 칸이 '5 4 3 2 1'이면 역채점(−) 문항이다. 하위 요인은 적혀 있지 않다.
+// PDF → 텍스트는 pdftotext(개발 환경). 없으면 이미 만든 extracted_A2_novopsych.csv 를 쓴다.
+$A2 = null;
+$a2Pdf = $src . '/novopsych_ipip_neo120_form.pdf';
+$a2Csv = $src . '/extracted_A2_novopsych.csv';
+if (is_file($a2Pdf) && trim((string) shell_exec('command -v pdftotext')) !== '') {
+    $txt = (string) shell_exec('pdftotext -layout ' . escapeshellarg($a2Pdf) . ' - 2>/dev/null');
+    // 두 줄에 걸친 문항(문장 앞부분 / 번호만 있는 줄 / 문장 뒷부분 / 점수 줄)을 한 줄로 합친다
+    $ls = preg_split('/\R/u', $txt);
+    for ($k = 1; $k + 2 < count($ls); $k++) {
+        if (preg_match('/^\s*(\d{1,3})\s*$/u', $ls[$k], $nm) && trim($ls[$k - 1]) !== '' && trim($ls[$k + 1]) !== ''
+            && preg_match('/^\s*([15])\s+([24])\s+3\s+([24])\s+([15])\s*$/u', $ls[$k + 2])) {
+            $ls[$k + 2] = $nm[1] . ' ' . trim($ls[$k - 1]) . ' ' . trim($ls[$k + 1]) . '     ' . trim($ls[$k + 2]);
+            $ls[$k - 1] = $ls[$k] = $ls[$k + 1] = '';
+        }
+    }
+    $txt = implode("\n", $ls);
+    preg_match_all('/^\s*(\d{1,3})\s+(.+?)\s{2,}([15])\s+([24])\s+3\s+([24])\s+([15])\s*$/mu', $txt, $mm, PREG_SET_ORDER);
+    $A2 = [];
+    foreach ($mm as $m) {
+        $A2[] = ['item_no_120' => $m[1], 'keyed' => $m[3] === '5' ? '-' : '+', 'text_en' => rtrim(trim($m[2]), '.')];
+    }
+    csv_write($a2Csv, ['item_no_120', 'keyed', 'text_en'], $A2);
+    line("[A''] extracted_A2_novopsych.csv 작성 (" . count($A2) . '행, pdftotext)');
+} elseif (is_file($a2Csv)) {
+    $A2 = csv_read($a2Csv);
+    line("[A''] extracted_A2_novopsych.csv 읽기 (" . count($A2) . '행)');
+}
+$a2Ok = false;
+if ($A2 !== null) {
+    line("== [A''] 구조 점검");
+    $nos = array_map(static fn($r) => (int) $r['item_no_120'], $A2);
+    check($nos === range(1, 120), "[A''] 번호 1~120 순서대로, 중복·누락 없음", $fail);
+    $minusA2 = count(array_filter($A2, static fn($r) => $r['keyed'] === '-'));
+    line("  정보  역채점 {$minusA2}개");
+    if ($B !== null) {
+        line("== [A''] 기준 [B] 대조 (실시 번호별 문구·방향)");
+        $bBy = array_column($B, null, 'item_no_120');
+        $mis = ['text' => 0, 'keyed' => 0];
+        $variants = [];
+        foreach ($A2 as $r) {
+            $b = $bBy[$r['item_no_120']] ?? null;
+            if ($b === null) {
+                $mis['text']++;
+                line("  불일치 {$r['item_no_120']}번: B 에 없음");
+                continue;
+            }
+            if (norm_text($b['text_en']) !== norm_text($r['text_en'])) {
+                similar_text(norm_text($b['text_en']), norm_text($r['text_en']), $pct);
+                if ($pct >= 80) {
+                    // 같은 문항의 표기 차이(철자·한 낱말). 문구는 [A'] IPIP 공식 페이지가 우선이라 B 를 바꾸지 않는다
+                    $variants[] = "{$r['item_no_120']}번 A''=\"{$r['text_en']}\" / A'·B=\"{$b['text_en']}\"";
+                } else {
+                    $mis['text']++;
+                    line("  불일치 {$r['item_no_120']}번 문구: A''=\"{$r['text_en']}\" B=\"{$b['text_en']}\"");
+                    continue;
+                }
+            }
+            if ($b['keyed'] !== $r['keyed']) {
+                $mis['keyed']++;
+                line("  불일치 {$r['item_no_120']}번 방향: A''={$r['keyed']} B={$b['keyed']}");
+            }
+        }
+        check($mis['text'] === 0, "120문항 실시 번호별로 같은 문항 (불일치 {$mis['text']})", $fail);
+        line('  정보  표기 차이 ' . count($variants) . "건 (같은 문항, 판정: [A'] 공식 페이지 문구 유지)");
+        foreach ($variants as $v) {
+            line('        - ' . $v);
+        }
+        check($mis['keyed'] === 0, "120문항 실시 번호별 채점 방향 일치 (불일치 {$mis['keyed']})", $fail);
+        $a2Ok = $mis === ['text' => 0, 'keyed' => 0] && $nos === range(1, 120);
+    }
+    line();
+}
+
 // [D'] Mini-IPIP 요약표 — 문항 문장은 없고, 요인별 정·역채점 문항 수만 있다
 $dtFile = $src . '/ipip_mini_ipip_table.html';
 if (is_file($dtFile) && $AP !== null) {
@@ -452,9 +527,11 @@ if (in_array('--write-master', $argv, true)) {
         $srcLabel = 'A';
     } elseif ($B !== null) {
         $base = $B;
-        $meta = $awOk
+        $meta = ($awOk && $a2Ok)
+            ? "# status: provisional — 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지와, 실시 번호·방향은 [A''] NovoPsych 검사지(Johnson 2014 인용)와 120/120 일치 확인(표기 차이 4건은 [A'] 문구 유지). 원논문(A) 표 1 대조 대기. 작성 {$today}"
+            : ($awOk
             ? "# status: provisional — 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지(Johnson, 2014)와 모두 일치 확인. 실시 번호 순서만 원논문(A) 표 1 대조 대기. 작성 {$today}"
-            : "# status: provisional — 임시 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 원논문(A) 대조 대기. 작성 {$today}";
+            : "# status: provisional — 임시 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 원논문(A) 대조 대기. 작성 {$today}");
         $srcLabel = 'B';
     } else {
         $base = null;

@@ -3,7 +3,7 @@
     "instrument": "IPIP-NEO-120 (Johnson, 2014)",
     "status": "draft",
     "source_status": "provisional",
-    "source_note": "status: provisional — 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지(Johnson, 2014)와 모두 일치 확인. 실시 번호 순서만 원논문(A) 표 1 대조 대기. 작성 2026-11-02",
+    "source_note": "status: provisional — 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지와, 실시 번호·방향은 [A''] NovoPsych 검사지(Johnson 2014 인용)와 120/120 일치 확인(표기 차이 4건은 [A'] 문구 유지). 원논문(A) 표 1 대조 대기. 작성 2026-11-02",
     "scale": [
         "전혀 아니다",
         "아닌 편이다",

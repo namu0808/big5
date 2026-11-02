@@ -1,7 +1,7 @@
 # 문항 번역 검수표
 
-- 만든 날: 2026-11-02 21:09 KST (`php tests/build_items.php`)
-- 원문 키 출처: `data/source/master_120.csv` — status: provisional — 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지(Johnson, 2014)와 모두 일치 확인. 실시 번호 순서만 원논문(A) 표 1 대조 대기. 작성 2026-11-02
+- 만든 날: 2026-11-02 21:12 KST (`php tests/build_items.php`)
+- 원문 키 출처: `data/source/master_120.csv` — status: provisional — 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 하위 요인·방향·문구는 [A'] IPIP 공식 120문항 페이지와, 실시 번호·방향은 [A''] NovoPsych 검사지(Johnson 2014 인용)와 120/120 일치 확인(표기 차이 4건은 [A'] 문구 유지). 원논문(A) 표 1 대조 대기. 작성 2026-11-02
 - 번역 초안: `data/translate/items_120_ko.csv` (status: draft)
 - 검수 방법: 번역이 원문과 같은 방향인지 봅니다. **방향** 열이 `−`인 문항은 "그렇다"고 답할수록 그 하위 요인 점수가 낮아집니다. 고칠 곳은 `data/translate/*.csv`에 적거나 이 표에 메모해 주세요.
 - 정식·간이 공통 문항: `data/translate/shared_items.csv` (status: final — 정식 검사(120)와 간이 검사(20)에서 같은 문항. 문장 기준은 원고 부록 A(20문항). [D] Mini-IPIP 원문과 영문이 똑같은 문항은 이 6쌍뿐임을 확인(2026-11-02) / 짝 근거: master_20.csv 영문([D]) = master_120.csv 영문. 채점 방향(keyed)도 같아야 한다 — tests/build_items.php 가 확인) — 문장은 원고 부록 A 기준으로 통일
