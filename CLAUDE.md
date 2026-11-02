@@ -43,6 +43,7 @@
   - 원문 대조: `php tests/source_compare.php [--write-master]` → `data/source/master_*.csv` (A·D 추출본이 있으면 그 값 우선)
   - 문항 JSON 빌드: `php tests/build_items.php` (master + `data/translate/*.csv` → `data/items_*.json`, `data/review_items.md`. 정식·간이 공통 문항은 `data/translate/shared_items.csv` — 문장은 원고 부록 A 기준으로 통일, 빌드가 방향·문장 일치를 확인). 문항 JSON 을 손으로 고치지 않는다
   - 해석 문구: `data/content/*.json` 7개(키 구조는 `includes/content_loader.php` 머리 주석). 점검 `includes/content_check.php`(CLI `tests/content_test.php`·관리자 `admin/content.php` 공유), 검수본 `php tests/build_review_content.php` → `data/review_content.md`. 문구를 고치면 둘 다 다시 돌린다
+  - 리포트: 데이터 구성 `includes/report_builder.php`(순수 함수, `tests/report_test.php`), 차트 `includes/report_charts.php`(CSS 막대·SVG 레이더), 인쇄 `assets/print.css` + `report.php` 의 `@page @bottom-center` 꼬리말. 샘플 검사 `php doc/dev-seed-reports.php`(all3·random·extreme·mini·nhigh)
   - 브라우저: `doc/pw/*-smoke.js` — 개발 서버를 스스로 띄움(`BIG5_DB_CONFIG=doc/dev-db-sqlite.php php -S 127.0.0.1:8093 doc/dev-router.php`, 주소 `http://127.0.0.1:8093/big5/`). 라우터가 운영 .htaccess 의 403 차단을 흉내 낸다
   - 손으로 띄울 때: `php doc/dev-sqlite-setup.php` 후 위 서버 명령
 - 전건 PASS 후 커밋. 커밋 메시지·코드에 모델 식별자 넣지 않음

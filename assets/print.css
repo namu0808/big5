@@ -1,0 +1,21 @@
+/* 다이얼 — 리포트 인쇄·PDF (A4 세로). 화면에서는 아무 영향 없음 */
+@media print {
+  @page { size: A4 portrait; margin: 16mm 15mm 20mm; }
+  html, body { background: #fff !important; }
+  body { font-size: 10.5pt; line-height: 1.6; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .topbar, .site-footer, .no-print, .flash { display: none !important; }
+  .page, .page-report .page, .report { max-width: none; margin: 0; padding: 0; }
+  a { color: inherit; text-decoration: none; }
+  /* 장마다 새 페이지 */
+  .r-chapter { page-break-before: always; break-before: page; border-top: 0; margin-top: 0; padding-top: 0; }
+  .r-domain { break-before: page; page-break-before: always; margin-top: 0; }
+  .r-domain:first-of-type { break-before: auto; page-break-before: auto; }
+  h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+  .r-card, .r-combo, .r-facet, .r-near, .r-bar-row, tr, .r-radar { break-inside: avoid; page-break-inside: avoid; }
+  .r-glance { grid-template-columns: 1.3fr 1fr; }
+  .r-two { grid-template-columns: 1fr 1fr; }
+  .r-standout { grid-template-columns: 1fr 1fr; }
+  /* 쪽마다 반복되는 꼬리말은 report.php 의 @page @bottom-center (이름·검사일 포함) */
+  .print-footer { display: none !important; }
+  .r-growth-saved ul:empty + p { display: block; }
+}

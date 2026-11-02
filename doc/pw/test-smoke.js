@@ -108,7 +108,7 @@ async function waitSaved(page) {
     ok((await page.textContent('#btnNext')).includes('결과 보기'), '마지막 페이지 버튼 = 결과 보기');
     await Promise.all([page.waitForURL(/report\.php\?id=/, { timeout: 15000 }), page.click('#btnNext')]);
     ok(page.url().includes(`report.php?id=${sid}`), '결과 보기 → 리포트');
-    ok((await page.$$('.dial')).length === 5, '리포트에 다섯 다이얼');
+    ok((await page.$$('.r-domain')).length === 5, '리포트에 다섯 다이얼');
     const r = sql("SELECT status, duration_sec, scoring_version FROM big5_sessions WHERE id = ?", [sid])[0];
     const nScores = sql("SELECT COUNT(*) AS n FROM big5_scores WHERE owner_type = 'session' AND owner_id = ?", [sid])[0].n;
     ok(r.status === 'completed' && r.scoring_version === '1.0' && nScores === 35, `완료 저장: 상태·채점 버전·점수 35행 (${nScores})`);
