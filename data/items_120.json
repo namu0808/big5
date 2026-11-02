@@ -177,8 +177,9 @@
             "facet": "O1",
             "keyed": "+",
             "text_en": "Have a vivid imagination",
-            "text_ko": "상상력이 풍부한 편이다.",
-            "text_ko_other": "이 사람은 상상력이 풍부한 편이다."
+            "text_ko": "상상력이 풍부하다.",
+            "text_ko_other": "이 사람은 상상력이 풍부하다.",
+            "mini20_no": 5
         },
         {
             "no": 4,
@@ -450,7 +451,8 @@
             "keyed": "+",
             "text_en": "Talk to a lot of different people at parties",
             "text_ko": "모임에서 여러 사람과 두루 이야기한다.",
-            "text_ko_other": "이 사람은 모임에서 여러 사람과 두루 이야기한다."
+            "text_ko_other": "이 사람은 모임에서 여러 사람과 두루 이야기한다.",
+            "mini20_no": 11
         },
         {
             "no": 38,
@@ -474,7 +476,8 @@
             "keyed": "-",
             "text_en": "Often forget to put things back in their proper place",
             "text_ko": "물건을 제자리에 두는 것을 자주 잊는다.",
-            "text_ko_other": "이 사람은 물건을 제자리에 두는 것을 자주 잊는다."
+            "text_ko_other": "이 사람은 물건을 제자리에 두는 것을 자주 잊는다.",
+            "mini20_no": 8
         },
         {
             "no": 41,
@@ -498,7 +501,8 @@
             "keyed": "+",
             "text_en": "Feel others' emotions",
             "text_ko": "다른 사람의 감정을 잘 느낀다.",
-            "text_ko_other": "이 사람은 다른 사람의 감정을 잘 느낀다."
+            "text_ko_other": "이 사람은 다른 사람의 감정을 잘 느낀다.",
+            "mini20_no": 12
         },
         {
             "no": 44,
@@ -817,8 +821,9 @@
             "facet": "O5",
             "keyed": "-",
             "text_en": "Have difficulty understanding abstract ideas",
-            "text_ko": "추상적인 생각을 이해하기 어려워한다.",
-            "text_ko_other": "이 사람은 추상적인 생각을 이해하기 어려워한다."
+            "text_ko": "추상적인 생각을 이해하기 어렵다.",
+            "text_ko_other": "이 사람은 추상적인 생각을 이해하기 어려워한다.",
+            "mini20_no": 15
         },
         {
             "no": 84,
@@ -865,8 +870,9 @@
             "facet": "A6",
             "keyed": "-",
             "text_en": "Am not interested in other people's problems",
-            "text_ko": "다른 사람의 문제에는 별로 관심이 없는 편이다.",
-            "text_ko_other": "이 사람은 다른 사람의 문제에는 별로 관심이 없는 편이다."
+            "text_ko": "다른 사람의 문제에는 별로 관심이 없다.",
+            "text_ko_other": "이 사람은 다른 사람의 문제에는 별로 관심이 없다.",
+            "mini20_no": 7
         },
         {
             "no": 90,
@@ -1116,5 +1122,6 @@
             "text_ko": "생각하기 전에 먼저 행동한다.",
             "text_ko_other": "이 사람은 생각하기 전에 먼저 행동한다."
         }
-    ]
+    ],
+    "shared_status": "provisional"
 }

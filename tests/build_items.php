@@ -149,6 +149,43 @@ $json20 = [
     'items' => $items20,
 ];
 
+// ── 정식·간이 공통 문항: 문장은 간이 검사(원고 부록 A) 하나를 기준으로 통일한다 ──
+[$sharedMeta, $shared] = read_csv_meta($root . '/data/translate/shared_items.csv');
+$i120By = [];
+foreach ($items120 as $k => $it) {
+    $i120By[$it['no']] = $k;
+}
+$i20By = [];
+foreach ($items20 as $k => $it) {
+    $i20By[$it['no']] = $k;
+}
+foreach ($shared as $sh) {
+    $n20 = (int) $sh['item_no_20'];
+    $n120 = (int) $sh['item_no_120'];
+    if (!isset($i20By[$n20], $i120By[$n120])) {
+        $errors[] = "공통 문항 {$n20}↔{$n120}: 번호 없음";
+        continue;
+    }
+    $a = &$items120[$i120By[$n120]];
+    $b = &$items20[$i20By[$n20]];
+    if ($a['text_en'] !== $sh['text_en_120']) {
+        $errors[] = "공통 문항 {$n20}↔{$n120}: 120문항 영문이 master 와 다름";
+    }
+    if ($a['keyed'] !== $b['keyed']) {
+        $errors[] = "공통 문항 {$n20}↔{$n120}: 채점 방향이 다름 ({$b['keyed']} / {$a['keyed']})";
+    }
+    if ($a['text_ko'] !== $b['text_ko'] || $a['text_ko_other'] !== $b['text_ko_other']) {
+        $errors[] = "공통 문항 {$n20}↔{$n120}: 번역 파일의 120문항 문장이 간이 검사와 다름 — data/translate/items_120_ko.csv 를 부록 A 문장으로 맞출 것";
+    }
+    $a['mini20_no'] = $n20;
+    $b['full120_no'] = $n120;
+    unset($a, $b);
+}
+$json120['items'] = $items120;
+$json20['items'] = $items20;
+$json120['shared_status'] = meta_status($sharedMeta);
+$json20['shared_status'] = meta_status($sharedMeta);
+
 if ($errors !== []) {
     fwrite(STDERR, implode("\n", $errors) . "\n");
     exit(1);
@@ -169,6 +206,12 @@ function review_marks(array $it): string
     if (($it['facet'] ?? '') === 'O6') {
         $m[] = '가치 개방(중립성)';
     }
+    if (isset($it['mini20_no'])) {
+        $m[] = '간이 검사 ' . $it['mini20_no'] . '번과 같은 문장';
+    }
+    if (isset($it['full120_no'])) {
+        $m[] = '정식 검사 ' . $it['full120_no'] . '번과 같은 문장';
+    }
     return implode(', ', $m);
 }
 
@@ -179,6 +222,7 @@ $md[] = '- 만든 날: ' . (new DateTimeImmutable('now', new DateTimeZone('Asia/
 $md[] = '- 원문 키 출처: `data/source/master_120.csv` — ' . implode(' / ', $m120meta);
 $md[] = '- 번역 초안: `data/translate/items_120_ko.csv` (status: ' . meta_status($t120meta) . ')';
 $md[] = '- 검수 방법: 번역이 원문과 같은 방향인지 봅니다. **방향** 열이 `−`인 문항은 "그렇다"고 답할수록 그 하위 요인 점수가 낮아집니다. 고칠 곳은 `data/translate/*.csv`에 적거나 이 표에 메모해 주세요.';
+$md[] = '- 정식·간이 공통 문항: `data/translate/shared_items.csv` (' . implode(' / ', $sharedMeta) . ') — 문장은 원고 부록 A 기준으로 통일';
 $md[] = '- 확인 표시: `부정·회피 표현` = 문장에 부정어·회피어가 있어 방향을 한 번 더 볼 문항, `가치 개방(중립성)` = 정치적으로 읽힐 수 있는 하위 요인';
 $md[] = '';
 $md[] = '## IPIP-NEO-120 (120문항)';

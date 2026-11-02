@@ -198,4 +198,19 @@ foreach (['full120' => $i120, 'mini20' => $i20] as $type => $set) {
 }
 t_ok($bad === [], '모든 문항: 하나만 5점 → + 문항은 점수 상승, − 문항은 하락 (140문항)' . ($bad ? ' — 어긋남: ' . implode(',', $bad) : ''));
 
+// ── 정식·간이 공통 문항: 문장·방향 통일 (2026-11-02 대표님 지시) ──
+$pairs = 0;
+$diffPairs = [];
+foreach ($i120['items'] as $a) {
+    if (!isset($a['mini20_no'])) {
+        continue;
+    }
+    $pairs++;
+    $b = $i20['items'][$a['mini20_no'] - 1];
+    if (($b['full120_no'] ?? null) !== $a['no'] || $a['text_ko'] !== $b['text_ko'] || $a['text_ko_other'] !== $b['text_ko_other'] || $a['keyed'] !== $b['keyed']) {
+        $diffPairs[] = "{$a['no']}↔{$b['no']}";
+    }
+}
+t_ok($pairs === 6 && $diffPairs === [], "정식·간이 공통 문항 {$pairs}쌍: 본인용·타인용 문장과 채점 방향이 같다" . ($diffPairs ? ' — 다름: ' . implode(',', $diffPairs) : ''));
+
 t_done();
