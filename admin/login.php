@@ -1,0 +1,53 @@
+<?php
+/** 관리자 로그인 — role=admin 계정만. 로그인 화면 자체는 admin_check 를 거치지 않는 유일한 /admin 파일 */
+declare(strict_types=1);
+
+require_once __DIR__ . '/../includes/bootstrap.php';
+
+$error = '';
+$username = '';
+
+if ($pdo !== null && big5_current_admin($pdo) !== null) {
+    big5_redirect('admin/index.php');
+}
+
+if (big5_is_post()) {
+    big5_csrf_check();
+    $username = strtolower(big5_param('username'));
+    $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
+    if ($pdo === null) {
+        $error = '지금은 로그인할 수 없습니다. DB 설정을 확인해 주세요.';
+    } else {
+        $u = big5_authenticate($pdo, $username, $password, true);
+        if (isset($u['error'])) {
+            $error = (string) $u['error'];
+        } else {
+            big5_login_admin($u);
+            big5_redirect('admin/index.php');
+        }
+    }
+}
+
+$page_title = '관리자 로그인';
+$layout_area = 'admin';
+require __DIR__ . '/../includes/header.php';
+?>
+<section class="form-card">
+  <h1>관리자 로그인</h1>
+<?php if ($error !== ''): ?>
+  <p class="form-error" role="alert"><?= h($error) ?></p>
+<?php endif; ?>
+  <form method="post" action="<?= h(big5_url('admin/login.php')) ?>" novalidate>
+    <?= big5_csrf_field() ?>
+    <label class="field">
+      <span>아이디</span>
+      <input type="text" name="username" value="<?= h($username) ?>" autocomplete="username" autocapitalize="off" required>
+    </label>
+    <label class="field">
+      <span>비밀번호</span>
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button type="submit" class="btn btn-primary btn-block">로그인</button>
+  </form>
+</section>
+<?php require __DIR__ . '/../includes/footer.php';

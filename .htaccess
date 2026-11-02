@@ -1,0 +1,17 @@
+# 다이얼(big5) — sonbm.com/big5/ 하위 폴더 전용
+# 루트 WordPress 의 재작성 규칙(index.php 로 모두 보냄)이 이 폴더 요청을 가로채지 않게,
+# 이 폴더에서 재작성 엔진을 새로 켠다(상위 규칙은 상속되지 않는다).
+<IfModule mod_rewrite.c>
+RewriteEngine On
+</IfModule>
+DirectoryIndex index.php
+Options -Indexes
+# 문서·점검 파일 직접 열람 차단
+<FilesMatch "\.(md|json|sqlite|log)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Deny from all
+  </IfModule>
+</FilesMatch>

@@ -1,0 +1,19 @@
+# 접속 정보 재유입 방지 (로더 includes/db_config.php 는 추적)
+/config/
+*.local.php
+/db_config.php
+
+# 개발 DB(SQLite)·검증 산출물
+*.sqlite
+*.sqlite-journal
+/doc/pw/out/
+/doc/pw/node_modules/
+
+# OS·에디터
+Thumbs.db
+desktop.ini
+.DS_Store
+*.swp
+*.bak
+.vscode/
+.idea/
