@@ -1,0 +1,198 @@
+{
+    "version": "mini-ipip-20-ko-v0.1",
+    "instrument": "Mini-IPIP (Donnellan et al., 2006)",
+    "status": "draft",
+    "source_status": "provisional",
+    "source_note": "status: provisional — 순서·방향·요인·한국어: 원고 부록 A. text_en 은 [D] 확보 후 채움(기억으로 채우지 않음). 작성 2026-11-02",
+    "scale": [
+        "전혀 아니다",
+        "아닌 편이다",
+        "보통이다",
+        "그런 편이다",
+        "매우 그렇다"
+    ],
+    "domains": {
+        "N": {
+            "name": "신경성",
+            "name_en": "Neuroticism"
+        },
+        "E": {
+            "name": "외향성",
+            "name_en": "Extraversion"
+        },
+        "O": {
+            "name": "개방성",
+            "name_en": "Openness To Experience"
+        },
+        "A": {
+            "name": "친화성",
+            "name_en": "Agreeableness"
+        },
+        "C": {
+            "name": "성실성",
+            "name_en": "Conscientiousness"
+        }
+    },
+    "items": [
+        {
+            "no": 1,
+            "domain": "E",
+            "keyed": "+",
+            "text_en": "",
+            "text_ko": "모임에서 분위기를 띄우는 편이다.",
+            "text_ko_other": "이 사람은 모임에서 분위기를 띄우는 편이다."
+        },
+        {
+            "no": 2,
+            "domain": "A",
+            "keyed": "+",
+            "text_en": "",
+            "text_ko": "다른 사람의 감정에 공감한다.",
+            "text_ko_other": "이 사람은 다른 사람의 감정에 공감한다."
+        },
+        {
+            "no": 3,
+            "domain": "C",
+            "keyed": "+",
+            "text_en": "",
+            "text_ko": "해야 할 일을 바로바로 처리한다.",
+            "text_ko_other": "이 사람은 해야 할 일을 바로바로 처리한다."
+        },
+        {
+            "no": 4,
+            "domain": "N",
+            "keyed": "+",
+            "text_en": "",
+            "text_ko": "기분이 자주 오락가락한다.",
+            "text_ko_other": "이 사람은 기분이 자주 오락가락한다."
+        },
+        {
+            "no": 5,
+            "domain": "O",
+            "keyed": "+",
+            "text_en": "",
+            "text_ko": "상상력이 풍부하다.",
+            "text_ko_other": "이 사람은 상상력이 풍부하다."
+        },
+        {
+            "no": 6,
+            "domain": "E",
+            "keyed": "-",
+            "text_en": "",
+            "text_ko": "말을 많이 하지 않는다.",
+            "text_ko_other": "이 사람은 말을 많이 하지 않는다."
+        },
+        {
+            "no": 7,
+            "domain": "A",
+            "keyed": "-",
+            "text_en": "",
+            "text_ko": "다른 사람의 문제에는 별로 관심이 없다.",
+            "text_ko_other": "이 사람은 다른 사람의 문제에는 별로 관심이 없다."
+        },
+        {
+            "no": 8,
+            "domain": "C",
+            "keyed": "-",
+            "text_en": "",
+            "text_ko": "물건을 제자리에 두는 것을 자주 잊는다.",
+            "text_ko_other": "이 사람은 물건을 제자리에 두는 것을 자주 잊는다."
+        },
+        {
+            "no": 9,
+            "domain": "N",
+            "keyed": "-",
+            "text_en": "",
+            "text_ko": "대체로 마음이 편안하다.",
+            "text_ko_other": "이 사람은 대체로 마음이 편안하다."
+        },
+        {
+            "no": 10,
+            "domain": "O",
+            "keyed": "-",
+            "text_en": "",
+            "text_ko": "추상적인 생각에는 관심이 없다.",
+            "text_ko_other": "이 사람은 추상적인 생각에는 관심이 없다."
+        },
+        {
+            "no": 11,
+            "domain": "E",
+            "keyed": "+",
+            "text_en": "",
+            "text_ko": "모임에서 여러 사람과 두루 이야기한다.",
+            "text_ko_other": "이 사람은 모임에서 여러 사람과 두루 이야기한다."
+        },
+        {
+            "no": 12,
+            "domain": "A",
+            "keyed": "+",
+            "text_en": "",
+            "text_ko": "다른 사람의 감정을 잘 느낀다.",
+            "text_ko_other": "이 사람은 다른 사람의 감정을 잘 느낀다."
+        },
+        {
+            "no": 13,
+            "domain": "C",
+            "keyed": "+",
+            "text_en": "",
+            "text_ko": "질서 정연한 것을 좋아한다.",
+            "text_ko_other": "이 사람은 질서 정연한 것을 좋아한다."
+        },
+        {
+            "no": 14,
+            "domain": "N",
+            "keyed": "+",
+            "text_en": "",
+            "text_ko": "쉽게 속상해진다.",
+            "text_ko_other": "이 사람은 쉽게 속상해한다."
+        },
+        {
+            "no": 15,
+            "domain": "O",
+            "keyed": "-",
+            "text_en": "",
+            "text_ko": "추상적인 생각을 이해하기 어렵다.",
+            "text_ko_other": "이 사람은 추상적인 생각을 이해하기 어려워한다."
+        },
+        {
+            "no": 16,
+            "domain": "E",
+            "keyed": "-",
+            "text_en": "",
+            "text_ko": "사람들 사이에서 뒤로 물러나 있는 편이다.",
+            "text_ko_other": "이 사람은 사람들 사이에서 뒤로 물러나 있는 편이다."
+        },
+        {
+            "no": 17,
+            "domain": "A",
+            "keyed": "-",
+            "text_en": "",
+            "text_ko": "다른 사람에게 별로 관심이 없다.",
+            "text_ko_other": "이 사람은 다른 사람에게 별로 관심이 없다."
+        },
+        {
+            "no": 18,
+            "domain": "C",
+            "keyed": "-",
+            "text_en": "",
+            "text_ko": "일을 엉망으로 만들 때가 많다.",
+            "text_ko_other": "이 사람은 일을 엉망으로 만들 때가 많다."
+        },
+        {
+            "no": 19,
+            "domain": "N",
+            "keyed": "-",
+            "text_en": "",
+            "text_ko": "우울한 기분이 드는 일이 드물다.",
+            "text_ko_other": "이 사람은 우울해하는 일이 드물다."
+        },
+        {
+            "no": 20,
+            "domain": "O",
+            "keyed": "-",
+            "text_en": "",
+            "text_ko": "상상력이 별로 없다.",
+            "text_ko_other": "이 사람은 상상력이 별로 없다."
+        }
+    ]
+}

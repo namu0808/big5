@@ -1,6 +1,8 @@
 # 원문 자료 출처 기록 (data/source)
 
-- 기록일: 2026-11-02 12:56 KST
+> **status: provisional** — 120문항 기준 파일 `master_120.csv`는 [B]를 임시 기준으로 만들었다(원논문 [A] 대조 대기). 20문항 `master_20.csv`는 원고 부록 A로 만들었고, `text_en`은 비어 있다([D] 대기). 원논문 대조가 끝나면 status: final 로 바꾼다. (승인 2026-11-02)
+
+- 기록일: 2026-11-02 12:56 KST (갱신 13:05 KST)
 - 이 폴더는 `data/.htaccess`(Deny from all)로 웹에서 직접 열 수 없다. FTP 배포 대상도 아니다.
 - 내려받기는 이 저장소의 클라우드 작업 환경에서 했다. 이 환경의 네트워크 허용 목록에 없는 주소는 받지 못했다(아래 '실패').
 
@@ -13,6 +15,11 @@
 | [C] UGA 문항지·채점 키 docx | 보조 | **실패** — 네트워크 정책이 호스트 차단 | 문항은 IPIP 공유 저작물 |
 | [D] IPIP Mini-IPIP 공식 페이지 | 20문항 기준본 | **실패** — 네트워크 정책이 호스트 차단 | IPIP 공유 저작물 |
 | 원고 부록 A | 20문항 실시 순서·역채점 대조 | 확보 (저장소 루트 `빅파이브 Big 5.md`) | 손병목 원고 |
+
+## 재시도 기록
+
+- 2026-11-02 13:00 KST 무렵: 대표님이 환경 허용 목록에 세 호스트를 추가했다고 알려 주셔서 다시 받았다. [A]·[C]·[D] 모두 여전히 프록시가 연결을 거부했다(CONNECT 403).
+  - 이 세션이 시작될 때의 네트워크 정책이 그대로 적용되는 것으로 보인다. 새 세션에서 다시 시도하거나, 대표님이 직접 올린다.
 
 ## [A] Johnson (2014) IPIP-NEO-120 원논문 — 실패
 
@@ -39,6 +46,13 @@
 | `bigfive_org/en/choices.js` | 847 | `261687679857bdf1994527b1a27741671e38dc6d2a8aff4ff9693a5938f43719` |
 | `bigfive_org/ko/questions.json` | 22,335 | `7eda50708eae53eab10c77bdd43cf1f18caa2759e9351527a3509b26d7523ce0` |
 | `bigfive_org/ko/choices.js` | 801 | `9b0ff30d4ee9477bb8d6bfa75f618ea0d79916363b352b2c3f984d36b1a06cc5` |
+| `bigfive_org/results_en/neuroticism.ts` | 4,860 | `d34781883fb134075cba478ac20d8257a96b1581bb6fa293f2ea642d5bd33034` |
+| `bigfive_org/results_en/extraversion.ts` | 4,142 | `455b1554c803eeadd3f03609e95d56b47ff14fa3fdfd5ffe78a9c85d9755a43b` |
+| `bigfive_org/results_en/openness_to_experience.ts` | 5,779 | `6449b3f27d0c3d3eb86052102b8df4d39e869a352744158d501532af51f07309` |
+| `bigfive_org/results_en/agreeableness.ts` | 4,508 | `fba5fc20d37ea6598b9bdd99b965a430114073e8a9d3ea0ae0de9a31c8738dbe` |
+| `bigfive_org/results_en/conscientiousness.ts` | 6,077 | `3dc42112036af804507f198f88438be990237f7aee60b7f43d01f8fa36aed4f0` |
+
+- `results_en/*.ts`는 같은 저장소 `packages/results/src/data/en/`에서 복사했다(커밋 `e8f3cac`). 요인·하위 요인의 영문 이름(예: N1 Anxiety)을 문항 JSON에 넣는 데만 쓴다.
 
 ## [C] UGA 인쇄용 문항지·채점 키 — 실패
 
@@ -58,6 +72,15 @@
 |---|---|---:|---|
 | `extracted_B_bigfiveorg.csv` | `php tests/source_compare.php` (B의 en·ko JSON에서 기계 추출) | 15,901 | `26cdb5eb0b601f52436d0df00d8e60b1263c2256bdf86b33222fe96fc6a97c87` |
 | `extracted_appendixA_mini.csv` | 같은 스크립트 (원고 부록 A의 문항표·뒤집는 문항·다이얼별 문항 표에서 기계 추출) | 1,043 | `a0ba606b50027cab0293bf42b9aa3a051eb093d948ca01de736ec5181c4860f2` |
+
+## 기준 파일 (확정 전)
+
+| 파일 | status | 만든 방법 | 바이트 | SHA-256 |
+|---|---|---|---:|---|
+| `master_120.csv` | provisional | `php tests/source_compare.php --write-master` — [B] 추출본을 그대로 옮김 | 4,900 | `ec42015519f07248a8bcc4767c0a8b34af5976269980f95346c61ac3eff90cf5` |
+| `master_20.csv` | provisional | 같은 명령 — 원고 부록 A 추출본, `text_en` 빈칸 | 1,425 | `95f642019ecd2f3b6b8ee2b105a63307c6cb005c2fee857c5f58c4c43d6c063c` |
+
+문항 JSON(`data/items_120.json`, `data/items_20.json`)은 `php tests/build_items.php`가 위 두 파일과 번역 초안(`data/translate/`)으로만 만든다.
 
 ## 받지 못한 자료를 채우는 방법
 

@@ -8,8 +8,12 @@
  *  2) 원고 부록 A(간이 자가 진단 20문항) → extracted_appendixA_mini.csv
  *  3) 있으면 extracted_A_johnson.csv · extracted_C_uga.csv · extracted_D_mini.csv 를 읽어 대조
  *  4) 검증 결과를 화면에 출력 (보고서 COMPARISON_REPORT.md 의 근거)
+ *  5) --write-master: 확정 기준 파일 master_120.csv · master_20.csv 작성
+ *     - 120문항: A(원논문) 추출본이 있으면 A 가 기준(status: final 후보), 없으면 B(status: provisional)
+ *     - 20문항: 순서·방향·한국어는 원고 부록 A. text_en 은 D 추출본이 있을 때만 채운다(없으면 빈칸, provisional)
+ *     (어느 경우든 대조 불일치가 있으면 기준 자료 값을 쓰고, 화면에 고친 목록을 남긴다)
  *
- * 실행: php tests/source_compare.php
+ * 실행: php tests/source_compare.php [--write-master]
  */
 declare(strict_types=1);
 
@@ -35,10 +39,12 @@ function csv_read(string $path): ?array
         return null;
     }
     $fh = fopen($path, 'r');
-    $header = fgetcsv($fh, null, ',', '"', '');
+    do {
+        $header = fgetcsv($fh, null, ',', '"', '');
+    } while ($header !== false && isset($header[0]) && is_string($header[0]) && str_starts_with($header[0], '#'));
     $rows = [];
     while (($r = fgetcsv($fh, null, ',', '"', '')) !== false) {
-        if ($r === [null]) {
+        if ($r === [null] || (is_string($r[0] ?? null) && str_starts_with((string) $r[0], '#'))) {
             continue;
         }
         $rows[] = array_combine($header, array_pad($r, count($header), ''));
@@ -259,6 +265,72 @@ if ($AP !== null) {
         }
     }
     line();
+}
+
+// ── 5) 확정 기준 파일 작성 ─────────────────────────────────
+if (in_array('--write-master', $argv, true)) {
+    $today = (new DateTimeImmutable('now', new DateTimeZone('Asia/Seoul')))->format('Y-m-d');
+    // 120문항
+    if ($A !== null) {
+        $base = $A;
+        $meta = "# status: final — 기준: [A] Johnson (2014) 원논문 표 1. 작성 {$today}";
+        $srcLabel = 'A';
+    } elseif ($B !== null) {
+        $base = $B;
+        $meta = "# status: provisional — 임시 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 원논문(A) 대조 대기. 작성 {$today}";
+        $srcLabel = 'B';
+    } else {
+        $base = null;
+    }
+    if ($base !== null) {
+        usort($base, static fn($x, $y) => (int) $x['item_no_120'] <=> (int) $y['item_no_120']);
+        $rows = array_map(static fn($r) => [
+            'item_no_120' => $r['item_no_120'], 'facet_code' => $r['facet_code'], 'keyed' => $r['keyed'],
+            'text_en' => $r['text_en'], 'source' => $srcLabel, 'note' => $r['note'] ?? '',
+        ], $base);
+        $path = $src . '/master_120.csv';
+        file_put_contents($path, $meta . "\n");
+        $fh = fopen($path, 'a');
+        $cols = ['item_no_120', 'facet_code', 'keyed', 'text_en', 'source', 'note'];
+        fputcsv($fh, $cols, ',', '"', '');
+        foreach ($rows as $r) {
+            fputcsv($fh, array_map(static fn($k) => $r[$k], $cols), ',', '"', '');
+        }
+        fclose($fh);
+        line("master_120.csv 작성 — 기준 {$srcLabel}, " . count($rows) . '행');
+    }
+    // 20문항
+    if ($AP !== null) {
+        $dBy = [];
+        foreach ($D ?? [] as $d) {
+            $dBy[(int) $d['item_no_20']] = $d;
+        }
+        $status = $D !== null ? 'final' : 'provisional';
+        $meta = $D !== null
+            ? "# status: final — 순서·방향·요인: [D] IPIP Mini-IPIP 공식 페이지, 한국어: 원고 부록 A. 작성 {$today}"
+            : "# status: provisional — 순서·방향·요인·한국어: 원고 부록 A. text_en 은 [D] 확보 후 채움(기억으로 채우지 않음). 작성 {$today}";
+        $path = $src . '/master_20.csv';
+        file_put_contents($path, $meta . "\n");
+        $fh = fopen($path, 'a');
+        $cols = ['item_no_20', 'factor', 'keyed', 'text_en', 'text_ko', 'source', 'note'];
+        fputcsv($fh, $cols, ',', '"', '');
+        foreach ($AP as $r) {
+            $no = (int) $r['item_no_20'];
+            $d = $dBy[$no] ?? null;
+            $note = '';
+            $factor = $r['factor'];
+            $keyed = $r['keyed'];
+            if ($d !== null && ($d['factor'] !== $factor || $d['keyed'] !== $keyed)) {
+                $note = "부록A {$factor}{$keyed} → D 기준 {$d['factor']}{$d['keyed']}";
+                $factor = $d['factor'];
+                $keyed = $d['keyed'];
+                line("  고침 20문항 {$no}번: {$note}");
+            }
+            fputcsv($fh, [$no, $factor, $keyed, $d['text_en'] ?? '', $r['text_ko'], $d !== null ? 'D+부록A' : '부록A', $note], ',', '"', '');
+        }
+        fclose($fh);
+        line("master_20.csv 작성 — status {$status}, " . count($AP) . '행');
+    }
 }
 
 line($fail === 0 ? '점검 결과: 불일치 0건' : "점검 결과: 불일치·실패 {$fail}건");

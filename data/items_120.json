@@ -1,0 +1,1120 @@
+{
+    "version": "ipip-neo-120-ko-v0.1",
+    "instrument": "IPIP-NEO-120 (Johnson, 2014)",
+    "status": "draft",
+    "source_status": "provisional",
+    "source_note": "status: provisional — 임시 기준: [B] @bigfive-org/questions 1.2.1 (MIT). 원논문(A) 대조 대기. 작성 2026-11-02",
+    "scale": [
+        "전혀 아니다",
+        "아닌 편이다",
+        "보통이다",
+        "그런 편이다",
+        "매우 그렇다"
+    ],
+    "domains": {
+        "N": {
+            "name": "신경성",
+            "name_en": "Neuroticism"
+        },
+        "E": {
+            "name": "외향성",
+            "name_en": "Extraversion"
+        },
+        "O": {
+            "name": "개방성",
+            "name_en": "Openness To Experience"
+        },
+        "A": {
+            "name": "친화성",
+            "name_en": "Agreeableness"
+        },
+        "C": {
+            "name": "성실성",
+            "name_en": "Conscientiousness"
+        }
+    },
+    "facets": {
+        "N1": {
+            "name": "불안",
+            "name_en": "Anxiety"
+        },
+        "N2": {
+            "name": "분노",
+            "name_en": "Anger"
+        },
+        "N3": {
+            "name": "우울",
+            "name_en": "Depression"
+        },
+        "N4": {
+            "name": "자의식",
+            "name_en": "Self-Consciousness"
+        },
+        "N5": {
+            "name": "충동성",
+            "name_en": "Immoderation"
+        },
+        "N6": {
+            "name": "취약성",
+            "name_en": "Vulnerability"
+        },
+        "E1": {
+            "name": "따뜻함",
+            "name_en": "Friendliness"
+        },
+        "E2": {
+            "name": "사교성",
+            "name_en": "Gregariousness"
+        },
+        "E3": {
+            "name": "주장성",
+            "name_en": "Assertiveness"
+        },
+        "E4": {
+            "name": "활동성",
+            "name_en": "Activity Level"
+        },
+        "E5": {
+            "name": "자극 추구",
+            "name_en": "Excitement-Seeking"
+        },
+        "E6": {
+            "name": "긍정 정서",
+            "name_en": "Cheerfulness"
+        },
+        "O1": {
+            "name": "상상",
+            "name_en": "Imagination"
+        },
+        "O2": {
+            "name": "심미성",
+            "name_en": "Artistic Interests"
+        },
+        "O3": {
+            "name": "감정 개방",
+            "name_en": "Emotionality"
+        },
+        "O4": {
+            "name": "행동 개방",
+            "name_en": "Adventurousness"
+        },
+        "O5": {
+            "name": "사고 개방",
+            "name_en": "Intellect"
+        },
+        "O6": {
+            "name": "가치 개방",
+            "name_en": "Liberalism"
+        },
+        "A1": {
+            "name": "신뢰",
+            "name_en": "Trust"
+        },
+        "A2": {
+            "name": "솔직함",
+            "name_en": "Morality"
+        },
+        "A3": {
+            "name": "이타성",
+            "name_en": "Altruism"
+        },
+        "A4": {
+            "name": "협조",
+            "name_en": "Cooperation"
+        },
+        "A5": {
+            "name": "겸손",
+            "name_en": "Modesty"
+        },
+        "A6": {
+            "name": "온정",
+            "name_en": "Sympathy"
+        },
+        "C1": {
+            "name": "유능감",
+            "name_en": "Self-Efficacy"
+        },
+        "C2": {
+            "name": "질서",
+            "name_en": "Orderliness"
+        },
+        "C3": {
+            "name": "의무감",
+            "name_en": "Dutifulness"
+        },
+        "C4": {
+            "name": "성취 추구",
+            "name_en": "Achievement-Striving"
+        },
+        "C5": {
+            "name": "자기 규율",
+            "name_en": "Self-Discipline"
+        },
+        "C6": {
+            "name": "신중함",
+            "name_en": "Cautiousness"
+        }
+    },
+    "items": [
+        {
+            "no": 1,
+            "facet": "N1",
+            "keyed": "+",
+            "text_en": "Worry about things",
+            "text_ko": "걱정이 많은 편이다.",
+            "text_ko_other": "이 사람은 걱정이 많은 편이다."
+        },
+        {
+            "no": 2,
+            "facet": "E1",
+            "keyed": "+",
+            "text_en": "Make friends easily",
+            "text_ko": "친구를 쉽게 사귄다.",
+            "text_ko_other": "이 사람은 친구를 쉽게 사귄다."
+        },
+        {
+            "no": 3,
+            "facet": "O1",
+            "keyed": "+",
+            "text_en": "Have a vivid imagination",
+            "text_ko": "상상력이 풍부한 편이다.",
+            "text_ko_other": "이 사람은 상상력이 풍부한 편이다."
+        },
+        {
+            "no": 4,
+            "facet": "A1",
+            "keyed": "+",
+            "text_en": "Trust others",
+            "text_ko": "다른 사람을 믿는 편이다.",
+            "text_ko_other": "이 사람은 다른 사람을 믿는 편이다."
+        },
+        {
+            "no": 5,
+            "facet": "C1",
+            "keyed": "+",
+            "text_en": "Complete tasks successfully",
+            "text_ko": "맡은 일을 잘 해낸다.",
+            "text_ko_other": "이 사람은 맡은 일을 잘 해낸다."
+        },
+        {
+            "no": 6,
+            "facet": "N2",
+            "keyed": "+",
+            "text_en": "Get angry easily",
+            "text_ko": "쉽게 화를 낸다.",
+            "text_ko_other": "이 사람은 쉽게 화를 낸다."
+        },
+        {
+            "no": 7,
+            "facet": "E2",
+            "keyed": "+",
+            "text_en": "Love large parties",
+            "text_ko": "사람이 많이 모이는 자리를 좋아한다.",
+            "text_ko_other": "이 사람은 사람이 많이 모이는 자리를 좋아한다."
+        },
+        {
+            "no": 8,
+            "facet": "O2",
+            "keyed": "+",
+            "text_en": "Believe in the importance of art",
+            "text_ko": "예술이 삶에 꼭 필요하다고 생각한다.",
+            "text_ko_other": "이 사람은 예술이 삶에 꼭 필요하다고 생각한다."
+        },
+        {
+            "no": 9,
+            "facet": "A2",
+            "keyed": "-",
+            "text_en": "Use others for my own ends",
+            "text_ko": "내 목적을 위해 다른 사람을 이용한다.",
+            "text_ko_other": "이 사람은 자기 목적을 위해 다른 사람을 이용한다."
+        },
+        {
+            "no": 10,
+            "facet": "C2",
+            "keyed": "+",
+            "text_en": "Like to tidy up",
+            "text_ko": "정리 정돈을 좋아한다.",
+            "text_ko_other": "이 사람은 정리 정돈을 좋아한다."
+        },
+        {
+            "no": 11,
+            "facet": "N3",
+            "keyed": "+",
+            "text_en": "Often feel blue",
+            "text_ko": "울적한 기분이 자주 든다.",
+            "text_ko_other": "이 사람은 울적해할 때가 많다."
+        },
+        {
+            "no": 12,
+            "facet": "E3",
+            "keyed": "+",
+            "text_en": "Take charge",
+            "text_ko": "일이 생기면 앞장서서 맡는다.",
+            "text_ko_other": "이 사람은 일이 생기면 앞장서서 맡는다."
+        },
+        {
+            "no": 13,
+            "facet": "O3",
+            "keyed": "+",
+            "text_en": "Experience my emotions intensely",
+            "text_ko": "감정을 강하게 느끼는 편이다.",
+            "text_ko_other": "이 사람은 감정을 강하게 느끼는 편이다."
+        },
+        {
+            "no": 14,
+            "facet": "A3",
+            "keyed": "+",
+            "text_en": "Love to help others",
+            "text_ko": "남을 돕는 것을 좋아한다.",
+            "text_ko_other": "이 사람은 남을 돕는 것을 좋아한다."
+        },
+        {
+            "no": 15,
+            "facet": "C3",
+            "keyed": "+",
+            "text_en": "Keep my promises",
+            "text_ko": "약속을 지킨다.",
+            "text_ko_other": "이 사람은 약속을 지킨다."
+        },
+        {
+            "no": 16,
+            "facet": "N4",
+            "keyed": "+",
+            "text_en": "Find it difficult to approach others",
+            "text_ko": "다른 사람에게 먼저 다가가기를 어려워한다.",
+            "text_ko_other": "이 사람은 다른 사람에게 먼저 다가가기를 어려워한다."
+        },
+        {
+            "no": 17,
+            "facet": "E4",
+            "keyed": "+",
+            "text_en": "Am always busy",
+            "text_ko": "늘 바쁘게 지낸다.",
+            "text_ko_other": "이 사람은 늘 바쁘게 지낸다."
+        },
+        {
+            "no": 18,
+            "facet": "O4",
+            "keyed": "+",
+            "text_en": "Prefer variety to routine",
+            "text_ko": "늘 같은 일보다 새롭고 다양한 일을 좋아한다.",
+            "text_ko_other": "이 사람은 늘 같은 일보다 새롭고 다양한 일을 좋아한다."
+        },
+        {
+            "no": 19,
+            "facet": "A4",
+            "keyed": "-",
+            "text_en": "Love a good fight",
+            "text_ko": "다툼을 즐기는 편이다.",
+            "text_ko_other": "이 사람은 다툼을 즐기는 편이다."
+        },
+        {
+            "no": 20,
+            "facet": "C4",
+            "keyed": "+",
+            "text_en": "Work hard",
+            "text_ko": "열심히 일한다.",
+            "text_ko_other": "이 사람은 열심히 일한다."
+        },
+        {
+            "no": 21,
+            "facet": "N5",
+            "keyed": "+",
+            "text_en": "Go on binges",
+            "text_ko": "폭식이나 폭음을 하는 편이다.",
+            "text_ko_other": "이 사람은 폭식이나 폭음을 하는 편이다."
+        },
+        {
+            "no": 22,
+            "facet": "E5",
+            "keyed": "+",
+            "text_en": "Love excitement",
+            "text_ko": "짜릿하고 신나는 일을 좋아한다.",
+            "text_ko_other": "이 사람은 짜릿하고 신나는 일을 좋아한다."
+        },
+        {
+            "no": 23,
+            "facet": "O5",
+            "keyed": "+",
+            "text_en": "Love to read challenging material",
+            "text_ko": "어렵고 깊이 있는 글을 즐겨 읽는다.",
+            "text_ko_other": "이 사람은 어렵고 깊이 있는 글을 즐겨 읽는다."
+        },
+        {
+            "no": 24,
+            "facet": "A5",
+            "keyed": "-",
+            "text_en": "Believe that I am better than others",
+            "text_ko": "내가 다른 사람보다 낫다고 생각한다.",
+            "text_ko_other": "이 사람은 자기가 다른 사람보다 낫다고 생각한다."
+        },
+        {
+            "no": 25,
+            "facet": "C5",
+            "keyed": "+",
+            "text_en": "Am always prepared",
+            "text_ko": "늘 미리 준비해 둔다.",
+            "text_ko_other": "이 사람은 늘 미리 준비해 둔다."
+        },
+        {
+            "no": 26,
+            "facet": "N6",
+            "keyed": "+",
+            "text_en": "Panic easily",
+            "text_ko": "쉽게 당황하는 편이다.",
+            "text_ko_other": "이 사람은 쉽게 당황하는 편이다."
+        },
+        {
+            "no": 27,
+            "facet": "E6",
+            "keyed": "+",
+            "text_en": "Radiate joy",
+            "text_ko": "밝은 기운이 겉으로 드러나는 편이다.",
+            "text_ko_other": "이 사람은 밝은 기운이 겉으로 드러나는 편이다."
+        },
+        {
+            "no": 28,
+            "facet": "O6",
+            "keyed": "+",
+            "text_en": "Tend to vote for liberal political candidates",
+            "text_ko": "선거에서 진보 성향의 후보에게 투표하는 편이다.",
+            "text_ko_other": "이 사람은 선거에서 진보 성향의 후보에게 투표하는 편이다."
+        },
+        {
+            "no": 29,
+            "facet": "A6",
+            "keyed": "+",
+            "text_en": "Sympathize with the homeless",
+            "text_ko": "노숙인의 처지를 딱하게 여긴다.",
+            "text_ko_other": "이 사람은 노숙인의 처지를 딱하게 여긴다."
+        },
+        {
+            "no": 30,
+            "facet": "C6",
+            "keyed": "-",
+            "text_en": "Jump into things without thinking",
+            "text_ko": "깊이 생각하지 않고 일에 뛰어든다.",
+            "text_ko_other": "이 사람은 깊이 생각하지 않고 일에 뛰어든다."
+        },
+        {
+            "no": 31,
+            "facet": "N1",
+            "keyed": "+",
+            "text_en": "Fear for the worst",
+            "text_ko": "일이 최악으로 흘러갈까 봐 두려워한다.",
+            "text_ko_other": "이 사람은 일이 최악으로 흘러갈까 봐 두려워한다."
+        },
+        {
+            "no": 32,
+            "facet": "E1",
+            "keyed": "+",
+            "text_en": "Feel comfortable around people",
+            "text_ko": "사람들과 함께 있으면 편안함을 느낀다.",
+            "text_ko_other": "이 사람은 사람들과 함께 있으면 편안해한다."
+        },
+        {
+            "no": 33,
+            "facet": "O1",
+            "keyed": "+",
+            "text_en": "Enjoy wild flights of fantasy",
+            "text_ko": "엉뚱한 공상에 빠지는 것을 즐긴다.",
+            "text_ko_other": "이 사람은 엉뚱한 공상에 빠지는 것을 즐긴다."
+        },
+        {
+            "no": 34,
+            "facet": "A1",
+            "keyed": "+",
+            "text_en": "Believe that others have good intentions",
+            "text_ko": "다른 사람들이 좋은 뜻으로 행동한다고 믿는다.",
+            "text_ko_other": "이 사람은 다른 사람들이 좋은 뜻으로 행동한다고 믿는다."
+        },
+        {
+            "no": 35,
+            "facet": "C1",
+            "keyed": "+",
+            "text_en": "Excel in what I do",
+            "text_ko": "내가 하는 일을 뛰어나게 해낸다.",
+            "text_ko_other": "이 사람은 자기가 하는 일을 뛰어나게 해낸다."
+        },
+        {
+            "no": 36,
+            "facet": "N2",
+            "keyed": "+",
+            "text_en": "Get irritated easily",
+            "text_ko": "쉽게 짜증을 낸다.",
+            "text_ko_other": "이 사람은 쉽게 짜증을 낸다."
+        },
+        {
+            "no": 37,
+            "facet": "E2",
+            "keyed": "+",
+            "text_en": "Talk to a lot of different people at parties",
+            "text_ko": "모임에서 여러 사람과 두루 이야기한다.",
+            "text_ko_other": "이 사람은 모임에서 여러 사람과 두루 이야기한다."
+        },
+        {
+            "no": 38,
+            "facet": "O2",
+            "keyed": "+",
+            "text_en": "See beauty in things that others might not notice",
+            "text_ko": "남들이 지나치는 것에서 아름다움을 발견한다.",
+            "text_ko_other": "이 사람은 남들이 지나치는 것에서 아름다움을 발견한다."
+        },
+        {
+            "no": 39,
+            "facet": "A2",
+            "keyed": "-",
+            "text_en": "Cheat to get ahead",
+            "text_ko": "앞서 나가려고 속임수를 쓴다.",
+            "text_ko_other": "이 사람은 앞서 나가려고 속임수를 쓴다."
+        },
+        {
+            "no": 40,
+            "facet": "C2",
+            "keyed": "-",
+            "text_en": "Often forget to put things back in their proper place",
+            "text_ko": "물건을 제자리에 두는 것을 자주 잊는다.",
+            "text_ko_other": "이 사람은 물건을 제자리에 두는 것을 자주 잊는다."
+        },
+        {
+            "no": 41,
+            "facet": "N3",
+            "keyed": "+",
+            "text_en": "Dislike myself",
+            "text_ko": "나 자신을 싫어하는 편이다.",
+            "text_ko_other": "이 사람은 자기 자신을 싫어하는 편이다."
+        },
+        {
+            "no": 42,
+            "facet": "E3",
+            "keyed": "+",
+            "text_en": "Try to lead others",
+            "text_ko": "다른 사람들을 이끌려고 한다.",
+            "text_ko_other": "이 사람은 다른 사람들을 이끌려고 한다."
+        },
+        {
+            "no": 43,
+            "facet": "O3",
+            "keyed": "+",
+            "text_en": "Feel others' emotions",
+            "text_ko": "다른 사람의 감정을 잘 느낀다.",
+            "text_ko_other": "이 사람은 다른 사람의 감정을 잘 느낀다."
+        },
+        {
+            "no": 44,
+            "facet": "A3",
+            "keyed": "+",
+            "text_en": "Am concerned about others",
+            "text_ko": "다른 사람에게 마음을 쓴다.",
+            "text_ko_other": "이 사람은 다른 사람에게 마음을 쓴다."
+        },
+        {
+            "no": 45,
+            "facet": "C3",
+            "keyed": "+",
+            "text_en": "Tell the truth",
+            "text_ko": "사실대로 말한다.",
+            "text_ko_other": "이 사람은 사실대로 말한다."
+        },
+        {
+            "no": 46,
+            "facet": "N4",
+            "keyed": "+",
+            "text_en": "Am afraid to draw attention to myself",
+            "text_ko": "남의 눈에 띄는 것을 두려워한다.",
+            "text_ko_other": "이 사람은 남의 눈에 띄는 것을 두려워한다."
+        },
+        {
+            "no": 47,
+            "facet": "E4",
+            "keyed": "+",
+            "text_en": "Am always on the go",
+            "text_ko": "늘 쉬지 않고 움직인다.",
+            "text_ko_other": "이 사람은 늘 쉬지 않고 움직인다."
+        },
+        {
+            "no": 48,
+            "facet": "O4",
+            "keyed": "-",
+            "text_en": "Prefer to stick with things that I know",
+            "text_ko": "익숙한 것만 하려는 편이다.",
+            "text_ko_other": "이 사람은 익숙한 것만 하려는 편이다."
+        },
+        {
+            "no": 49,
+            "facet": "A4",
+            "keyed": "-",
+            "text_en": "Yell at people",
+            "text_ko": "사람들에게 소리를 지른다.",
+            "text_ko_other": "이 사람은 사람들에게 소리를 지른다."
+        },
+        {
+            "no": 50,
+            "facet": "C4",
+            "keyed": "+",
+            "text_en": "Do more than what's expected of me",
+            "text_ko": "기대받은 것보다 더 많이 해낸다.",
+            "text_ko_other": "이 사람은 기대받은 것보다 더 많이 해낸다."
+        },
+        {
+            "no": 51,
+            "facet": "N5",
+            "keyed": "-",
+            "text_en": "Rarely overindulge",
+            "text_ko": "무엇이든 지나치게 빠져드는 일이 드문 편이다.",
+            "text_ko_other": "이 사람은 무엇이든 지나치게 빠져드는 일이 드문 편이다."
+        },
+        {
+            "no": 52,
+            "facet": "E5",
+            "keyed": "+",
+            "text_en": "Seek adventure",
+            "text_ko": "모험을 찾아 나선다.",
+            "text_ko_other": "이 사람은 모험을 찾아 나선다."
+        },
+        {
+            "no": 53,
+            "facet": "O5",
+            "keyed": "-",
+            "text_en": "Avoid philosophical discussions",
+            "text_ko": "철학적인 이야기는 피하는 편이다.",
+            "text_ko_other": "이 사람은 철학적인 이야기는 피하는 편이다."
+        },
+        {
+            "no": 54,
+            "facet": "A5",
+            "keyed": "-",
+            "text_en": "Think highly of myself",
+            "text_ko": "나 자신을 높게 평가한다.",
+            "text_ko_other": "이 사람은 자기 자신을 높게 평가한다."
+        },
+        {
+            "no": 55,
+            "facet": "C5",
+            "keyed": "+",
+            "text_en": "Carry out my plans",
+            "text_ko": "세운 계획을 실행에 옮긴다.",
+            "text_ko_other": "이 사람은 세운 계획을 실행에 옮긴다."
+        },
+        {
+            "no": 56,
+            "facet": "N6",
+            "keyed": "+",
+            "text_en": "Become overwhelmed by events",
+            "text_ko": "일이 닥치면 쉽게 압도된다.",
+            "text_ko_other": "이 사람은 일이 닥치면 쉽게 압도된다."
+        },
+        {
+            "no": 57,
+            "facet": "E6",
+            "keyed": "+",
+            "text_en": "Have a lot of fun",
+            "text_ko": "재미있게 지낼 때가 많은 편이다.",
+            "text_ko_other": "이 사람은 재미있게 지낼 때가 많은 편이다."
+        },
+        {
+            "no": 58,
+            "facet": "O6",
+            "keyed": "+",
+            "text_en": "Believe that there is no absolute right and wrong",
+            "text_ko": "세상에 절대적으로 옳고 그른 것은 없다고 생각한다.",
+            "text_ko_other": "이 사람은 세상에 절대적으로 옳고 그른 것은 없다고 생각한다."
+        },
+        {
+            "no": 59,
+            "facet": "A6",
+            "keyed": "+",
+            "text_en": "Feel sympathy for those who are worse off than myself",
+            "text_ko": "나보다 형편이 어려운 사람에게 마음이 쓰인다.",
+            "text_ko_other": "이 사람은 자기보다 형편이 어려운 사람에게 마음을 쓴다."
+        },
+        {
+            "no": 60,
+            "facet": "C6",
+            "keyed": "-",
+            "text_en": "Make rash decisions",
+            "text_ko": "성급하게 결정을 내린다.",
+            "text_ko_other": "이 사람은 성급하게 결정을 내린다."
+        },
+        {
+            "no": 61,
+            "facet": "N1",
+            "keyed": "+",
+            "text_en": "Am afraid of many things",
+            "text_ko": "두려워하는 것이 많은 편이다.",
+            "text_ko_other": "이 사람은 두려워하는 것이 많은 편이다."
+        },
+        {
+            "no": 62,
+            "facet": "E1",
+            "keyed": "-",
+            "text_en": "Avoid contacts with others",
+            "text_ko": "다른 사람과 만나는 것을 피한다.",
+            "text_ko_other": "이 사람은 다른 사람과 만나는 것을 피한다."
+        },
+        {
+            "no": 63,
+            "facet": "O1",
+            "keyed": "+",
+            "text_en": "Love to daydream",
+            "text_ko": "멍하니 공상하는 것을 좋아한다.",
+            "text_ko_other": "이 사람은 멍하니 공상하는 것을 좋아한다."
+        },
+        {
+            "no": 64,
+            "facet": "A1",
+            "keyed": "+",
+            "text_en": "Trust what people say",
+            "text_ko": "사람들이 하는 말을 그대로 믿는다.",
+            "text_ko_other": "이 사람은 사람들이 하는 말을 그대로 믿는다."
+        },
+        {
+            "no": 65,
+            "facet": "C1",
+            "keyed": "+",
+            "text_en": "Handle tasks smoothly",
+            "text_ko": "일을 매끄럽게 처리한다.",
+            "text_ko_other": "이 사람은 일을 매끄럽게 처리한다."
+        },
+        {
+            "no": 66,
+            "facet": "N2",
+            "keyed": "+",
+            "text_en": "Lose my temper",
+            "text_ko": "화를 참지 못하고 터뜨린다.",
+            "text_ko_other": "이 사람은 화를 참지 못하고 터뜨린다."
+        },
+        {
+            "no": 67,
+            "facet": "E2",
+            "keyed": "-",
+            "text_en": "Prefer to be alone",
+            "text_ko": "혼자 있는 것을 더 좋아한다.",
+            "text_ko_other": "이 사람은 혼자 있는 것을 더 좋아한다."
+        },
+        {
+            "no": 68,
+            "facet": "O2",
+            "keyed": "-",
+            "text_en": "Do not like poetry",
+            "text_ko": "시를 좋아하지 않는다.",
+            "text_ko_other": "이 사람은 시를 좋아하지 않는다."
+        },
+        {
+            "no": 69,
+            "facet": "A2",
+            "keyed": "-",
+            "text_en": "Take advantage of others",
+            "text_ko": "남을 이용해 이득을 본다.",
+            "text_ko_other": "이 사람은 남을 이용해 이득을 본다."
+        },
+        {
+            "no": 70,
+            "facet": "C2",
+            "keyed": "-",
+            "text_en": "Leave a mess in my room",
+            "text_ko": "방을 어질러 둔다.",
+            "text_ko_other": "이 사람은 자기 방을 어질러 둔다."
+        },
+        {
+            "no": 71,
+            "facet": "N3",
+            "keyed": "+",
+            "text_en": "Am often down in the dumps",
+            "text_ko": "기분이 가라앉아 있을 때가 많은 편이다.",
+            "text_ko_other": "이 사람은 기분이 가라앉아 있을 때가 많은 편이다."
+        },
+        {
+            "no": 72,
+            "facet": "E3",
+            "keyed": "+",
+            "text_en": "Take control of things",
+            "text_ko": "상황을 주도한다.",
+            "text_ko_other": "이 사람은 상황을 주도한다."
+        },
+        {
+            "no": 73,
+            "facet": "O3",
+            "keyed": "-",
+            "text_en": "Rarely notice my emotional reactions",
+            "text_ko": "내 감정의 변화를 잘 알아차리지 못한다.",
+            "text_ko_other": "이 사람은 자기 감정의 변화를 잘 알아차리지 못한다."
+        },
+        {
+            "no": 74,
+            "facet": "A3",
+            "keyed": "-",
+            "text_en": "Am indifferent to the feelings of others",
+            "text_ko": "다른 사람의 감정에 무관심한 편이다.",
+            "text_ko_other": "이 사람은 다른 사람의 감정에 무관심한 편이다."
+        },
+        {
+            "no": 75,
+            "facet": "C3",
+            "keyed": "-",
+            "text_en": "Break rules",
+            "text_ko": "규칙을 어긴다.",
+            "text_ko_other": "이 사람은 규칙을 어긴다."
+        },
+        {
+            "no": 76,
+            "facet": "N4",
+            "keyed": "+",
+            "text_en": "Only feel comfortable with friends",
+            "text_ko": "친한 사람들과 있을 때만 편안함을 느낀다.",
+            "text_ko_other": "이 사람은 친한 사람들과 있을 때만 편안해한다."
+        },
+        {
+            "no": 77,
+            "facet": "E4",
+            "keyed": "+",
+            "text_en": "Do a lot in my spare time",
+            "text_ko": "여가 시간에 이것저것 많이 한다.",
+            "text_ko_other": "이 사람은 여가 시간에 이것저것 많이 한다."
+        },
+        {
+            "no": 78,
+            "facet": "O4",
+            "keyed": "-",
+            "text_en": "Dislike changes",
+            "text_ko": "변화를 싫어한다.",
+            "text_ko_other": "이 사람은 변화를 싫어한다."
+        },
+        {
+            "no": 79,
+            "facet": "A4",
+            "keyed": "-",
+            "text_en": "Insult people",
+            "text_ko": "남에게 모욕적인 말을 한다.",
+            "text_ko_other": "이 사람은 남에게 모욕적인 말을 한다."
+        },
+        {
+            "no": 80,
+            "facet": "C4",
+            "keyed": "-",
+            "text_en": "Do just enough work to get by",
+            "text_ko": "적당히 넘어갈 만큼만 일한다.",
+            "text_ko_other": "이 사람은 적당히 넘어갈 만큼만 일한다."
+        },
+        {
+            "no": 81,
+            "facet": "N5",
+            "keyed": "-",
+            "text_en": "Easily resist temptations",
+            "text_ko": "유혹을 쉽게 뿌리친다.",
+            "text_ko_other": "이 사람은 유혹을 쉽게 뿌리친다."
+        },
+        {
+            "no": 82,
+            "facet": "E5",
+            "keyed": "+",
+            "text_en": "Enjoy being reckless",
+            "text_ko": "무모하게 행동하는 것을 즐긴다.",
+            "text_ko_other": "이 사람은 무모하게 행동하는 것을 즐긴다."
+        },
+        {
+            "no": 83,
+            "facet": "O5",
+            "keyed": "-",
+            "text_en": "Have difficulty understanding abstract ideas",
+            "text_ko": "추상적인 생각을 이해하기 어려워한다.",
+            "text_ko_other": "이 사람은 추상적인 생각을 이해하기 어려워한다."
+        },
+        {
+            "no": 84,
+            "facet": "A5",
+            "keyed": "-",
+            "text_en": "Have a high opinion of myself",
+            "text_ko": "스스로를 대단한 사람이라고 여긴다.",
+            "text_ko_other": "이 사람은 스스로를 대단한 사람이라고 여긴다."
+        },
+        {
+            "no": 85,
+            "facet": "C5",
+            "keyed": "-",
+            "text_en": "Waste my time",
+            "text_ko": "시간을 헛되이 보낸다.",
+            "text_ko_other": "이 사람은 시간을 헛되이 보낸다."
+        },
+        {
+            "no": 86,
+            "facet": "N6",
+            "keyed": "+",
+            "text_en": "Feel that I'm unable to deal with things",
+            "text_ko": "일을 감당하지 못할 것 같다고 느낀다.",
+            "text_ko_other": "이 사람은 일을 감당하지 못할 것 같다고 느낀다."
+        },
+        {
+            "no": 87,
+            "facet": "E6",
+            "keyed": "+",
+            "text_en": "Love life",
+            "text_ko": "삶을 사랑한다.",
+            "text_ko_other": "이 사람은 삶을 사랑한다."
+        },
+        {
+            "no": 88,
+            "facet": "O6",
+            "keyed": "-",
+            "text_en": "Tend to vote for conservative political candidates",
+            "text_ko": "선거에서 보수 성향의 후보에게 투표하는 편이다.",
+            "text_ko_other": "이 사람은 선거에서 보수 성향의 후보에게 투표하는 편이다."
+        },
+        {
+            "no": 89,
+            "facet": "A6",
+            "keyed": "-",
+            "text_en": "Am not interested in other people's problems",
+            "text_ko": "다른 사람의 문제에는 별로 관심이 없는 편이다.",
+            "text_ko_other": "이 사람은 다른 사람의 문제에는 별로 관심이 없는 편이다."
+        },
+        {
+            "no": 90,
+            "facet": "C6",
+            "keyed": "-",
+            "text_en": "Rush into things",
+            "text_ko": "충분히 살피지 않고 서둘러 일을 시작한다.",
+            "text_ko_other": "이 사람은 충분히 살피지 않고 서둘러 일을 시작한다."
+        },
+        {
+            "no": 91,
+            "facet": "N1",
+            "keyed": "+",
+            "text_en": "Get stressed out easily",
+            "text_ko": "스트레스를 쉽게 받는다.",
+            "text_ko_other": "이 사람은 스트레스를 쉽게 받는다."
+        },
+        {
+            "no": 92,
+            "facet": "E1",
+            "keyed": "-",
+            "text_en": "Keep others at a distance",
+            "text_ko": "다른 사람과 거리를 둔다.",
+            "text_ko_other": "이 사람은 다른 사람과 거리를 둔다."
+        },
+        {
+            "no": 93,
+            "facet": "O1",
+            "keyed": "+",
+            "text_en": "Like to get lost in thought",
+            "text_ko": "생각에 깊이 빠져드는 것을 좋아한다.",
+            "text_ko_other": "이 사람은 생각에 깊이 빠져드는 것을 좋아한다."
+        },
+        {
+            "no": 94,
+            "facet": "A1",
+            "keyed": "-",
+            "text_en": "Distrust people",
+            "text_ko": "사람들을 잘 믿지 않는다.",
+            "text_ko_other": "이 사람은 사람들을 잘 믿지 않는다."
+        },
+        {
+            "no": 95,
+            "facet": "C1",
+            "keyed": "+",
+            "text_en": "Know how to get things done",
+            "text_ko": "일을 해내는 방법을 안다.",
+            "text_ko_other": "이 사람은 일을 해내는 방법을 안다."
+        },
+        {
+            "no": 96,
+            "facet": "N2",
+            "keyed": "-",
+            "text_en": "Am not easily annoyed",
+            "text_ko": "웬만해서는 짜증을 내지 않는다.",
+            "text_ko_other": "이 사람은 웬만해서는 짜증을 내지 않는다."
+        },
+        {
+            "no": 97,
+            "facet": "E2",
+            "keyed": "-",
+            "text_en": "Avoid crowds",
+            "text_ko": "사람이 붐비는 곳을 피한다.",
+            "text_ko_other": "이 사람은 사람이 붐비는 곳을 피한다."
+        },
+        {
+            "no": 98,
+            "facet": "O2",
+            "keyed": "-",
+            "text_en": "Do not enjoy going to art museums",
+            "text_ko": "미술관에 가는 것을 즐기지 않는다.",
+            "text_ko_other": "이 사람은 미술관에 가는 것을 즐기지 않는다."
+        },
+        {
+            "no": 99,
+            "facet": "A2",
+            "keyed": "-",
+            "text_en": "Obstruct others' plans",
+            "text_ko": "다른 사람의 계획을 방해한다.",
+            "text_ko_other": "이 사람은 다른 사람의 계획을 방해한다."
+        },
+        {
+            "no": 100,
+            "facet": "C2",
+            "keyed": "-",
+            "text_en": "Leave my belongings around",
+            "text_ko": "내 물건을 아무 데나 둔다.",
+            "text_ko_other": "이 사람은 자기 물건을 아무 데나 둔다."
+        },
+        {
+            "no": 101,
+            "facet": "N3",
+            "keyed": "-",
+            "text_en": "Feel comfortable with myself",
+            "text_ko": "나 자신을 편안하게 받아들인다.",
+            "text_ko_other": "이 사람은 자기 자신을 편안하게 받아들인다."
+        },
+        {
+            "no": 102,
+            "facet": "E3",
+            "keyed": "-",
+            "text_en": "Wait for others to lead the way",
+            "text_ko": "다른 사람이 앞장서기를 기다린다.",
+            "text_ko_other": "이 사람은 다른 사람이 앞장서기를 기다린다."
+        },
+        {
+            "no": 103,
+            "facet": "O3",
+            "keyed": "-",
+            "text_en": "Don't understand people who get emotional",
+            "text_ko": "감정이 격해지는 사람을 이해하지 못한다.",
+            "text_ko_other": "이 사람은 감정이 격해지는 사람을 이해하지 못한다."
+        },
+        {
+            "no": 104,
+            "facet": "A3",
+            "keyed": "-",
+            "text_en": "Take no time for others",
+            "text_ko": "다른 사람을 위해 시간을 내지 않는다.",
+            "text_ko_other": "이 사람은 다른 사람을 위해 시간을 내지 않는다."
+        },
+        {
+            "no": 105,
+            "facet": "C3",
+            "keyed": "-",
+            "text_en": "Break my promises",
+            "text_ko": "약속을 어긴다.",
+            "text_ko_other": "이 사람은 약속을 어긴다."
+        },
+        {
+            "no": 106,
+            "facet": "N4",
+            "keyed": "-",
+            "text_en": "Am not bothered by difficult social situations",
+            "text_ko": "사람들 사이의 곤란한 상황에도 크게 개의치 않는다.",
+            "text_ko_other": "이 사람은 사람들 사이의 곤란한 상황에도 크게 개의치 않는다."
+        },
+        {
+            "no": 107,
+            "facet": "E4",
+            "keyed": "-",
+            "text_en": "Like to take it easy",
+            "text_ko": "느긋하게 지내는 것을 좋아한다.",
+            "text_ko_other": "이 사람은 느긋하게 지내는 것을 좋아한다."
+        },
+        {
+            "no": 108,
+            "facet": "O4",
+            "keyed": "-",
+            "text_en": "Am attached to conventional ways",
+            "text_ko": "익숙한 관습과 방식을 지키려는 편이다.",
+            "text_ko_other": "이 사람은 익숙한 관습과 방식을 지키려는 편이다."
+        },
+        {
+            "no": 109,
+            "facet": "A4",
+            "keyed": "-",
+            "text_en": "Get back at others",
+            "text_ko": "당한 만큼 앙갚음한다.",
+            "text_ko_other": "이 사람은 당한 만큼 앙갚음한다."
+        },
+        {
+            "no": 110,
+            "facet": "C4",
+            "keyed": "-",
+            "text_en": "Put little time and effort into my work",
+            "text_ko": "일에 시간과 노력을 적게 들인다.",
+            "text_ko_other": "이 사람은 일에 시간과 노력을 적게 들인다."
+        },
+        {
+            "no": 111,
+            "facet": "N5",
+            "keyed": "-",
+            "text_en": "Am able to control my cravings",
+            "text_ko": "무언가 몹시 당길 때도 스스로 조절할 수 있다.",
+            "text_ko_other": "이 사람은 무언가 몹시 당길 때도 스스로 조절한다."
+        },
+        {
+            "no": 112,
+            "facet": "E5",
+            "keyed": "+",
+            "text_en": "Act wild and crazy",
+            "text_ko": "들떠서 요란하게 행동하는 편이다.",
+            "text_ko_other": "이 사람은 들떠서 요란하게 행동하는 편이다."
+        },
+        {
+            "no": 113,
+            "facet": "O5",
+            "keyed": "-",
+            "text_en": "Am not interested in theoretical discussions",
+            "text_ko": "이론적인 토론에는 관심이 없는 편이다.",
+            "text_ko_other": "이 사람은 이론적인 토론에는 관심이 없는 편이다."
+        },
+        {
+            "no": 114,
+            "facet": "A5",
+            "keyed": "-",
+            "text_en": "Boast about my virtues",
+            "text_ko": "내 장점을 자랑한다.",
+            "text_ko_other": "이 사람은 자기 장점을 자랑한다."
+        },
+        {
+            "no": 115,
+            "facet": "C5",
+            "keyed": "-",
+            "text_en": "Have difficulty starting tasks",
+            "text_ko": "일을 시작하는 데 어려움을 겪는다.",
+            "text_ko_other": "이 사람은 일을 시작하는 데 어려움을 겪는다."
+        },
+        {
+            "no": 116,
+            "facet": "N6",
+            "keyed": "-",
+            "text_en": "Remain calm under pressure",
+            "text_ko": "압박 속에서도 침착함을 유지한다.",
+            "text_ko_other": "이 사람은 압박 속에서도 침착함을 유지한다."
+        },
+        {
+            "no": 117,
+            "facet": "E6",
+            "keyed": "+",
+            "text_en": "Look at the bright side of life",
+            "text_ko": "삶의 밝은 면을 본다.",
+            "text_ko_other": "이 사람은 삶의 밝은 면을 본다."
+        },
+        {
+            "no": 118,
+            "facet": "O6",
+            "keyed": "-",
+            "text_en": "Believe that we should be tough on crime",
+            "text_ko": "범죄는 엄하게 처벌해야 한다고 생각한다.",
+            "text_ko_other": "이 사람은 범죄는 엄하게 처벌해야 한다고 생각한다."
+        },
+        {
+            "no": 119,
+            "facet": "A6",
+            "keyed": "-",
+            "text_en": "Try not to think about the needy",
+            "text_ko": "어려운 처지의 사람들은 생각하지 않으려 한다.",
+            "text_ko_other": "이 사람은 어려운 처지의 사람들은 생각하지 않으려 한다."
+        },
+        {
+            "no": 120,
+            "facet": "C6",
+            "keyed": "-",
+            "text_en": "Act without thinking",
+            "text_ko": "생각하기 전에 먼저 행동한다.",
+            "text_ko_other": "이 사람은 생각하기 전에 먼저 행동한다."
+        }
+    ]
+}
