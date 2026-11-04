@@ -4,7 +4,7 @@
  *  big5/            → 서버 {홈}/www/big5/ 에 그대로 올린다 (배포 제외 규칙 적용)
  *  install.php      → 설치할 때만 /big5/ 에 올려 1회 실행 후 삭제 (1time/install.php 복사)
  *  config/big5_db.sample.php → {홈}/config/big5_db.php 로 복사해 값을 채운다 (웹루트 밖)
- * 배포 제외(CLAUDE.md): doc/ tests/ 1time/ data/source/ data/translate/ data/review_*.md PLAN.md CLAUDE.md README.md 원고, 점 파일(.htaccess 는 포함)
+ * 배포 제외(CLAUDE.md): doc/(계획서·원고 포함) tests/ 1time/ data/source/ data/translate/ data/review_*.md CLAUDE.md, 점 파일(.htaccess 는 포함)
  * 실행: php doc/make-dist.php
  */
 declare(strict_types=1);
@@ -24,7 +24,8 @@ function big5_dist_include(string $rel): bool
     if (str_starts_with($rel, 'data/source/') || str_starts_with($rel, 'data/translate/') || preg_match('#^data/review_.*\.md$#', $rel)) {
         return false;
     }
-    if (in_array($rel, ['PLAN.md', 'CLAUDE.md', 'README.md', '빅파이브 Big 5.md'], true)) {
+    // 루트에는 CLAUDE.md 말고 문서가 없다(문서는 doc/). 혹시 남은 .md 도 올리지 않는다
+    if ($rel === 'CLAUDE.md' || (strpos($rel, '/') === false && str_ends_with($rel, '.md'))) {
         return false;
     }
     foreach ($parts as $p) {

@@ -20,7 +20,8 @@ const { BASE, OUT, startServer, resetDb, openBrowser, ok, done, login, status } 
     // 2) 접근 차단 (운영 .htaccess 흉내)
     ok(await status(`${BASE}/includes/db_config.php`) === 403, 'includes/ 직접 접근 403');
     ok(await status(`${BASE}/data/.htaccess`) === 403, 'data/ 직접 접근 403');
-    ok(await status(`${BASE}/PLAN.md`) === 403, 'PLAN.md 직접 접근 403');
+    ok(await status(`${BASE}/CLAUDE.md`) === 403, 'CLAUDE.md 직접 접근 403');
+    ok(await status(`${BASE}/doc/PLAN.md`) === 403, 'doc/ 직접 접근 403');
     for (const d of ['includes', 'data']) {
       ok(fs.readFileSync(`${__dirname}/../../${d}/.htaccess`, 'utf8').includes('Deny from all'), `${d}/.htaccess = Deny from all`);
     }

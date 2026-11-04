@@ -141,7 +141,7 @@ if (is_file($bEn)) {
 }
 
 // ── 2) 원고 부록 A 추출 ──────────────────────────────────────
-$ms = $root . '/빅파이브 Big 5.md';
+$ms = $root . '/doc/빅파이브 Big 5.md';
 $AP = null;
 if (is_file($ms)) {
     $text = (string) file_get_contents($ms);

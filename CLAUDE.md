@@ -1,7 +1,7 @@
 # 다이얼(Dial) — Claude Code 작업 규칙
 
 프로젝트: 빅파이브 성격 검사·결과 리포트 웹 프로그램 | 테이블 접두어: `big5_` | 저장소: `namu0808/big5`
-**계획서·작업 지시서: `PLAN.md`** · 원고 『다섯 개의 다이얼』: 루트 `빅파이브 Big 5.md`(해석 문구·Mini-IPIP 번역·용어 사전의 근거) — 작업 전에 해당 장을 읽는다. PLAN 0.1의 '고정' 항목은 바꾸지 않는다(바꿀 필요가 보이면 이유를 들어 먼저 묻는다).
+**계획서·작업 지시서: `doc/PLAN.md`** · 원고 『다섯 개의 다이얼』: `doc/빅파이브 Big 5.md`(해석 문구·Mini-IPIP 번역·용어 사전의 근거) — 작업 전에 해당 장을 읽는다. PLAN 0.1의 '고정' 항목은 바꾸지 않는다(바꿀 필요가 보이면 이유를 들어 먼저 묻는다).
 승인된 작업 계획(변경 제안 포함)은 아래 '승인된 변경' 절에 정리한다.
 
 ## 핵심 원칙 (PLAN 1.2)
@@ -16,6 +16,7 @@
 - UI: 바닐라 CSS(`assets/style.css`) + 바닐라 JS, Pretendard CDN(막혀도 시스템 폰트로 대체). 차트는 CSS 막대 + PHP 생성 SVG(외부 차트 라이브러리 없음)
 
 ## 파일 구조 원칙
+- **루트에는 문서를 두지 않는다 — `CLAUDE.md` 하나만.** 계획서·원고·안내서·점검표 등 모든 문서는 `doc/` (사용자 지시 2026-11-05)
 - DB 접속 정보: 웹루트 밖 `{홈}/config/big5_db.php` (견본 `doc/big5_db.sample.php`). `includes/db_config.php`는 로더(심) — 접속 정보 넣지 않음. 계약: 전역 `$pdo`(PDO|null) + `BIG5_DB_*`, `BIG5_EXPORT_SALT`, (선택) `BIG5_BASE_URL`
 - **경로는 모두 `big5_url('경로')`** (`includes/util.php`). `/admin/...` 같은 루트 기준 절대 경로 하드코딩 금지. 루트 `.htaccess`가 `RewriteEngine On`으로 WordPress 재작성 규칙 상속을 끊는다
 - 화면 첫 require: 공개 화면 `includes/bootstrap.php`, 사용자 화면 `includes/auth_check.php`(`$big5User`), 관리자 화면 `includes/admin_check.php`(`$big5Admin`)
@@ -58,7 +59,7 @@
 - 단계가 끝나면 PLAN 10장 완료 기준을 보고하고 다음 단계로
 
 ## 배포
-- 제외: `doc/`, `tests/`, `1time/`(설치 때만 install.php 를 앱 루트로), `data/source/`, `data/review_*.md`, `PLAN.md`, `CLAUDE.md`, `README.md`, 원고 `빅파이브 Big 5.md`, 점(.)으로 시작하는 파일(단 `.htaccess`는 올린다)
+- 제외: `doc/`, `tests/`, `1time/`(설치 때만 install.php 를 앱 루트로), `data/source/`, `data/review_*.md`, `CLAUDE.md`, 점(.)으로 시작하는 파일(단 `.htaccess`는 올린다)
 - 작업 끝에 FTP 배포 파일 목록을 적는다
 
 ## 승인된 변경 (PLAN 참고 항목, 2026-11-02 승인)
