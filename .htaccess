@@ -1,4 +1,4 @@
-# 다이얼(big5) — sonbm.com/big5/ 하위 폴더 전용
+# 다이얼(big5) — www.sbm.ai.kr/big5/ 하위 폴더 전용 (도메인과 무관하게 /big5/ 에서 동작)
 # 루트 WordPress 의 재작성 규칙(index.php 로 모두 보냄)이 이 폴더 요청을 가로채지 않게,
 # 이 폴더에서 재작성 엔진을 새로 켠다(상위 규칙은 상속되지 않는다).
 <IfModule mod_rewrite.c>

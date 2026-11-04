@@ -67,7 +67,7 @@ $zip->addFile($root . '/doc/big5_db.sample.php', 'config/big5_db.sample.php');
 $zip->addFromString('읽어 주세요.txt', "다이얼 배포 묶음 ({$date})\n\n"
     . "1. big5/ 폴더의 내용을 서버 {홈}/www/big5/ 에 올립니다 (.htaccess 파일 포함).\n"
     . "2. config/big5_db.sample.php 를 서버 {홈}/config/big5_db.php 로 복사해 DB 접속 정보와 BIG5_EXPORT_SALT 를 채웁니다 (웹루트 밖).\n"
-    . "3. install.php 를 {홈}/www/big5/ 에 올려 브라우저로 https://sonbm.com/big5/install.php 를 한 번 연 뒤, 바로 삭제합니다.\n"
+    . "3. install.php 를 {홈}/www/big5/ 에 올려 브라우저로 https://www.sbm.ai.kr/big5/install.php 를 한 번 연 뒤, 바로 삭제합니다.\n"
     . "자세한 순서는 저장소의 doc/배포-안내.md 를 보세요.\n");
 $zip->close();
 

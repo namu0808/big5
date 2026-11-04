@@ -1,4 +1,4 @@
-# 다이얼 FTP 배포 파일 목록 (20261102) — 서버 {홈}/www/big5/ 기준, 64개
+# 다이얼 FTP 배포 파일 목록 (20261105) — 서버 {홈}/www/big5/ 기준, 64개
 # 설치 때만: install.php (1time/install.php, 실행 후 삭제) / 웹루트 밖: {홈}/config/big5_db.php (doc/big5_db.sample.php 로 만듦)
 .htaccess
 account.php

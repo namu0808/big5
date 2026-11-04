@@ -38,7 +38,7 @@ function big5_db_config_candidates(string $includesDir): array
     }
     for ($i = 2; $i <= 6; $i++) {
         // i=2: {홈}/www/includes → {홈}/config
-        // i=3: {홈}/www/big5/includes → {홈}/config (sonbm.com/big5/)
+        // i=3: {홈}/www/big5/includes → {홈}/config (www.sbm.ai.kr/big5/)
         $list[] = dirname($includesDir, $i) . '/config/big5_db.php';
     }
     return $list;

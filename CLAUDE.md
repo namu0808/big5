@@ -12,7 +12,7 @@
 ## 환경
 - 기준 시각 한국 시간(KST). 날짜를 쓰기 전 `TZ=Asia/Seoul date` 확인. 코드는 `big5_now()`(Asia/Seoul)
 - PHP 8.x 바닐라(Composer 불가), MariaDB 10.x `utf8mb4_unicode_ci`, 카페24 FTP 배포, 빌드 없음
-- 서버 sonbm.com, 설치 위치 **`{홈}/www/big5/`** (https://sonbm.com/big5/). 루트는 WordPress
+- 서버 www.sbm.ai.kr(카페24), 설치 위치 **`{홈}/www/big5/`** (https://www.sbm.ai.kr/big5/). 2026-11-04 sonbm.com/big5/ 에서 옮김(새로 설치, 기존 주소 정리는 대표님이 직접). 앱 코드에는 도메인을 쓰지 않는다 — 경로는 `/big5` 기준, 초대 링크는 요청 호스트로 만든다
 - UI: 바닐라 CSS(`assets/style.css`) + 바닐라 JS, Pretendard CDN(막혀도 시스템 폰트로 대체). 차트는 CSS 막대 + PHP 생성 SVG(외부 차트 라이브러리 없음)
 
 ## 파일 구조 원칙
