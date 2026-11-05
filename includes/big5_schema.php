@@ -1,6 +1,7 @@
 <?php
 /**
  * 스키마 단일 원본 — 모든 big5_ 테이블을 멱등(IF NOT EXISTS)으로 만든다.
+ * 계정은 사이트 공통 sbm_users(SBM 코어 core/sbm_schema.php)이고, 다이얼 테이블의 user_id 가 이를 참조한다.
  * MariaDB(운영)와 SQLite(개발·검증) DDL 을 한 파일에 나란히 두어 서로 어긋나지 않게 한다.
  * 앱 쿼리는 두 DB 모두에서 도는 표준 SQL 만 쓴다. (ENUM 값 검사는 애플리케이션이 한다)
  *
@@ -10,36 +11,14 @@
  */
 declare(strict_types=1);
 
+// 계정 테이블(sbm_users)은 사이트 공통 코어가 만든다
+require_once __DIR__ . '/core_link.php';
+
 /** 테이블 이름 → [MariaDB DDL, SQLite DDL] */
 function big5_schema_tables(): array
 {
     $my = ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';
     $t = [];
-
-    $t['big5_users'] = [
-        "CREATE TABLE IF NOT EXISTS big5_users (
-          id            INT AUTO_INCREMENT PRIMARY KEY,
-          username      VARCHAR(50)  NOT NULL UNIQUE,
-          password      VARCHAR(255) NOT NULL,
-          display_name  VARCHAR(50)  NOT NULL,
-          role          ENUM('admin','user') NOT NULL DEFAULT 'user',
-          is_active     TINYINT(1)   NOT NULL DEFAULT 1,
-          age_confirmed TINYINT(1)   NOT NULL DEFAULT 0,
-          created_at    DATETIME     NOT NULL,
-          last_login_at DATETIME     NULL
-        )" . $my,
-        "CREATE TABLE IF NOT EXISTS big5_users (
-          id            INTEGER PRIMARY KEY AUTOINCREMENT,
-          username      TEXT NOT NULL UNIQUE,
-          password      TEXT NOT NULL,
-          display_name  TEXT NOT NULL,
-          role          TEXT NOT NULL DEFAULT 'user',
-          is_active     INTEGER NOT NULL DEFAULT 1,
-          age_confirmed INTEGER NOT NULL DEFAULT 0,
-          created_at    TEXT NOT NULL,
-          last_login_at TEXT NULL
-        )",
-    ];
 
     // 본인 검사 1회
     $t['big5_sessions'] = [
@@ -56,11 +35,11 @@ function big5_schema_tables(): array
           quality_flags   VARCHAR(255) NULL,
           consent_at      DATETIME     NOT NULL,
           INDEX idx_user (user_id),
-          FOREIGN KEY (user_id) REFERENCES big5_users(id) ON DELETE CASCADE
+          FOREIGN KEY (user_id) REFERENCES sbm_users(id) ON DELETE CASCADE
         )" . $my,
         "CREATE TABLE IF NOT EXISTS big5_sessions (
           id              INTEGER PRIMARY KEY AUTOINCREMENT,
-          user_id         INTEGER NOT NULL REFERENCES big5_users(id) ON DELETE CASCADE,
+          user_id         INTEGER NOT NULL REFERENCES sbm_users(id) ON DELETE CASCADE,
           test_type       TEXT NOT NULL,
           item_version    TEXT NOT NULL,
           scoring_version TEXT NULL,
@@ -132,11 +111,11 @@ function big5_schema_tables(): array
           expires_at  DATETIME NOT NULL,
           created_at  DATETIME NOT NULL,
           INDEX idx_invite_user (user_id),
-          FOREIGN KEY (user_id) REFERENCES big5_users(id) ON DELETE CASCADE
+          FOREIGN KEY (user_id) REFERENCES sbm_users(id) ON DELETE CASCADE
         )" . $my,
         "CREATE TABLE IF NOT EXISTS big5_invites (
           id          INTEGER PRIMARY KEY AUTOINCREMENT,
-          user_id     INTEGER NOT NULL REFERENCES big5_users(id) ON DELETE CASCADE,
+          user_id     INTEGER NOT NULL REFERENCES sbm_users(id) ON DELETE CASCADE,
           token_hash  TEXT NOT NULL UNIQUE,
           relation    TEXT NOT NULL,
           test_type   TEXT NOT NULL DEFAULT 'mini20',
@@ -186,11 +165,11 @@ function big5_schema_tables(): array
           action_key  VARCHAR(40) NOT NULL,
           created_at  DATETIME    NOT NULL,
           INDEX idx_growth_user (user_id),
-          FOREIGN KEY (user_id) REFERENCES big5_users(id) ON DELETE CASCADE
+          FOREIGN KEY (user_id) REFERENCES sbm_users(id) ON DELETE CASCADE
         )" . $my,
         "CREATE TABLE IF NOT EXISTS big5_growth_choices (
           id          INTEGER PRIMARY KEY AUTOINCREMENT,
-          user_id     INTEGER NOT NULL REFERENCES big5_users(id) ON DELETE CASCADE,
+          user_id     INTEGER NOT NULL REFERENCES sbm_users(id) ON DELETE CASCADE,
           session_id  INTEGER NOT NULL,
           domain      TEXT NOT NULL,
           direction   TEXT NOT NULL,
@@ -227,24 +206,6 @@ function big5_schema_tables(): array
         )",
     ];
 
-    // 로그인 실패 기록 (무차별 대입 차단) — 성공하면 그 아이디의 기록을 지운다
-    $t['big5_login_attempts'] = [
-        "CREATE TABLE IF NOT EXISTS big5_login_attempts (
-          id           INT AUTO_INCREMENT PRIMARY KEY,
-          username     VARCHAR(50) NOT NULL,
-          ip           VARCHAR(45) NOT NULL,
-          attempted_at DATETIME    NOT NULL,
-          INDEX idx_attempt_user (username, attempted_at),
-          INDEX idx_attempt_ip (ip, attempted_at)
-        )" . $my,
-        "CREATE TABLE IF NOT EXISTS big5_login_attempts (
-          id           INTEGER PRIMARY KEY AUTOINCREMENT,
-          username     TEXT NOT NULL,
-          ip           TEXT NOT NULL,
-          attempted_at TEXT NOT NULL
-        )",
-    ];
-
     return $t;
 }
 
@@ -255,7 +216,8 @@ function big5_ensure_schema(PDO $pdo): array
     if (!$isMysql) {
         $pdo->exec('PRAGMA foreign_keys = ON');
     }
-    $done = [];
+    // 계정 테이블(sbm_users)은 사이트 공통 — 다이얼 테이블이 참조하므로 먼저 만든다
+    $done = sbm_ensure_schema($pdo);
     foreach (big5_schema_tables() as $name => [$mysqlDdl, $sqliteDdl]) {
         $pdo->exec($isMysql ? $mysqlDdl : $sqliteDdl);
         $done[] = $name;
@@ -267,8 +229,6 @@ function big5_ensure_schema(PDO $pdo): array
             'CREATE INDEX IF NOT EXISTS idx_invites_user ON big5_invites(user_id)',
             'CREATE INDEX IF NOT EXISTS idx_ratings_invite ON big5_ratings(invite_id)',
             'CREATE INDEX IF NOT EXISTS idx_growth_user ON big5_growth_choices(user_id)',
-            'CREATE INDEX IF NOT EXISTS idx_attempt_user ON big5_login_attempts(username, attempted_at)',
-            'CREATE INDEX IF NOT EXISTS idx_attempt_ip ON big5_login_attempts(ip, attempted_at)',
         ] as $sql) {
             $pdo->exec($sql);
         }
@@ -277,29 +237,9 @@ function big5_ensure_schema(PDO $pdo): array
 }
 
 /**
- * 초기 계정 — 관리자 sonbm / visang, 사용자 user / visang. 이미 있으면 건드리지 않는다.
- * 운영 배포 후에는 두 계정의 비밀번호를 바로 바꾼다.
+ * 초기 계정 — 사이트 공통 계정에 만든다(관리자 sonbm / 사용자 user, 비밀번호 visang). 이미 있으면 건드리지 않는다.
  */
 function big5_seed_accounts(PDO $pdo): array
 {
-    $msgs = [];
-    $seeds = [
-        ['sonbm', 'visang', '손병목', 'admin'],
-        ['user', 'visang', '사용자', 'user'],
-    ];
-    $find = $pdo->prepare('SELECT id FROM big5_users WHERE username = ?');
-    $ins = $pdo->prepare(
-        'INSERT INTO big5_users (username, password, display_name, role, is_active, age_confirmed, created_at)
-         VALUES (?, ?, ?, ?, 1, 1, ?)'
-    );
-    foreach ($seeds as [$username, $pw, $name, $role]) {
-        $find->execute([$username]);
-        if ($find->fetchColumn() !== false) {
-            $msgs[] = "계정 {$username} 은(는) 이미 있습니다 (변경하지 않음)";
-            continue;
-        }
-        $ins->execute([$username, password_hash($pw, PASSWORD_DEFAULT), $name, $role, big5_now()]);
-        $msgs[] = "계정 {$username} 생성 (" . ($role === 'admin' ? '관리자' : '사용자') . ')';
-    }
-    return $msgs;
+    return sbm_seed_accounts($pdo);
 }

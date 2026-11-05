@@ -9,7 +9,7 @@ if (big5_is_post()) {
     big5_csrf_check();
     $id = (int) big5_param('user_id', '0');
     $active = big5_param('active') === '1' ? 1 : 0;
-    $pdo->prepare("UPDATE big5_users SET is_active = ? WHERE id = ? AND role = 'user'")->execute([$active, $id]);
+    $pdo->prepare("UPDATE sbm_users SET is_active = ? WHERE id = ? AND role = 'user'")->execute([$active, $id]);
     big5_flash($active ? '다시 사용할 수 있게 했습니다.' : '사용을 중지했습니다. 이 사용자는 로그인할 수 없습니다.');
     big5_redirect('admin/users.php?q=' . rawurlencode(big5_param('q')) . '&p=' . (int) big5_param('p', '1'));
 }
@@ -24,7 +24,7 @@ if ($q !== '') {
     $where = "WHERE u.username LIKE ? ESCAPE '!' OR u.display_name LIKE ? ESCAPE '!'";
     $params = [$like, $like];
 }
-$st = $pdo->prepare("SELECT COUNT(*) FROM big5_users u {$where}");
+$st = $pdo->prepare("SELECT COUNT(*) FROM sbm_users u {$where}");
 $st->execute($params);
 $total = (int) $st->fetchColumn();
 $pages = max(1, (int) ceil($total / BIG5_USERS_PER_PAGE));
@@ -32,7 +32,7 @@ $page = min($page, $pages);
 $st = $pdo->prepare(
     "SELECT u.id, u.username, u.display_name, u.role, u.is_active, u.created_at, u.last_login_at,
             (SELECT COUNT(*) FROM big5_sessions s WHERE s.user_id = u.id AND s.status = 'completed') AS done
-       FROM big5_users u {$where} ORDER BY u.id DESC LIMIT " . BIG5_USERS_PER_PAGE . ' OFFSET ' . (($page - 1) * BIG5_USERS_PER_PAGE)
+       FROM sbm_users u {$where} ORDER BY u.id DESC LIMIT " . BIG5_USERS_PER_PAGE . ' OFFSET ' . (($page - 1) * BIG5_USERS_PER_PAGE)
 );
 $st->execute($params);
 $users = $st->fetchAll();
@@ -43,6 +43,7 @@ $nav_active = 'users';
 require __DIR__ . '/../includes/header.php';
 ?>
 <h1>사용자</h1>
+<p class="muted">SBM 진단 검사의 <strong>사이트 공통 계정</strong>입니다. 사용을 중지하면 이 사이트의 모든 서비스에 로그인할 수 없습니다.</p>
 <form method="get" action="<?= h(big5_url('admin/users.php')) ?>" class="inline-form">
   <label>검색 <input type="search" name="q" value="<?= h($q) ?>" placeholder="아이디 또는 이름" class="input-sm"></label>
   <button type="submit" class="btn btn-outline btn-sm">찾기</button>

@@ -23,10 +23,8 @@ if (big5_is_post()) {
                 $error = '관계와 검사 종류를 골라 주세요.';
             } else {
                 $token = big5_invite_create($pdo, $userId, $relation, $type);
-                $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
-                $host = preg_replace('/[^A-Za-z0-9.\-:]/', '', (string) ($_SERVER['HTTP_HOST'] ?? 'localhost'));
                 // 새로고침으로 다시 만들어지지 않게 세션에 한 번만 담고 다시 불러온다 (POST → 리다이렉트)
-                $_SESSION['big5_new_invite'] = ($https ? 'https' : 'http') . '://' . $host . big5_url('rate.php?t=' . $token);
+                $_SESSION['big5_new_invite'] = big5_origin() . big5_url('rate.php?t=' . $token);
                 big5_redirect('invite.php');
             }
         } elseif ($action === 'stop') {

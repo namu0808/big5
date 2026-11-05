@@ -1,7 +1,7 @@
 /**
  * Playwright 스모크 공통 도우미 — 개발 서버를 띄우고(이미 떠 있으면 그대로) 브라우저를 연다.
  * 서버: BIG5_DB_CONFIG=doc/dev-db-sqlite.php php -S 127.0.0.1:8093 doc/dev-router.php
- * 앱 주소: http://127.0.0.1:8093/big5/
+ * 앱 주소: http://127.0.0.1:8093/big5/  (홈·공통 계정 /, /account/ 는 옆 sbm.ai.kr 저장소 — 라우터가 넘긴다)
  */
 'use strict';
 const { spawn } = require('child_process');
@@ -45,11 +45,11 @@ async function startServer() {
   };
 }
 
-/** 개발 DB 를 지운다 (install.php 검증 전) — SQLite 는 파일 삭제, MariaDB 는 big5_ 테이블 전부 삭제 */
+/** 개발 DB 를 지운다 (install.php 검증 전) — SQLite 는 파일 삭제, MariaDB 는 big5_·sbm_ 테이블 전부 삭제 */
 function resetDb() {
   if (USE_MYSQL) {
     const { execFileSync } = require('child_process');
-    const code = 'require $argv[1]; $pdo->exec("SET FOREIGN_KEY_CHECKS = 0"); foreach ($pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN) as $t) { if (str_starts_with((string) $t, "big5_")) { $pdo->exec("DROP TABLE `" . str_replace("`", "", (string) $t) . "`"); } } $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");';
+    const code = 'require $argv[1]; $pdo->exec("SET FOREIGN_KEY_CHECKS = 0"); foreach ($pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN) as $t) { if (str_starts_with((string) $t, "big5_") || str_starts_with((string) $t, "sbm_")) { $pdo->exec("DROP TABLE `" . str_replace("`", "", (string) $t) . "`"); } } $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");';
     execFileSync('php', ['-r', code, DB_CONFIG], { env: { ...process.env, BIG5_DB_QUIET: '1' } });
     return;
   }
@@ -75,8 +75,9 @@ function done() {
   process.exitCode = fail === 0 ? 0 : 1;
 }
 
+/** 로그인 — 사용자는 사이트 공통 /account/login.php(돌아올 곳 /big5/index.php), 관리자는 /big5/admin/login.php */
 async function login(page, username, password, admin = false) {
-  await page.goto(`${BASE}/${admin ? 'admin/' : ''}login.php`);
+  await page.goto(admin ? `${BASE}/admin/login.php` : `${ORIGIN}/account/login.php?next=%2Fbig5%2Findex.php`);
   await page.fill('input[name=username]', username);
   await page.fill('input[name=password]', password);
   await Promise.all([page.waitForLoadState('load'), page.click('button[type=submit]')]);

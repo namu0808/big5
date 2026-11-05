@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const { chromium } = require('playwright');
-const { ROOT, BASE, OUT, DB, DB_CONFIG, startServer, resetDb, openBrowser, ok, done, login, freshInstall, sql } = require('./lib');
+const { ROOT, BASE, ORIGIN, OUT, DB, DB_CONFIG, startServer, resetDb, openBrowser, ok, done, login, freshInstall, sql } = require('./lib');
 
 /** 로그인 없는 새 브라우저로 평가 한 건 완료 */
 async function rateOnce(link, pick) {
@@ -96,7 +96,7 @@ async function rateOnce(link, pick) {
     await page.goto(`${BASE}/report.php?id=${ids.all3}`);
     ok(!(await page.$('#retest')), '첫 검사 리포트에는 10장 없음');
     // 지난번 성장 행동 다시 보기
-    sql('INSERT INTO big5_growth_choices (user_id, session_id, domain, direction, action_key, created_at) VALUES ((SELECT id FROM big5_users WHERE username = ?), ?, ?, ?, ?, ?)', ['user', ids.random, 'C', 'grow', 'c_g_calendar', '2026-11-02 00:00:00']);
+    sql('INSERT INTO big5_growth_choices (user_id, session_id, domain, direction, action_key, created_at) VALUES ((SELECT id FROM sbm_users WHERE username = ?), ?, ?, ?, ?, ?)', ['user', ids.random, 'C', 'grow', 'c_g_calendar', '2026-11-02 00:00:00']);
     await page.goto(`${BASE}/report.php?id=${ids.extreme}`);
     ok((await page.textContent('#growthRecall')).includes('달력에 넣고'), '리포트 10장: 지난번에 골라 둔 성장 행동');
 
@@ -134,8 +134,9 @@ async function rateOnce(link, pick) {
     ok(resp.status() === 404, '다른 사용자 검사 비교 → 404');
     await b3.close();
 
-    // ── 비밀번호 바꾸기 / 내 데이터 전체 삭제
+    // ── 다이얼 기록만 삭제 (계정은 남는다)
     await page.goto(`${BASE}/account.php`);
+    ok(await page.getAttribute('#sbmAccountLink', 'href') === '/account/', '계정 화면 → 사이트 공통 내 계정 링크');
     await page.fill('#deleteForm input[name=current]', 'visang');
     await page.fill('#deleteForm input[name=phrase]', '삭제');
     await Promise.all([page.waitForLoadState('load'), page.click('#deleteForm button')]);
@@ -143,18 +144,31 @@ async function rateOnce(link, pick) {
     await page.fill('#deleteForm input[name=current]', 'visang');
     await page.fill('#deleteForm input[name=phrase]', '모두 삭제');
     await Promise.all([page.waitForLoadState('load'), page.click('#deleteForm button')]);
-    ok((await page.textContent('body')).includes('모든 검사 기록을 지웠습니다'), '삭제 완료 → 시작 화면 안내');
+    ok((await page.textContent('body')).includes('다이얼 검사 기록을 모두 지웠습니다'), '다이얼 기록 삭제 완료 → 시작 화면 안내');
     const left = sql(`SELECT
-      (SELECT COUNT(*) FROM big5_users WHERE username = 'user') AS u,
-      (SELECT COUNT(*) FROM big5_sessions) AS s,
-      (SELECT COUNT(*) FROM big5_responses) AS r,
-      (SELECT COUNT(*) FROM big5_scores) AS sc,
-      (SELECT COUNT(*) FROM big5_invites) AS i,
-      (SELECT COUNT(*) FROM big5_ratings) AS ra,
-      (SELECT COUNT(*) FROM big5_growth_choices) AS g`)[0];
-    ok(Object.values(left).every((v) => v === 0), `삭제 후 관련 행 0건 ${JSON.stringify(left)}`);
+      (SELECT COUNT(*) FROM big5_sessions WHERE user_id = (SELECT id FROM sbm_users WHERE username = 'user')) AS s,
+      (SELECT COUNT(*) FROM big5_invites WHERE user_id = (SELECT id FROM sbm_users WHERE username = 'user')) AS i,
+      (SELECT COUNT(*) FROM big5_growth_choices) AS g,
+      (SELECT COUNT(*) FROM big5_ratings) AS ra`)[0];
+    ok(Object.values(left).every((v) => v === 0), `다이얼 기록 0건 ${JSON.stringify(left)}`);
+    ok(sql("SELECT COUNT(*) AS n FROM sbm_users WHERE username = 'user'")[0].n === 1, '계정은 남음');
     await page.goto(`${BASE}/history.php`);
-    ok(page.url().endsWith('/login.php'), '삭제 후 로그아웃 상태');
+    ok(page.url().endsWith('/big5/history.php'), '기록 삭제 후에도 로그인 유지');
+
+    // ── 사이트 공통 [내 계정]에서 계정 전체 삭제 → 다이얼 데이터와 계정 모두
+    const sid = sql("SELECT id FROM sbm_users WHERE username = 'user'")[0].id;
+    sql("INSERT INTO big5_sessions (user_id, test_type, item_version, status, started_at, consent_at) VALUES (?, 'mini20', 'v', 'in_progress', '2026-11-05 00:00:00', '2026-11-05 00:00:00')", [sid]);
+    await page.goto(`${ORIGIN}/account/`);
+    ok((await page.textContent('.svc-list')).includes('Dial'), '내 계정: 이용 중인 검사에 다이얼');
+    await page.fill('#deleteForm input[name=current]', 'visang');
+    await page.fill('#deleteForm input[name=phrase]', '모두 삭제');
+    await Promise.all([page.waitForLoadState('load'), page.click('#deleteForm button')]);
+    ok(page.url() === `${ORIGIN}/` && (await page.textContent('.flash')).includes('지웠습니다'), '계정 전체 삭제 → 홈 안내');
+    const gone = sql(`SELECT (SELECT COUNT(*) FROM sbm_users WHERE username = 'user') AS u,
+      (SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?) AS s`, [sid])[0];
+    ok(gone.u === 0 && gone.s === 0, `계정·다이얼 기록 모두 삭제 ${JSON.stringify(gone)}`);
+    await page.goto(`${BASE}/history.php`);
+    ok(page.url().includes('/account/login.php'), '삭제 후 로그아웃 상태 → 공통 로그인');
     await login(page, 'user', 'visang');
     ok((await page.textContent('body')).includes('맞지 않습니다'), '삭제된 계정으로 로그인 불가');
     fs.mkdirSync(OUT, { recursive: true });

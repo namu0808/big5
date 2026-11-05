@@ -12,13 +12,15 @@ require dirname(__DIR__) . '/includes/util.php';
 require dirname(__DIR__) . '/includes/big5_schema.php';
 require dirname(__DIR__) . '/includes/others.php';
 require dirname(__DIR__) . '/includes/user_delete.php';
+require dirname(__DIR__) . '/includes/sbm_hook.php';
+putenv('SBM_BIG5_DIR=' . dirname(__DIR__)); // 공통 계정 전체 삭제가 다이얼 훅을 찾는 곳
 require __DIR__ . '/lib.php';
 
 $pdo = t_pdo();
 big5_ensure_schema($pdo);
 big5_seed_accounts($pdo);
-$uid = (int) $pdo->query("SELECT id FROM big5_users WHERE username = 'user'")->fetchColumn();
-$other = (int) $pdo->query("SELECT id FROM big5_users WHERE username = 'sonbm'")->fetchColumn();
+$uid = (int) $pdo->query("SELECT id FROM sbm_users WHERE username = 'user'")->fetchColumn();
+$other = (int) $pdo->query("SELECT id FROM sbm_users WHERE username = 'sonbm'")->fetchColumn();
 
 // ── 초대 토큰
 $token = big5_invite_create($pdo, $uid, 'colleague', 'mini20');
@@ -86,23 +88,37 @@ foreach ([$s1, $s2] as $sid) {
     big5_scores_save($pdo, 'session', $sid, ['domains' => ['C' => ['raw' => 12, 'pomp' => 50.0, 'band' => 'mid']], 'facets' => []]);
 }
 $pdo->prepare('INSERT INTO big5_growth_choices (user_id, session_id, domain, direction, action_key, created_at) VALUES (?, ?, ?, ?, ?, ?)')->execute([$uid, $s1, 'C', 'grow', 'c_g_calendar', big5_now()]);
-$pdo->prepare('INSERT INTO big5_login_attempts (username, ip, attempted_at) VALUES (?, ?, ?)')->execute(['user', '1.1.1.1', big5_now()]);
+$pdo->prepare('INSERT INTO sbm_login_attempts (username, ip, attempted_at) VALUES (?, ?, ?)')->execute(['user', '1.1.1.1', big5_now()]);
 // 다른 사용자 데이터는 남아야 한다
 $os = big5_session_start($pdo, $other, 'mini20');
 big5_response_save($pdo, 'session', $os, 1, 3);
-big5_user_delete($pdo, $uid);
 $count = static fn(string $sql, array $p = []) => (function () use ($pdo, $sql, $p) {
     $st = $pdo->prepare($sql);
     $st->execute($p);
     return (int) $st->fetchColumn();
 })();
-t_ok($count('SELECT COUNT(*) FROM big5_users WHERE id = ?', [$uid]) === 0, '삭제: 계정');
+// 공통 계정 훅 — 내 계정 화면의 요약
+$summary = big5_sbm_summary($pdo, $uid);
+t_ok(is_string($summary) && str_contains($summary, '완료한 검사'), '훅 요약: ' . (string) $summary);
+t_ok(big5_sbm_summary($pdo, 999999) === null, '훅 요약: 기록 없으면 null');
+$hooks = sbm_user_summaries($pdo, $uid);
+t_ok(count($hooks) === 1 && $hooks[0]['id'] === 'big5' && $hooks[0]['summary'] === $summary, '공통 계정이 다이얼 훅을 찾음');
+// 사이트 공통 계정 전체 삭제 (다이얼 훅 + 계정 행)
+sbm_user_delete_all($pdo, $uid);
+t_ok($count('SELECT COUNT(*) FROM sbm_users WHERE id = ?', [$uid]) === 0, '삭제: 계정');
 t_ok($count('SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?', [$uid]) === 0, '삭제: 검사');
 t_ok($count("SELECT COUNT(*) FROM big5_responses WHERE owner_type = 'session' AND owner_id IN (?, ?)", [$s1, $s2]) === 0, '삭제: 본인 응답');
 t_ok($count("SELECT COUNT(*) FROM big5_scores WHERE owner_type = 'session' AND owner_id IN (?, ?)", [$s1, $s2]) === 0, '삭제: 본인 점수');
 t_ok($count('SELECT COUNT(*) FROM big5_invites') === 0 && $count('SELECT COUNT(*) FROM big5_ratings') === 0, '삭제: 초대·받은 평가');
 t_ok($count("SELECT COUNT(*) FROM big5_responses WHERE owner_type = 'rating'") === 0 && $count("SELECT COUNT(*) FROM big5_scores WHERE owner_type = 'rating'") === 0, '삭제: 받은 평가의 응답·점수');
-t_ok($count('SELECT COUNT(*) FROM big5_growth_choices') === 0 && $count("SELECT COUNT(*) FROM big5_login_attempts WHERE username = 'user'") === 0, '삭제: 성장 행동·로그인 기록');
+t_ok($count('SELECT COUNT(*) FROM big5_growth_choices') === 0 && $count("SELECT COUNT(*) FROM sbm_login_attempts WHERE username = 'user'") === 0, '삭제: 성장 행동·로그인 기록');
 t_ok($count('SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?', [$other]) === 1 && $count("SELECT COUNT(*) FROM big5_responses WHERE owner_type = 'session' AND owner_id = ?", [$os]) === 1, '다른 사용자 데이터는 그대로');
+
+
+// 다이얼 기록만 삭제 — 계정은 남는다
+$os2 = big5_session_start($pdo, $other, 'full120');
+big5_user_delete_data_tx($pdo, $other);
+t_ok($count('SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?', [$other]) === 0, '다이얼 기록만 삭제: 검사 없음');
+t_ok($count('SELECT COUNT(*) FROM sbm_users WHERE id = ?', [$other]) === 1, '다이얼 기록만 삭제: 계정은 남음');
 
 t_done();

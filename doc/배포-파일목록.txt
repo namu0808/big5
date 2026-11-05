@@ -1,5 +1,6 @@
-# 다이얼 FTP 배포 파일 목록 (20261105) — 서버 {홈}/www/big5/ 기준, 64개
-# 설치 때만: install.php (1time/install.php, 실행 후 삭제) / 웹루트 밖: {홈}/config/big5_db.php (doc/big5_db.sample.php 로 만듦)
+# 다이얼 FTP 배포 파일 목록 (20261105) — 서버 {홈}/www/big5/ 기준, 66개
+# 0.9.x 에서 올릴 때 1회: migrate_sbm_users.php (1time/, 실행 후 삭제) / 새 설치 때만: install.php (1time/install.php, 실행 후 삭제)
+# 웹루트 밖: {홈}/config/big5_db.php (doc/big5_db.sample.php 로 만듦) / 공통 계정 코어 {홈}/www/core/ 는 sbm.ai.kr 묶음
 .htaccess
 account.php
 admin/content.php
@@ -38,6 +39,7 @@ includes/big5_schema.php
 includes/bootstrap.php
 includes/content_check.php
 includes/content_loader.php
+includes/core_link.php
 includes/csrf.php
 includes/db_config.php
 includes/db_down.php
@@ -49,6 +51,7 @@ includes/others.php
 includes/quality.php
 includes/report_builder.php
 includes/report_charts.php
+includes/sbm_hook.php
 includes/scoring.php
 includes/session.php
 includes/test_session.php

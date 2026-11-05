@@ -19,7 +19,7 @@ const { ROOT, BASE, OUT, DB, DB_CONFIG, startServer, resetDb, openBrowser, ok, d
     const ids = JSON.parse(execFileSync('php', [path.join(ROOT, 'doc', 'dev-seed-reports.php')], { env }).toString());
     ok(ids.all3 && ids.random && ids.extreme && ids.mini && ids.nhigh, `샘플 검사 5건 생성 ${JSON.stringify(ids)}`);
     // 표시 이름에 따옴표·꺾쇠를 넣어 인쇄 꼬리말(CSS 문자열)·화면 이스케이프를 함께 확인한다
-    sql('UPDATE big5_users SET display_name = ? WHERE username = ?', ['김 "다이얼" </style>', 'user']);
+    sql('UPDATE sbm_users SET display_name = ? WHERE username = ?', ['김 "다이얼" </style>', 'user']);
     await login(page, 'user', 'visang');
     fs.mkdirSync(OUT, { recursive: true });
 

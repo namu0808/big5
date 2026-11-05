@@ -36,7 +36,7 @@ async function waitSaved(page) {
     // ── 로그인 전: 검사 버튼 → 로그인 → 동의 화면으로 돌아옴
     await page.goto(`${BASE}/index.php`);
     await Promise.all([page.waitForLoadState('load'), page.click('a:has-text("정식 검사")')]);
-    ok(page.url().endsWith('/login.php'), '로그인 전 검사 시작 → 로그인 화면');
+    ok(page.url().includes('/account/login.php?next=%2Fbig5%2Fconsent.php'), '로그인 전 검사 시작 → 공통 로그인 화면(돌아올 곳 = 동의 화면)');
     await page.fill('input[name=username]', 'user');
     await page.fill('input[name=password]', 'visang');
     await Promise.all([page.waitForLoadState('load'), page.click('button[type=submit]')]);
@@ -171,7 +171,7 @@ async function waitSaved(page) {
     // 로그인 없이 리포트 → 로그인 화면
     const anon = await request.newContext();
     const ar = await anon.get(`${BASE}/report.php?id=${sid}`, { maxRedirects: 0 });
-    ok(ar.status() === 302 && (ar.headers().location || '').endsWith('/login.php'), '로그인 없이 리포트 → 로그인으로');
+    ok(ar.status() === 302 && (ar.headers().location || '').startsWith('/account/login.php?next=%2Fbig5%2Freport.php'), '로그인 없이 리포트 → 공통 로그인으로');
     await anon.dispose();
   } catch (e) {
     ok(false, `예외: ${e.message}`);

@@ -21,10 +21,14 @@
 - **경로는 모두 `big5_url('경로')`** (`includes/util.php`). `/admin/...` 같은 루트 기준 절대 경로 하드코딩 금지. 루트 `.htaccess`가 `RewriteEngine On`으로 WordPress 재작성 규칙 상속을 끊는다
 - 화면 첫 require: 공개 화면 `includes/bootstrap.php`, 사용자 화면 `includes/auth_check.php`(`$big5User`), 관리자 화면 `includes/admin_check.php`(`$big5Admin`)
 - `/admin` 모든 파일은 `declare(strict_types=1);` 바로 다음 첫 문장이 `require_once '../includes/admin_check.php';` (예외: `admin/login.php`)
-- 세션: `big5_session_begin()`(이름 `BIG5SESSID`, 쿠키 경로 `/big5/`). 사용자 `$_SESSION['user_id']`, 관리자 `$_SESSION['admin_id']` 분리
+- **계정은 사이트 공통(0.10.0~)**: 계정 테이블은 `sbm_users` 하나(저장소 `namu0808/sbm.ai.kr` 의 `core/`, 서버 `{홈}/www/core/`). 다이얼은 `includes/core_link.php` 로 코어를 싣고(`SBM_CORE_DIR` → `../core` → `../sbm.ai.kr/core`) `big5_*` 인증·세션·CSRF 함수는 `sbm_*` 를 감싼다
+  - 로그인·가입·비밀번호·계정 전체 삭제 화면은 사이트 공통 `/account/` — `big5_account_url('login.php', next)`. 다이얼 `login.php`·`register.php` 는 넘기기만 한다. 다이얼 `account.php` 는 다이얼 기록만 지운다
+  - 공통 계정의 전체 삭제는 서비스 훅 `includes/sbm_hook.php`(`big5_sbm_summary`·`big5_sbm_delete`, PDO 만)로 다이얼 데이터를 지운다. 다이얼 테이블이 바뀌면 `includes/user_delete.php` 를 함께 고친다
+  - 관리자 로그인은 다이얼 `admin/login.php`(sbm_users 의 role=admin)
+- 세션: 사이트 공통 `SBMSESSID`, 쿠키 경로 `/`(`big5_session_begin()` → `sbm_session_begin()`). 사용자 `$_SESSION['user_id']`, 관리자 `$_SESSION['admin_id']` 분리. 다이얼 세션 키는 `big5_` 접두어
 - `api.php` 같은 전용 API 파일 만들지 않음 — 각 화면이 자기에게 POST. 새로고침 없는 동작만 `ajax=1` fetch POST → JSON `{ok, code, error, ...}` (`big5_json()`)
 - 모든 POST는 CSRF 검사 (`big5_csrf_field()` / `big5_csrf_check()`)
-- 스키마 단일 원본 `includes/big5_schema.php` (MariaDB·SQLite DDL 나란히, 멱등). 설치 `1time/install.php`(서버 `/big5/install.php`로 올려 1회 실행 후 삭제)
+- 스키마 단일 원본 `includes/big5_schema.php` (MariaDB·SQLite DDL 나란히, 멱등 — 먼저 `sbm_ensure_schema()`, 외래 키는 `sbm_users(id)`). 설치 `1time/install.php`(서버 `/big5/install.php`로 올려 1회 실행 후 삭제). 0.9.x → 0.10 계정 이전 `1time/migrate_sbm_users.php`(MariaDB 전용 구문은 이 파일에만, `/big5/` 에 올려 1회 실행 후 삭제)
 - 앱 쿼리는 표준 SQL만 (SQLite 검증이 돌아야 함). `NOW()` 대신 `big5_now()`
 - 해석 문구는 `data/content/*.json`, 문항은 `data/items_*.json` — 코드와 분리. 문항 JSON 은 `data/source/master_*.csv`(원문 대조 확정본, `php tests/source_compare.php`)로만 만든다. `data/`·`includes/`·`tests/`는 `Deny from all`
 - 버전 단일 원본 `includes/version.php` — 기능 추가 MINOR, 고침·문구 PATCH
@@ -39,8 +43,9 @@
 7. 문항은 `data/source/`의 IPIP 원문 키를 근거로만 — 기억으로 짓지 않음
 
 ## 검증
+- **두 저장소를 나란히 클론해야 검증이 돈다**: `/home/user/big5` 와 `/home/user/sbm.ai.kr`(코어·홈·`/account/`). 개발 라우터가 `/big5/` 바깥을 옆 저장소 라우터로 넘긴다(`SBM_HOME_DIR`), 같은 DB(`SBM_DB_CONFIG` ← `BIG5_DB_CONFIG`)
 - 일괄: `node doc/pw/run.js` (CLI + 브라우저) · `--cli` · `--pw`
-  - CLI: `php tests/run.php` (모든 PHP `php -l` + `tests/*_test.php`: 스키마·인증, 채점·문항 구조·원문 키 일치)
+  - CLI: `php tests/run.php` (모든 PHP `php -l` + `tests/*_test.php`: 스키마·인증, 채점·문항 구조·원문 키 일치, `migrate_test.php`(공통 계정 이전 — MariaDB 에서만, 0.9.1 스키마 `tests/fixtures/`))
   - 원문 대조: `php tests/source_compare.php [--write-master]` → `data/source/master_*.csv` (A·D 추출본이 있으면 그 값 우선)
   - 문항 JSON 빌드: `php tests/build_items.php` (master + `data/translate/*.csv` → `data/items_*.json`, `data/review_items.md`. 정식·간이 공통 문항은 `data/translate/shared_items.csv` — 문장은 원고 부록 A 기준으로 통일, 빌드가 방향·문장 일치를 확인). 문항 JSON 을 손으로 고치지 않는다
   - 해석 문구: `data/content/*.json` 7개(키 구조는 `includes/content_loader.php` 머리 주석). 점검 `includes/content_check.php`(CLI `tests/content_test.php`·관리자 `admin/content.php` 공유), 검수본 `php tests/build_review_content.php` → `data/review_content.md`. 문구를 고치면 둘 다 다시 돌린다
@@ -51,7 +56,7 @@
   - 손으로 띄울 때: `php doc/dev-sqlite-setup.php` 후 위 서버 명령
   - **운영과 같은 MariaDB 로 검증**: `BIG5_TEST_DB=mysql node doc/pw/run.js` (설정 `doc/dev-db-mysql.php`, 로컬 DB `big5_test`/계정 `big5dev`, sql_mode 에 ONLY_FULL_GROUP_BY). 클라우드 세션에서는 `apt-get install mariadb-server` 후 `mysqld_safe --user=mysql &` 로 띄우고 DB·계정을 만든다. 배포 전 SQLite·MariaDB 둘 다 전건 PASS
   - 반응형: `doc/pw/responsive-smoke.js` (390·768·1280px)
-- 배포 묶음: `php doc/make-dist.php` → `dist/big5-deploy-YYYYMMDD.zip`(git 제외) + `doc/배포-파일목록.txt`. 설치·확인 순서 `doc/배포-안내.md`, 점검표 `doc/점검표-2026-11-02.md`
+- 배포 묶음: `php doc/make-dist.php` → `dist/big5-deploy-YYYYMMDD.zip`(git 제외, install.php·migrate_sbm_users.php 포함) + `doc/배포-파일목록.txt`. 사이트 전체 배포 순서(홈·코어 → 다이얼 → 계정 이전)는 **sbm.ai.kr 저장소 `doc/배포-안내.md`**. 다이얼 단독 설치는 `doc/배포-안내.md`, 점검표 `doc/점검표-2026-11-02.md`
 - 전건 PASS 후 커밋. 커밋 메시지·코드에 모델 식별자 넣지 않음
 
 ## Git

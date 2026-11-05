@@ -22,8 +22,8 @@ function big5_admin_counts(PDO $pdo): array
         return (int) $st->fetchColumn();
     };
     $c = [
-        'users' => $one("SELECT COUNT(*) FROM big5_users WHERE role = 'user'"),
-        'users_inactive' => $one("SELECT COUNT(*) FROM big5_users WHERE role = 'user' AND is_active = 0"),
+        'users' => $one("SELECT COUNT(*) FROM sbm_users WHERE role = 'user'"),
+        'users_inactive' => $one("SELECT COUNT(*) FROM sbm_users WHERE role = 'user' AND is_active = 0"),
         'full' => $one("SELECT COUNT(*) FROM big5_sessions WHERE status = 'completed' AND test_type = 'full120'"),
         'mini' => $one("SELECT COUNT(*) FROM big5_sessions WHERE status = 'completed' AND test_type = 'mini20'"),
         'in_progress' => $one("SELECT COUNT(*) FROM big5_sessions WHERE status = 'in_progress'"),

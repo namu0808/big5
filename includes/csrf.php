@@ -1,32 +1,24 @@
 <?php
 /**
- * CSRF 토큰 — 세션당 1개. 모든 POST(폼·fetch)는 big5_csrf_check() 를 통과해야 한다.
+ * CSRF 토큰 — 사이트 공통 코어(sbm_csrf_*)를 쓴다. 세션당 1개. 모든 POST(폼·fetch)는 big5_csrf_check() 를 통과해야 한다.
  * 폼: <?= big5_csrf_field() ?>   fetch: FormData 에 'csrf' (페이지가 data-csrf 로 전달)
  */
 declare(strict_types=1);
 
 function big5_csrf_token(): string
 {
-    big5_session_begin();
-    if (empty($_SESSION['big5_csrf']) || !is_string($_SESSION['big5_csrf'])) {
-        $_SESSION['big5_csrf'] = bin2hex(random_bytes(16));
-    }
-    return $_SESSION['big5_csrf'];
+    return sbm_csrf_token();
 }
 
 function big5_csrf_field(): string
 {
-    return '<input type="hidden" name="csrf" value="' . h(big5_csrf_token()) . '">';
+    return sbm_csrf_field();
 }
 
 /** 요청의 csrf 값이 세션 토큰과 같은지 (POST 본문 우선, 헤더 X-BIG5-CSRF 허용) */
 function big5_csrf_valid(): bool
 {
-    $sent = $_POST['csrf'] ?? ($_SERVER['HTTP_X_BIG5_CSRF'] ?? '');
-    if (!is_string($sent) || $sent === '') {
-        return false;
-    }
-    return hash_equals(big5_csrf_token(), $sent);
+    return sbm_csrf_valid();
 }
 
 /** 검사 실패 시 종료. ajax 요청이면 JSON {ok:0, code:'csrf'}, 아니면 400 안내문 */

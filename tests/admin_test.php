@@ -17,7 +17,7 @@ require __DIR__ . '/lib.php';
 $pdo = t_pdo();
 big5_ensure_schema($pdo);
 big5_seed_accounts($pdo);
-$uid = (int) $pdo->query("SELECT id FROM big5_users WHERE username = 'user'")->fetchColumn();
+$uid = (int) $pdo->query("SELECT id FROM sbm_users WHERE username = 'user'")->fetchColumn();
 $items = big5_items('full120');
 
 /** 완료 검사 하나 (모든 문항 같은 값 $v, 플래그 지정) */

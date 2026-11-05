@@ -39,7 +39,7 @@ function t_pdo(): PDO
         }
         $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
         foreach ($pdo->query('SHOW TABLES')->fetchAll(PDO::FETCH_COLUMN) as $t) {
-            if (str_starts_with((string) $t, 'big5_')) {
+            if (str_starts_with((string) $t, 'big5_') || str_starts_with((string) $t, 'sbm_')) {
                 $pdo->exec('DROP TABLE `' . str_replace('`', '', (string) $t) . '`');
             }
         }

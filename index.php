@@ -7,6 +7,8 @@ require_once __DIR__ . '/includes/bootstrap.php';
 $user = big5_current_user($pdo);
 $page_title = '';
 $nav_active = 'home';
+$page_indexable = true;
+$meta_description = '다섯 개의 다이얼로 나를 읽는 빅파이브(Big5) 성격 검사. 정식 120문항·간이 20문항, 『초등 공부력』 저자 손병목.';
 require __DIR__ . '/includes/header.php';
 
 // 로그인 전이면 검사 버튼은 로그인 화면으로 (로그인 뒤 동의 화면으로 이어진다)
@@ -23,7 +25,7 @@ $mini = big5_url('consent.php?type=mini20');
 <?php if ($user !== null): ?>
   <p class="hero-sub"><?= h($user['display_name']) ?>님, 반갑습니다. <a href="<?= h(big5_url('history.php')) ?>">내 기록 보기</a></p>
 <?php else: ?>
-  <p class="hero-sub">검사 결과를 저장하고 다시 보려면 <a href="<?= h(big5_url('login.php')) ?>">로그인</a>하거나 <a href="<?= h(big5_url('register.php')) ?>">가입</a>해 주세요.</p>
+  <p class="hero-sub">검사 결과를 저장하고 다시 보려면 <a href="<?= h(big5_account_url('login.php')) ?>">로그인</a>하거나 <a href="<?= h(big5_account_url('register.php')) ?>">가입</a>해 주세요. SBM 진단 검사의 한 계정으로 모든 검사를 이용합니다.</p>
 <?php endif; ?>
 </section>
 <section class="notice-box">

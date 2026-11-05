@@ -3,6 +3,7 @@
  * 공통 머리 — 페이지가 설정하는 변수:
  *   $page_title(문자열), $layout_area('user'|'admin'), $nav_active(메뉴 키), $hide_nav(bool),
  *   $body_class(문자열), $extra_css(경로 배열, assets/ 기준), $extra_head(이미 이스케이프된 HTML — 쓰지 않는 것이 원칙)
+ *   $page_indexable(bool, 검색 노출 허용 — 시작 화면만), $meta_description(문자열, 검색 결과 요약)
  */
 declare(strict_types=1);
 
@@ -14,6 +15,8 @@ $nav_active = isset($nav_active) && is_string($nav_active) ? $nav_active : '';
 $hide_nav = !empty($hide_nav);
 $body_class = isset($body_class) && is_string($body_class) ? $body_class : '';
 $extra_css = isset($extra_css) && is_array($extra_css) ? $extra_css : [];
+$page_indexable = !empty($page_indexable) && $layout_area === 'user';
+$meta_description = isset($meta_description) && is_string($meta_description) ? $meta_description : '';
 
 $big5HeadUser = $layout_area === 'user' ? big5_current_user($pdo ?? null) : null;
 $big5HeadAdmin = $layout_area === 'admin' ? big5_current_admin($pdo ?? null) : null;
@@ -37,9 +40,23 @@ $big5Nav = $layout_area === 'admin'
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php if ($page_indexable): ?>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="<?= h(big5_origin() . big5_url('')) ?>">
+<?php else: ?>
 <meta name="robots" content="noindex">
+<?php endif; ?>
+<?php if ($meta_description !== ''): ?>
+<meta name="description" content="<?= h($meta_description) ?>">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SBM 진단 검사">
+<meta property="og:title" content="<?= h($page_title !== '' ? $page_title : 'Dial — 빅파이브(Big5) 성격 검사') ?>">
+<meta property="og:description" content="<?= h($meta_description) ?>">
+<meta property="og:url" content="<?= h(big5_origin() . big5_url('')) ?>">
+<meta property="og:image" content="<?= h(big5_origin() . '/assets/img/og.jpg') ?>">
+<?php endif; ?>
 <meta name="referrer" content="same-origin">
-<title><?= h($page_title !== '' ? $page_title . ' · 다이얼' : '다이얼 — 빅파이브 성격 검사') ?></title>
+<title><?= h($page_title !== '' ? $page_title . ' · 다이얼' : 'Dial — 빅파이브(Big5) 성격 검사 | SBM 진단 검사') ?></title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="<?= h(big5_url('assets/style.css')) ?>?v=<?= h(BIG5_VERSION) ?>">
 <?php if ($layout_area === 'admin'): ?>
@@ -68,8 +85,8 @@ $big5Nav = $layout_area === 'admin'
 <?php endforeach; ?>
       <a href="<?= h(big5_url('logout.php')) ?>">로그아웃</a>
 <?php else: ?>
-      <a href="<?= h(big5_url('login.php')) ?>"<?= $nav_active === 'login' ? ' aria-current="page"' : '' ?>>로그인</a>
-      <a href="<?= h(big5_url('register.php')) ?>"<?= $nav_active === 'register' ? ' aria-current="page"' : '' ?>>가입</a>
+      <a href="<?= h(big5_account_url('login.php', big5_current_path())) ?>">로그인</a>
+      <a href="<?= h(big5_account_url('register.php', big5_current_path())) ?>">가입</a>
 <?php endif; ?>
     </nav>
   </div>

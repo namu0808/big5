@@ -15,7 +15,7 @@ if ($pdo === null) {
     fwrite(STDERR, "DB 없음\n");
     exit(1);
 }
-$uid = (int) $pdo->query("SELECT id FROM big5_users WHERE username = 'user'")->fetchColumn();
+$uid = (int) $pdo->query("SELECT id FROM sbm_users WHERE username = 'user'")->fetchColumn();
 
 /** 응답을 넣고 완료 처리 → 검사 id */
 function seed(PDO $pdo, int $uid, string $type, callable $value): int

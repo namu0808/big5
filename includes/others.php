@@ -37,7 +37,7 @@ function big5_invite_by_token(PDO $pdo, string $token): ?array
     }
     $st = $pdo->prepare(
         'SELECT i.*, u.display_name AS owner_name, u.is_active AS owner_active
-           FROM big5_invites i JOIN big5_users u ON u.id = i.user_id WHERE i.token_hash = ?'
+           FROM big5_invites i JOIN sbm_users u ON u.id = i.user_id WHERE i.token_hash = ?'
     );
     $st->execute([big5_token_hash($token)]);
     $row = $st->fetch();

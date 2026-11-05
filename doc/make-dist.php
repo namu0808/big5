@@ -2,7 +2,9 @@
 /**
  * 배포 묶음 만들기 — dist/big5-deploy-YYYYMMDD.zip + doc/배포-파일목록.txt
  *  big5/            → 서버 {홈}/www/big5/ 에 그대로 올린다 (배포 제외 규칙 적용)
- *  install.php      → 설치할 때만 /big5/ 에 올려 1회 실행 후 삭제 (1time/install.php 복사)
+ *  install.php      → 새로 설치할 때만 /big5/ 에 올려 1회 실행 후 삭제 (1time/install.php 복사)
+ *  migrate_sbm_users.php → 0.9.x 에서 올릴 때 1회: /big5/ 에 올려 실행 후 삭제 (공통 계정 이전)
+ *  홈·공통 계정(core/, /account/)은 sbm.ai.kr 저장소의 묶음으로 따로 올린다 — 다이얼은 {홈}/www/core/ 가 있어야 동작한다
  *  config/big5_db.sample.php → {홈}/config/big5_db.php 로 복사해 값을 채운다 (웹루트 밖)
  * 배포 제외(CLAUDE.md): doc/(계획서·원고 포함) tests/ 1time/ data/source/ data/translate/ data/review_*.md CLAUDE.md, 점 파일(.htaccess 는 포함)
  * 실행: php doc/make-dist.php
@@ -64,17 +66,24 @@ foreach ($files as $rel) {
     $zip->addFile($root . '/' . $rel, 'big5/' . $rel);
 }
 $zip->addFile($root . '/1time/install.php', 'install.php');
+$zip->addFile($root . '/1time/migrate_sbm_users.php', 'migrate_sbm_users.php');
 $zip->addFile($root . '/doc/big5_db.sample.php', 'config/big5_db.sample.php');
 $zip->addFromString('읽어 주세요.txt', "다이얼 배포 묶음 ({$date})\n\n"
+    . "다이얼은 사이트 공통 계정 코어({홈}/www/core/ — sbm.ai.kr 묶음)가 먼저 올라가 있어야 합니다.\n\n"
+    . "[이미 0.9.x 를 쓰는 서버 — 업데이트]\n"
+    . "1. big5/ 폴더의 내용을 서버 {홈}/www/big5/ 에 덮어 올립니다 (.htaccess 파일 포함).\n"
+    . "2. migrate_sbm_users.php 를 {홈}/www/big5/ 에 올려 https://www.sbm.ai.kr/big5/migrate_sbm_users.php 를 한 번 연 뒤, 바로 삭제합니다.\n\n"
+    . "[새 서버 — 처음 설치]\n"
     . "1. big5/ 폴더의 내용을 서버 {홈}/www/big5/ 에 올립니다 (.htaccess 파일 포함).\n"
     . "2. config/big5_db.sample.php 를 서버 {홈}/config/big5_db.php 로 복사해 DB 접속 정보와 BIG5_EXPORT_SALT 를 채웁니다 (웹루트 밖).\n"
-    . "3. install.php 를 {홈}/www/big5/ 에 올려 브라우저로 https://www.sbm.ai.kr/big5/install.php 를 한 번 연 뒤, 바로 삭제합니다.\n"
-    . "자세한 순서는 저장소의 doc/배포-안내.md 를 보세요.\n");
+    . "3. install.php 를 {홈}/www/big5/ 에 올려 https://www.sbm.ai.kr/big5/install.php 를 한 번 연 뒤, 바로 삭제합니다.\n\n"
+    . "자세한 순서는 sbm.ai.kr 저장소의 doc/배포-안내.md 를 보세요.\n");
 $zip->close();
 
 $list = "# 다이얼 FTP 배포 파일 목록 ({$date}) — 서버 {홈}/www/big5/ 기준, " . count($files) . "개\n"
-    . "# 설치 때만: install.php (1time/install.php, 실행 후 삭제) / 웹루트 밖: {홈}/config/big5_db.php (doc/big5_db.sample.php 로 만듦)\n"
+    . "# 0.9.x 에서 올릴 때 1회: migrate_sbm_users.php (1time/, 실행 후 삭제) / 새 설치 때만: install.php (1time/install.php, 실행 후 삭제)\n"
+    . "# 웹루트 밖: {홈}/config/big5_db.php (doc/big5_db.sample.php 로 만듦) / 공통 계정 코어 {홈}/www/core/ 는 sbm.ai.kr 묶음\n"
     . implode("\n", $files) . "\n";
 file_put_contents($root . '/doc/배포-파일목록.txt', $list);
 
-echo "배포 묶음: dist/big5-deploy-{$date}.zip (" . count($files) . "개 + install.php + config 견본), 목록: doc/배포-파일목록.txt\n";
+echo "배포 묶음: dist/big5-deploy-{$date}.zip (" . count($files) . "개 + install.php + migrate_sbm_users.php + config 견본), 목록: doc/배포-파일목록.txt\n";

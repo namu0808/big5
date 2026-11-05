@@ -1,10 +1,10 @@
 /**
- * 1단계 스모크 — install.php 실행 → 사용자·관리자 로그인, 세션 분리, 가입, 접근 차단(403).
+ * 1단계 스모크 — install.php 실행 → 사이트 공통 로그인(한 번 로그인)·관리자 로그인, 세션 분리, 가입, 접근 차단(403).
  * 실행: node doc/pw/auth-smoke.js
  */
 'use strict';
 const fs = require('fs');
-const { BASE, OUT, startServer, resetDb, openBrowser, ok, done, login, status } = require('./lib');
+const { BASE, ORIGIN, OUT, startServer, resetDb, openBrowser, ok, done, login, status, sql } = require('./lib');
 
 (async () => {
   resetDb();
@@ -26,13 +26,38 @@ const { BASE, OUT, startServer, resetDb, openBrowser, ok, done, login, status } 
       ok(fs.readFileSync(`${__dirname}/../../${d}/.htaccess`, 'utf8').includes('Deny from all'), `${d}/.htaccess = Deny from all`);
     }
 
-    // 3) 보호 화면은 로그인으로
+    // 2-1) 검색 노출 — 시작 화면만 색인 허용, 나머지는 noindex
+    await page.goto(`${BASE}/index.php`);
+    ok((await page.getAttribute('meta[name=robots]', 'content')).startsWith('index'), '시작 화면 색인 허용');
+    ok((await page.title()).includes('빅파이브(Big5)'), '시작 화면 제목에 빅파이브(Big5)');
+    ok((await page.getAttribute('link[rel=canonical]', 'href')).endsWith('/big5/'), '시작 화면 canonical');
+    ok((await page.getAttribute('meta[name=description]', 'content') || '').includes('초등 공부력'), '시작 화면 설명');
+    ok(await page.isVisible('footer a[href="/"]'), '꼬리에 SBM 진단 검사 홈 링크');
+    await page.goto(`${BASE}/admin/login.php`);
+    ok((await page.getAttribute('meta[name=robots]', 'content')) === 'noindex', '관리자 화면 noindex');
+
+    // 3) 보호 화면은 로그인으로 — 사용자 화면은 사이트 공통 로그인(돌아올 곳 유지), 관리자는 다이얼 관리자 로그인
     await page.goto(`${BASE}/admin/index.php`);
     ok(page.url().endsWith('/big5/admin/login.php'), '미로그인 관리자 화면 → admin/login.php');
+    await page.goto(`${BASE}/history.php`);
+    ok(page.url() === `${ORIGIN}/account/login.php?next=%2Fbig5%2Fhistory.php`, '미로그인 내 기록 → 공통 로그인(next=/big5/history.php)');
+    await page.fill('input[name=username]', 'user');
+    await page.fill('input[name=password]', 'visang');
+    await Promise.all([page.waitForLoadState('load'), page.click('button[type=submit]')]);
+    ok(page.url() === `${BASE}/history.php`, '공통 로그인 뒤 다이얼 화면으로 돌아옴');
+    const ck = (await context.cookies()).find((c) => c.name === 'SBMSESSID');
+    ok(!!ck && ck.path === '/', '세션 쿠키 SBMSESSID 경로 / (사이트 공통)');
+    await page.goto(`${ORIGIN}/`);
+    ok((await page.textContent('.gnb')).includes('내 계정'), '홈에서도 로그인 상태 (한 번 로그인)');
+    await page.goto(`${BASE}/logout.php`);
+    await page.goto(`${ORIGIN}/`);
+    ok(!(await page.textContent('.gnb')).includes('내 계정'), '다이얼에서 로그아웃 → 홈도 로그아웃');
+    await page.goto(`${BASE}/login.php`);
+    ok(page.url().startsWith(`${ORIGIN}/account/login.php`), '예전 주소 /big5/login.php → 공통 로그인');
 
     // 4) 사용자 로그인
     await login(page, 'user', 'visang');
-    ok(page.url().endsWith('/big5/index.php'), 'user/visang 로그인 → 시작 화면');
+    ok(page.url().endsWith('/big5/index.php'), 'user/visang 공통 로그인 → 다이얼 시작 화면');
     ok((await page.textContent('body')).includes('사용자님, 반갑습니다'), '시작 화면에 표시 이름');
     ok(await page.isVisible('a:has-text("로그아웃")'), '로그인 상태 메뉴');
 
@@ -55,9 +80,11 @@ const { BASE, OUT, startServer, resetDb, openBrowser, ok, done, login, status } 
     ok((await page.textContent('body')).includes('사용자님, 반갑습니다'), '관리자 로그아웃 후 사용자 세션 유지');
     await page.goto(`${BASE}/logout.php`);
     ok(await page.isVisible('.topnav a:has-text("로그인")'), '사용자 로그아웃');
+    ok((await page.getAttribute('.topnav a:has-text("가입")', 'href')).startsWith('/account/register.php?next='), '가입 링크 → 공통 가입');
 
-    // 9) 가입 (만 14세 미확인 → 거부, 확인 → 가입·자동 로그인)
+    // 9) 가입 (만 14세 미확인 → 거부, 확인 → 가입·자동 로그인 → 다이얼로 돌아옴)
     await page.goto(`${BASE}/register.php`);
+    ok(page.url().startsWith(`${ORIGIN}/account/register.php`), '예전 주소 /big5/register.php → 공통 가입');
     await page.fill('input[name=username]', 'tester1');
     await page.fill('input[name=password]', 'password1');
     await page.fill('input[name=password2]', 'password1');
@@ -68,12 +95,13 @@ const { BASE, OUT, startServer, resetDb, openBrowser, ok, done, login, status } 
     await page.fill('input[name=password2]', 'password1');
     await page.check('input[name=age14]');
     await Promise.all([page.waitForLoadState('load'), page.click('button[type=submit]')]);
-    ok((await page.textContent('body')).includes('가입이 끝났습니다'), '가입 후 자동 로그인');
+    ok(page.url() === `${BASE}/index.php` && (await page.textContent('body')).includes('시험님, 반갑습니다'), '가입 후 자동 로그인 → 다이얼 시작 화면');
+    ok(sql("SELECT COUNT(*) AS n FROM sbm_users WHERE username = 'tester1'")[0].n === 1, '가입 계정은 공통 계정 테이블(sbm_users)');
 
     // 10) CSRF 없는 POST 거부
     const { request } = require('playwright');
     const anon = await request.newContext();
-    const res = await anon.post(`${BASE}/login.php`, { form: { username: 'user', password: 'visang' }, maxRedirects: 0 });
+    const res = await anon.post(`${ORIGIN}/account/login.php`, { form: { username: 'user', password: 'visang' }, maxRedirects: 0 });
     await anon.dispose();
     ok(res.status() === 400, 'CSRF 토큰 없는 POST → 400');
 

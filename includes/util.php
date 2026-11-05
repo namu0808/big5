@@ -78,5 +78,27 @@ function big5_flash(?string $msg = null): ?string
     }
     $m = $_SESSION['big5_flash'] ?? null;
     unset($_SESSION['big5_flash']);
+    if (!is_string($m) && function_exists('sbm_flash')) {
+        $m = sbm_flash(); // 공통 계정 화면(가입 등)에서 남긴 알림
+    }
     return is_string($m) ? $m : null;
+}
+
+/** 지금 화면 경로(다이얼 안) — 로그인 뒤 돌아올 곳. 앱 밖이거나 이상하면 시작 화면 */
+function big5_current_path(): string
+{
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    $base = big5_base_url() . '/';
+    if (!is_string($uri) || !str_starts_with($uri, $base) || preg_match('/[\x00-\x1F\x7F\\\\]/', $uri)) {
+        return big5_url('index.php');
+    }
+    return $uri;
+}
+
+/** 요청 호스트 기준 출처 'https://www.sbm.ai.kr' — 앱 코드에 도메인을 쓰지 않는다(초대 링크·공유 미리보기용) */
+function big5_origin(): string
+{
+    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+    $host = preg_replace('/[^A-Za-z0-9.\-:]/', '', (string) ($_SERVER['HTTP_HOST'] ?? 'localhost'));
+    return ($https ? 'https' : 'http') . '://' . $host;
 }
