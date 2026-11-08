@@ -49,16 +49,42 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 .muted { color: var(--muted); }
 
 /* ── 상단 막대 ── */
-.topbar { border-bottom: 1px solid var(--line); background: var(--bg); }
-.topbar-inner {
-  max-width: 960px; margin: 0 auto; padding: 0.75rem 1rem;
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+/* ── 상단: 공부력 진단(sbmtest assets/sbmt.css)과 같은 모양 — SBM 토큰은 상단에만 쓴다 ── */
+.gnb {
+  --sbm-navy: #1A2B4A; --sbm-green: #2A6049; --sbm-gold: #C8943A; --sbm-paper: #FBF8F3; --sbm-rule: #E7E2D6;
+  --sbm-gray-7: #374151; --sbm-gray-6: #4B5563; --sbm-gray-5: #6B7280;
+  --sbm-serif: 'Noto Serif KR', 'Source Serif 4', serif;
+  position: sticky; top: 0; z-index: 100; background: rgba(251, 248, 243, .94); border-bottom: 1px solid var(--sbm-rule); backdrop-filter: blur(8px);
 }
-.brand { font-weight: 700; font-size: 1.1rem; color: var(--ink); text-decoration: none; letter-spacing: -0.02em; }
-.brand-sub { font-weight: 500; font-size: 0.85rem; color: var(--muted); margin-left: 0.25rem; }
-.topnav { display: flex; gap: 0.25rem 1rem; flex-wrap: wrap; font-size: 0.95rem; }
-.topnav a { color: var(--ink-soft); text-decoration: none; padding: 0.25rem 0; }
-.topnav a[aria-current="page"] { color: var(--accent); font-weight: 600; border-bottom: 2px solid var(--accent); }
+.gnb-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; min-height: 64px; display: flex; align-items: center; gap: 1rem; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
+.brand-mark { display: inline-flex; align-items: center; justify-content: center; font-family: var(--sbm-serif); font-weight: 700; font-size: 14px; letter-spacing: .06em; color: var(--sbm-paper); background: var(--sbm-navy); padding: 6px 8px 5px; border-radius: 2px; line-height: 1; box-shadow: inset 0 -2px 0 var(--sbm-gold); }
+.brand-text { display: flex; flex-direction: column; line-height: 1.25; text-decoration: none; }
+a.brand-mark { text-decoration: none; min-height: 32px; }
+a.brand-mark:hover, a.brand-mark:focus-visible { background: var(--sbm-green); }
+.brand-name { font-family: var(--sbm-serif); font-weight: 700; font-size: 16px; color: var(--sbm-navy); }
+.brand-sub { font-size: 11px; color: var(--sbm-gray-5); }
+.gnb-menu { display: flex; gap: 1.25rem; margin-left: auto; }
+.gnb-menu a { font-family: var(--sbm-serif); font-size: 13.5px; color: var(--sbm-gray-7); text-decoration: none; padding: 4px 0; border-bottom: 1px solid transparent; white-space: nowrap; }
+.gnb-menu a:hover, .gnb-menu a[aria-current="page"] { color: var(--sbm-green); border-bottom-color: var(--sbm-green); }
+.gnb-user { display: flex; align-items: center; gap: .75rem; }
+.gnb-user-name { font-size: 13px; color: var(--sbm-gray-6); }
+.gnb-cta { font-size: 13px; font-weight: 500; text-decoration: none; white-space: nowrap; color: var(--sbm-navy); border: 1px solid var(--sbm-navy); padding: 8px 14px; border-radius: 2px; min-height: 44px; display: inline-flex; align-items: center; }
+.gnb-cta:hover { background: var(--sbm-navy); color: #fff; }
+@media (max-width: 760px) {
+  .gnb-inner { gap: .6rem; min-height: 56px; }
+  .gnb-menu { gap: .7rem; }
+  .gnb-menu a { font-size: 12.5px; }
+  .gnb-menu a[href="/"] { display: none; }
+  .brand-sub { display: none; }
+  .gnb-user-name { display: none; }
+  .gnb-cta { padding: 6px 10px; font-size: 12px; }
+}
+/* 관리자 메뉴는 항목이 많아 좁은 화면에서 줄을 바꾼다 */
+@media (max-width: 900px) {
+  .area-admin .gnb-inner { flex-wrap: wrap; padding-top: .4rem; padding-bottom: .4rem; }
+  .area-admin .gnb-menu { flex-wrap: wrap; gap: .25rem 1rem; margin-left: 0; width: 100%; }
+}
 
 /* ── 본문 ── */
 .page { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 3rem; min-height: 60vh; }

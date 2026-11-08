@@ -59,7 +59,10 @@ const { BASE, ORIGIN, OUT, startServer, resetDb, openBrowser, ok, done, login, s
     await login(page, 'user', 'visang');
     ok(page.url().endsWith('/big5/index.php'), 'user/visang 공통 로그인 → 다이얼 시작 화면');
     ok((await page.textContent('body')).includes('사용자님, 반갑습니다'), '시작 화면에 표시 이름');
-    ok(await page.isVisible('a:has-text("로그아웃")'), '로그인 상태 메뉴');
+    // 상단(0.10.1) — 공부력 진단과 같은 모양: SBM 표식·Dial·'SBM 진단 검사 홈'·내 메뉴·[내 계정]
+    ok((await page.getAttribute('.gnb a.brand-mark', 'href')) === '/', '상단: SBM 표식 → 사이트 홈(휴대폰에서도 홈으로 가는 길)');
+    ok(await page.isVisible('.gnb .brand-mark') && (await page.textContent('.gnb .brand-name')).trim() === 'Dial' && (await page.getAttribute('.gnb-menu a:has-text("SBM 진단 검사 홈")', 'href')) === '/', '상단: SBM 표식·Dial·사이트 홈 링크');
+    ok(await page.isVisible('.gnb-menu a:has-text("내 기록")') && (await page.getAttribute('.gnb a.gnb-cta', 'href')) === '/account/' && (await page.textContent('.gnb-user-name')).includes('사용자님'), '로그인 상태 상단: 내 기록·[내 계정]');
 
     // 5) 사용자 세션만으로는 관리자 화면 불가 (세션 분리)
     await page.goto(`${BASE}/admin/index.php`);
@@ -79,8 +82,14 @@ const { BASE, ORIGIN, OUT, startServer, resetDb, openBrowser, ok, done, login, s
     await page.goto(`${BASE}/index.php`);
     ok((await page.textContent('body')).includes('사용자님, 반갑습니다'), '관리자 로그아웃 후 사용자 세션 유지');
     await page.goto(`${BASE}/logout.php`);
-    ok(await page.isVisible('.topnav a:has-text("로그인")'), '사용자 로그아웃');
-    ok((await page.getAttribute('.topnav a:has-text("가입")', 'href')).startsWith('/account/register.php?next='), '가입 링크 → 공통 가입');
+    ok(await page.isVisible('.gnb a.gnb-cta:has-text("로그인")') && (await page.getAttribute('.gnb a.gnb-cta', 'href')).startsWith('/account/login.php?next='), '사용자 로그아웃 → 상단 [로그인](공통 로그인)');
+    ok((await page.getAttribute('.hero-sub a:has-text("익명으로 가입")', 'href')).startsWith('/account/register.php?next='), '시작 화면: 익명으로 가입 → 공통 가입');
+    for (const w of [390, 768, 1280]) {
+      await page.setViewportSize({ width: w, height: 900 });
+      const g = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth - document.documentElement.clientWidth, cta: document.querySelector('.gnb-cta').getBoundingClientRect().height }));
+      ok(g.sw <= 0 && g.cta >= 44, `${w}px 상단 가로 넘침 없음·버튼 44px`);
+    }
+    await page.setViewportSize({ width: 1280, height: 900 });
 
     // 9) 가입 (만 14세 미확인 → 거부, 확인 → 가입·자동 로그인 → 다이얼로 돌아옴)
     await page.goto(`${BASE}/register.php`);

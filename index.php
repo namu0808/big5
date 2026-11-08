@@ -25,7 +25,7 @@ $mini = big5_url('consent.php?type=mini20');
 <?php if ($user !== null): ?>
   <p class="hero-sub"><?= h($user['display_name']) ?>님, 반갑습니다. <a href="<?= h(big5_url('history.php')) ?>">내 기록 보기</a></p>
 <?php else: ?>
-  <p class="hero-sub">검사 결과를 저장하고 다시 보려면 <a href="<?= h(big5_account_url('login.php')) ?>">로그인</a>하거나 <a href="<?= h(big5_account_url('register.php')) ?>">가입</a>해 주세요. SBM 진단 검사의 한 계정으로 모든 검사를 이용합니다.</p>
+  <p class="hero-sub">검사 결과를 저장하고 다시 보려면 <a href="<?= h(big5_account_url('login.php')) ?>">로그인</a>하거나 <a href="<?= h(big5_account_url('register.php')) ?>">익명으로 가입</a>해 주세요(이름·연락처 없이 아이디와 비밀번호만). SBM 진단 검사의 한 계정으로 모든 검사를 이용합니다.</p>
 <?php endif; ?>
 </section>
 <section class="notice-box">

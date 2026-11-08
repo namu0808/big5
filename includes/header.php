@@ -33,7 +33,7 @@ $big5Nav = $layout_area === 'admin'
     : [
         'history' => ['history.php', '내 기록'],
         'invite' => ['invite.php', '타인 평가'],
-        'account' => ['account.php', '계정'],
+        'account' => ['account.php', '다이얼 기록'],
     ];
 ?><!DOCTYPE html>
 <html lang="ko">
@@ -58,6 +58,10 @@ $big5Nav = $layout_area === 'admin'
 <meta name="referrer" content="same-origin">
 <title><?= h($page_title !== '' ? $page_title . ' · 다이얼' : 'Dial — 빅파이브(Big5) 성격 검사 | SBM 진단 검사') ?></title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="<?= h(big5_url('assets/style.css')) ?>?v=<?= h(BIG5_VERSION) ?>">
 <?php if ($layout_area === 'admin'): ?>
 <link rel="stylesheet" href="<?= h(big5_url('assets/admin.css')) ?>?v=<?= h(BIG5_VERSION) ?>">
@@ -68,27 +72,40 @@ $big5Nav = $layout_area === 'admin'
 </head>
 <body class="<?= h(trim('area-' . $layout_area . ' ' . $body_class)) ?>" data-base="<?= h(big5_base_url()) ?>">
 <?php if (!$hide_nav): ?>
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="<?= h(big5_url($layout_area === 'admin' ? 'admin/index.php' : 'index.php')) ?>">다이얼<?= $layout_area === 'admin' ? ' <span class="brand-sub">관리자</span>' : '' ?></a>
-    <nav class="topnav" aria-label="주 메뉴">
+<?php /* 상단 — 공부력 진단(sbmtest includes/header.php)과 같은 모양: SBM 표식 · 서비스 이름 · 'SBM 진단 검사 홈' · 내 계정/로그인. .topbar 는 인쇄 숨김(print.css)용 */ ?>
+<header class="gnb topbar">
+  <div class="gnb-inner">
+    <span class="brand">
+      <a class="brand-mark" href="/" aria-label="SBM 진단 검사 홈" title="SBM 진단 검사 홈">SBM</a>
+      <a class="brand-text" href="<?= h(big5_url($layout_area === 'admin' ? 'admin/index.php' : 'index.php')) ?>" aria-label="다이얼 시작 화면">
+        <span class="brand-name">Dial<?= $layout_area === 'admin' ? ' 관리자' : '' ?></span>
+        <span class="brand-sub">빅파이브(Big5) 성격 검사</span>
+      </a>
+    </span>
+    <nav class="gnb-menu" aria-label="주 메뉴">
 <?php if ($layout_area === 'admin'): ?>
 <?php if ($big5HeadAdmin !== null): ?>
-<?php foreach ($big5Nav as $key => [$href, $label]): ?>
-      <a href="<?= h(big5_url($href)) ?>"<?= $key === $nav_active ? ' aria-current="page"' : '' ?>><?= h($label) ?></a>
+<?php foreach ($big5Nav as $big5NavKey => [$big5NavHref, $big5NavLabel]): ?>
+      <a href="<?= h(big5_url($big5NavHref)) ?>"<?= $big5NavKey === $nav_active ? ' aria-current="page"' : '' ?>><?= h($big5NavLabel) ?></a>
 <?php endforeach; ?>
       <a href="<?= h(big5_url('admin/logout.php')) ?>">로그아웃</a>
 <?php endif; ?>
-<?php elseif ($big5HeadUser !== null): ?>
-<?php foreach ($big5Nav as $key => [$href, $label]): ?>
-      <a href="<?= h(big5_url($href)) ?>"<?= $key === $nav_active ? ' aria-current="page"' : '' ?>><?= h($label) ?></a>
-<?php endforeach; ?>
-      <a href="<?= h(big5_url('logout.php')) ?>">로그아웃</a>
 <?php else: ?>
-      <a href="<?= h(big5_account_url('login.php', big5_current_path())) ?>">로그인</a>
-      <a href="<?= h(big5_account_url('register.php', big5_current_path())) ?>">가입</a>
+      <a href="/">SBM 진단 검사 홈</a>
+<?php if ($big5HeadUser !== null): ?>
+<?php foreach ($big5Nav as $big5NavKey => [$big5NavHref, $big5NavLabel]): ?>
+      <a href="<?= h(big5_url($big5NavHref)) ?>"<?= $big5NavKey === $nav_active ? ' aria-current="page"' : '' ?>><?= h($big5NavLabel) ?></a>
+<?php endforeach; ?>
+<?php endif; ?>
 <?php endif; ?>
     </nav>
+<?php if ($layout_area === 'user'): ?>
+<?php if ($big5HeadUser !== null): ?>
+    <span class="gnb-user"><span class="gnb-user-name"><?= h((string) $big5HeadUser['display_name']) ?>님</span><a class="gnb-cta" href="/account/">내 계정</a></span>
+<?php else: ?>
+    <a class="gnb-cta" href="<?= h(big5_account_url('login.php', big5_current_path())) ?>">로그인</a>
+<?php endif; ?>
+<?php endif; ?>
   </div>
 </header>
 <?php endif; ?>
