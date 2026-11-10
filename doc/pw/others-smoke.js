@@ -148,9 +148,15 @@ async function rateOnce(link, pick) {
     const left = sql(`SELECT
       (SELECT COUNT(*) FROM big5_sessions WHERE user_id = (SELECT id FROM sbm_users WHERE username = 'user')) AS s,
       (SELECT COUNT(*) FROM big5_invites WHERE user_id = (SELECT id FROM sbm_users WHERE username = 'user')) AS i,
-      (SELECT COUNT(*) FROM big5_growth_choices) AS g,
+      (SELECT COUNT(*) FROM big5_growth_choices WHERE user_id = (SELECT id FROM sbm_users WHERE username = 'user')) AS g`)[0];
+    ok(Object.values(left).every((v) => v === 0), `내 다이얼 기록 0건 ${JSON.stringify(left)}`);
+    // 실제로 지우지 않는다(2026-11-10) — 기록은 빈 은퇴 계정('~del…')으로 옮겨 남는다
+    const kept = sql(`SELECT
+      (SELECT COUNT(*) FROM big5_sessions s JOIN sbm_users u ON u.id = s.user_id WHERE u.username LIKE '~del%' AND u.is_active = 0) AS s,
       (SELECT COUNT(*) FROM big5_ratings) AS ra`)[0];
-    ok(Object.values(left).every((v) => v === 0), `다이얼 기록 0건 ${JSON.stringify(left)}`);
+    ok(kept.s > 0 && kept.ra > 0, `지운 기록은 DB 에 보존 ${JSON.stringify(kept)}`);
+    await page.goto(`${BASE}/history.php`);
+    ok(await page.locator('a[href*="report.php?id="]').count() === 0, '지운 뒤 내 기록 화면에 옛 검사 없음');
     ok(sql("SELECT COUNT(*) AS n FROM sbm_users WHERE username = 'user'")[0].n === 1, '계정은 남음');
     await page.goto(`${BASE}/history.php`);
     ok(page.url().endsWith('/big5/history.php'), '기록 삭제 후에도 로그인 유지');
@@ -166,7 +172,7 @@ async function rateOnce(link, pick) {
     ok(page.url() === `${ORIGIN}/` && (await page.textContent('.flash')).includes('지웠습니다'), '계정 전체 삭제 → 홈 안내');
     const gone = sql(`SELECT (SELECT COUNT(*) FROM sbm_users WHERE username = 'user') AS u,
       (SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?) AS s`, [sid])[0];
-    ok(gone.u === 0 && gone.s === 0, `계정·다이얼 기록 모두 삭제 ${JSON.stringify(gone)}`);
+    ok(gone.u === 0 && gone.s === 1, `계정은 은퇴(아이디 풀림)·다이얼 기록은 보존 ${JSON.stringify(gone)}`);
     await page.goto(`${BASE}/history.php`);
     ok(page.url().includes('/account/login.php'), '삭제 후 로그아웃 상태 → 공통 로그인');
     await login(page, 'user', 'visang');

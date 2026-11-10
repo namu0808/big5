@@ -9,7 +9,8 @@ if (big5_is_post()) {
     big5_csrf_check();
     $id = (int) big5_param('user_id', '0');
     $active = big5_param('active') === '1' ? 1 : 0;
-    $pdo->prepare("UPDATE sbm_users SET is_active = ? WHERE id = ? AND role = 'user'")->execute([$active, $id]);
+    // 은퇴(삭제한) 계정은 다시 켜지 않는다 — 아이디가 '~del…' 로 바뀌어 있다
+    $pdo->prepare("UPDATE sbm_users SET is_active = ? WHERE id = ? AND role = 'user' AND username NOT LIKE '~%'")->execute([$active, $id]);
     big5_flash($active ? '다시 사용할 수 있게 했습니다.' : '사용을 중지했습니다. 이 사용자는 로그인할 수 없습니다.');
     big5_redirect('admin/users.php?q=' . rawurlencode(big5_param('q')) . '&p=' . (int) big5_param('p', '1'));
 }
@@ -52,16 +53,16 @@ require __DIR__ . '/../includes/header.php';
 <div class="table-wrap"><table class="table" id="userTable">
   <thead><tr><th>번호</th><th>아이디</th><th>이름</th><th>구분</th><th>완료 검사</th><th>가입</th><th>최근 로그인</th><th>상태</th><th></th></tr></thead>
   <tbody>
-<?php foreach ($users as $u): $isUser = $u['role'] === 'user'; ?>
+<?php foreach ($users as $u): $retired = sbm_user_is_retired($u); $isUser = $u['role'] === 'user' && !$retired; ?>
     <tr data-username="<?= h((string) $u['username']) ?>">
       <td><?= (int) $u['id'] ?></td>
       <td><?= h((string) $u['username']) ?></td>
       <td><?= h((string) $u['display_name']) ?></td>
-      <td><?= $isUser ? '사용자' : '관리자' ?></td>
+      <td><?= $retired ? '삭제한 계정' : ($isUser ? '사용자' : '관리자') ?></td>
       <td><?= (int) $u['done'] ?></td>
       <td><?= h(substr((string) $u['created_at'], 0, 10)) ?></td>
       <td><?= h(substr((string) ($u['last_login_at'] ?? ''), 0, 16)) ?></td>
-      <td><?= (int) $u['is_active'] === 1 ? '사용 중' : '<strong>중지</strong>' ?></td>
+      <td><?= $retired ? '<span class="muted">닫힘(기록 보존)</span>' : ((int) $u['is_active'] === 1 ? '사용 중' : '<strong>중지</strong>') ?></td>
       <td>
 <?php if ($isUser): ?>
         <form method="post" action="<?= h(big5_url('admin/users.php')) ?>">

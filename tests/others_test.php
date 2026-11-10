@@ -103,22 +103,28 @@ t_ok(is_string($summary) && str_contains($summary, '완료한 검사'), '훅 요
 t_ok(big5_sbm_summary($pdo, 999999) === null, '훅 요약: 기록 없으면 null');
 $hooks = sbm_user_summaries($pdo, $uid);
 t_ok(count($hooks) === 1 && $hooks[0]['id'] === 'big5' && $hooks[0]['summary'] === $summary, '공통 계정이 다이얼 훅을 찾음');
-// 사이트 공통 계정 전체 삭제 (다이얼 훅 + 계정 행)
+// 사이트 공통 계정 전체 삭제 — 계정은 은퇴(로그인 불가·익명), 다이얼 기록은 DB 에 그대로 남는다(2026-11-10 기록 보존)
+$beforeResp = $count('SELECT COUNT(*) FROM big5_responses');
+$beforeRatings = $count('SELECT COUNT(*) FROM big5_ratings');
+$beforeSessions = $count('SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?', [$uid]);
 sbm_user_delete_all($pdo, $uid);
-t_ok($count('SELECT COUNT(*) FROM sbm_users WHERE id = ?', [$uid]) === 0, '삭제: 계정');
-t_ok($count('SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?', [$uid]) === 0, '삭제: 검사');
-t_ok($count("SELECT COUNT(*) FROM big5_responses WHERE owner_type = 'session' AND owner_id IN (?, ?)", [$s1, $s2]) === 0, '삭제: 본인 응답');
-t_ok($count("SELECT COUNT(*) FROM big5_scores WHERE owner_type = 'session' AND owner_id IN (?, ?)", [$s1, $s2]) === 0, '삭제: 본인 점수');
-t_ok($count('SELECT COUNT(*) FROM big5_invites') === 0 && $count('SELECT COUNT(*) FROM big5_ratings') === 0, '삭제: 초대·받은 평가');
-t_ok($count("SELECT COUNT(*) FROM big5_responses WHERE owner_type = 'rating'") === 0 && $count("SELECT COUNT(*) FROM big5_scores WHERE owner_type = 'rating'") === 0, '삭제: 받은 평가의 응답·점수');
-t_ok($count('SELECT COUNT(*) FROM big5_growth_choices') === 0 && $count("SELECT COUNT(*) FROM sbm_login_attempts WHERE username = 'user'") === 0, '삭제: 성장 행동·로그인 기록');
+$ret = $pdo->query("SELECT username, is_active, display_name FROM sbm_users WHERE id = {$uid}")->fetch();
+t_ok(is_array($ret) && sbm_user_is_retired($ret) && (int) $ret['is_active'] === 0 && $ret['display_name'] === '', '전체 삭제: 계정은 은퇴(행 남음·익명·비활성)');
+t_ok($count('SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?', [$uid]) === $beforeSessions && $beforeSessions > 0, '전체 삭제: 검사 기록 보존');
+t_ok($count('SELECT COUNT(*) FROM big5_responses') === $beforeResp && $count('SELECT COUNT(*) FROM big5_ratings') === $beforeRatings, '전체 삭제: 응답·받은 평가 보존');
+t_ok($count('SELECT COUNT(*) FROM big5_invites WHERE user_id = ? AND expires_at > ?', [$uid, big5_now()]) === 0, '전체 삭제: 초대 링크 만료');
+t_ok($count("SELECT COUNT(*) FROM sbm_login_attempts WHERE username = 'user'") === 0, '전체 삭제: 로그인 기록 정리');
+t_ok(isset(sbm_authenticate($pdo, 'user', 'userpass1')['error']), '전체 삭제: 옛 아이디로 로그인 불가');
 t_ok($count('SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?', [$other]) === 1 && $count("SELECT COUNT(*) FROM big5_responses WHERE owner_type = 'session' AND owner_id = ?", [$os]) === 1, '다른 사용자 데이터는 그대로');
 
 
-// 다이얼 기록만 삭제 — 계정은 남는다
+// 다이얼 기록만 지우기 — 계정은 남고, 기록은 빈 은퇴 계정으로 옮겨 보존
 $os2 = big5_session_start($pdo, $other, 'full120');
-big5_user_delete_data_tx($pdo, $other);
-t_ok($count('SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?', [$other]) === 0, '다이얼 기록만 삭제: 검사 없음');
-t_ok($count('SELECT COUNT(*) FROM sbm_users WHERE id = ?', [$other]) === 1, '다이얼 기록만 삭제: 계정은 남음');
+$totalSessions = $count('SELECT COUNT(*) FROM big5_sessions');
+$tomb = big5_user_delete_data_tx($pdo, $other);
+t_ok($count('SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?', [$other]) === 0, '다이얼 기록만 지우기: 내 검사 없음');
+t_ok($count('SELECT COUNT(*) FROM sbm_users WHERE id = ? AND is_active = 1', [$other]) === 1, '다이얼 기록만 지우기: 계정은 남음');
+t_ok($count('SELECT COUNT(*) FROM big5_sessions') === $totalSessions && $count('SELECT COUNT(*) FROM big5_sessions WHERE user_id = ?', [$tomb]) === 2, '다이얼 기록만 지우기: 기록은 은퇴 계정에 보존');
+t_ok($count('SELECT COUNT(*) FROM sbm_users WHERE id = ? AND is_active = 0', [$tomb]) === 1, '은퇴 계정은 로그인 불가');
 
 t_done();

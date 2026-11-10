@@ -20,7 +20,7 @@ require __DIR__ . '/../includes/header.php';
 <h1>대시보드</h1>
 <p class="muted"><?= h($big5Admin['display_name']) ?>님, 관리자 화면입니다.</p>
 <div class="stat-grid">
-  <div class="stat"><span class="stat-label">사용자</span><span class="stat-value"><?= $c['users'] ?></span><span class="muted small">사용 중지 <?= $c['users_inactive'] ?></span></div>
+  <div class="stat"><span class="stat-label">사용자</span><span class="stat-value"><?= $c['users'] ?></span><span class="muted small">사용 중지 <?= $c['users_inactive'] ?> · 삭제한 계정 <?= $c['users_retired'] ?>(기록 보존)</span></div>
   <div class="stat"><span class="stat-label">정식 검사 완료</span><span class="stat-value"><?= $c['full'] ?></span></div>
   <div class="stat"><span class="stat-label">간이 검사 완료</span><span class="stat-value"><?= $c['mini'] ?></span></div>
   <div class="stat"><span class="stat-label">타인 평가 완료</span><span class="stat-value"><?= $c['ratings'] ?></span></div>

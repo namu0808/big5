@@ -2,6 +2,7 @@
 /**
  * 계정 — 다이얼 기록 관리. 계정 정보·비밀번호·계정 전체 삭제는 사이트 공통 [내 계정](/account/) 에서 한다.
  * 여기서는 다이얼 기록만 지운다(계정은 남는다). 비밀번호와 확인 문구로 다시 확인한다.
+ * 지운 기록은 내 화면에서 사라지지만 DB 에는 익명으로 남는다(빈 은퇴 계정으로 옮김 — includes/user_delete.php).
  */
 declare(strict_types=1);
 
@@ -47,7 +48,8 @@ require __DIR__ . '/includes/header.php';
 
   <h2>다이얼 기록만 삭제</h2>
   <div class="danger-box">
-    <p>다이얼의 <strong>모든 검사 기록, 응답, 점수, 성장 행동, 보낸 초대 링크, 받은 타인 평가</strong>가 지워집니다. 계정은 남아 다른 검사를 계속 이용할 수 있어요. <strong>되돌릴 수 없습니다.</strong></p>
+    <p>다이얼의 <strong>모든 검사 기록, 응답, 점수, 성장 행동, 보낸 초대 링크, 받은 타인 평가</strong>가 내 화면에서 사라지고, 보낸 초대 링크는 더 열리지 않습니다. 계정은 남아 다른 검사를 계속 이용할 수 있어요. <strong>되돌릴 수 없습니다.</strong></p>
+    <p class="muted small">아이디·이름과 떼어 낸 익명 응답 기록은 검사 개선을 위한 연구 자료로 보관됩니다(<a href="/privacy.php">개인정보 처리 안내</a>).</p>
 <?php if ($delError !== ''): ?>
     <p class="form-error" role="alert"><?= h($delError) ?></p>
 <?php endif; ?>

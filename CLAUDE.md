@@ -24,7 +24,7 @@
 - `/admin` 모든 파일은 `declare(strict_types=1);` 바로 다음 첫 문장이 `require_once '../includes/admin_check.php';` (예외: `admin/login.php`)
 - **계정은 사이트 공통(0.10.0~)**: 계정 테이블은 `sbm_users` 하나(저장소 `namu0808/sbm.ai.kr` 의 `core/`, 서버 `{홈}/www/core/`). 다이얼은 `includes/core_link.php` 로 코어를 싣고(`SBM_CORE_DIR` → `../core` → `../sbm.ai.kr/core`) `big5_*` 인증·세션·CSRF 함수는 `sbm_*` 를 감싼다
   - 로그인·가입·비밀번호·계정 전체 삭제 화면은 사이트 공통 `/account/` — `big5_account_url('login.php', next)`. 다이얼 `login.php`·`register.php` 는 넘기기만 한다. 다이얼 `account.php` 는 다이얼 기록만 지운다
-  - 공통 계정의 전체 삭제는 서비스 훅 `includes/sbm_hook.php`(`big5_sbm_summary`·`big5_sbm_delete`, PDO 만)로 다이얼 데이터를 지운다. 다이얼 테이블이 바뀌면 `includes/user_delete.php` 를 함께 고친다
+  - 공통 계정의 전체 삭제는 서비스 훅 `includes/sbm_hook.php`(`big5_sbm_summary`·`big5_sbm_delete`, PDO 만). **0.11.0(2026-11-10 대표 지시)부터 다이얼 기록은 DB 에서 실제로 지우지 않는다**: 계정 전체 삭제 때는 계정이 은퇴(`~del{id}`, 로그인 불가)하고 기록은 그대로·초대 링크만 만료, '다이얼 기록만 지우기'(`account.php`)는 빈 은퇴 계정(`sbm_user_tombstone_create()`)으로 검사·초대·성장 행동의 user_id 를 옮긴다(`includes/user_delete.php`). 다이얼 테이블이 바뀌면 `includes/user_delete.php` 를 함께 고친다. 관리자 사용자 화면은 은퇴 계정을 '삭제한 계정'으로 보이고 다시 켜지 못하게 한다
   - 관리자 로그인은 다이얼 `admin/login.php`(sbm_users 의 role=admin)
 - 세션: 사이트 공통 `SBMSESSID`, 쿠키 경로 `/`(`big5_session_begin()` → `sbm_session_begin()`). 사용자 `$_SESSION['user_id']`, 관리자 `$_SESSION['admin_id']` 분리. 다이얼 세션 키는 `big5_` 접두어
 - `api.php` 같은 전용 API 파일 만들지 않음 — 각 화면이 자기에게 POST. 새로고침 없는 동작만 `ajax=1` fetch POST → JSON `{ok, code, error, ...}` (`big5_json()`)

@@ -47,6 +47,7 @@ h2 { font-size: 1.3rem; margin: 2rem 0 0.75rem; }
 h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 
 .muted { color: var(--muted); }
+.small { font-size: 0.875rem; }
 
 /* ── 상단 막대 ── */
 /* ── 상단: 공부력 진단(sbmtest assets/sbmt.css)과 같은 모양 — SBM 토큰은 상단에만 쓴다 ── */

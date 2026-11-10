@@ -26,8 +26,8 @@ function big5_sbm_summary(PDO $pdo, int $userId): ?string
     return implode(' · ', $parts);
 }
 
-/** 계정 전체 삭제 때 다이얼 데이터 삭제 (트랜잭션은 공통 계정 쪽) */
+/** 계정 전체 삭제 때 — 기록은 은퇴한 계정에 남기고(실제 삭제 없음) 초대 링크만 만료 (트랜잭션은 공통 계정 쪽) */
 function big5_sbm_delete(PDO $pdo, int $userId): void
 {
-    big5_user_delete_data($pdo, $userId);
+    big5_user_detach_data($pdo, $userId);
 }

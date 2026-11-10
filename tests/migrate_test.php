@@ -71,8 +71,8 @@ t_ok(($r['id'] ?? 0) === 6, '새 가입 id = 6 (AUTO_INCREMENT 이어짐)');
 require_once $root . '/includes/sbm_hook.php';
 putenv('SBM_BIG5_DIR=' . $root);
 sbm_user_delete_all($pdo, 2);
-t_ok((int) $q('SELECT COUNT(*) FROM big5_sessions WHERE user_id = 2') === 0 && (int) $q('SELECT COUNT(*) FROM big5_invites WHERE user_id = 2') === 0
-    && (int) $q("SELECT COUNT(*) FROM big5_responses") === 1, '계정 전체 삭제: 다이얼 기록(응답 포함)도 삭제');
+t_ok((int) $q('SELECT COUNT(*) FROM big5_sessions WHERE user_id = 2') === 2 && (int) $q("SELECT COUNT(*) FROM big5_responses") === 3
+    && (int) $q("SELECT is_active FROM sbm_users WHERE id = 2") === 0, '계정 전체 삭제: 계정은 은퇴, 다이얼 기록은 보존(2026-11-10)');
 t_ok((int) $q('SELECT COUNT(*) FROM big5_sessions WHERE user_id = 5') === 1, '다른 사람 기록은 그대로');
 
 // 5) 겹치는 아이디가 다른 id 로 이미 있으면 멈춘다 (아무것도 지우지 않음)
