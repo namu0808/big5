@@ -24,7 +24,6 @@ $big5HeadAdmin = $layout_area === 'admin' ? big5_current_admin($pdo ?? null) : n
 $big5Nav = $layout_area === 'admin'
     ? [
         'dash' => ['admin/index.php', '대시보드'],
-        'users' => ['admin/users.php', '사용자'],
         'items' => ['admin/items.php', '문항'],
         'content' => ['admin/content.php', '해석 문구'],
         'norms' => ['admin/norms.php', '규준'],
@@ -88,7 +87,7 @@ $big5Nav = $layout_area === 'admin'
 <?php foreach ($big5Nav as $big5NavKey => [$big5NavHref, $big5NavLabel]): ?>
       <a href="<?= h(big5_url($big5NavHref)) ?>"<?= $big5NavKey === $nav_active ? ' aria-current="page"' : '' ?>><?= h($big5NavLabel) ?></a>
 <?php endforeach; ?>
-      <a href="<?= h(big5_url('admin/logout.php')) ?>">로그아웃</a>
+      <a href="<?= h(function_exists('sbm_admin_url') ? sbm_admin_url('logout.php') : big5_url('admin/logout.php')) ?>">로그아웃</a>
 <?php endif; ?>
 <?php else: ?>
       <a href="/">SBM 진단 검사 홈</a>
@@ -107,6 +106,16 @@ $big5Nav = $layout_area === 'admin'
 <?php endif; ?>
 <?php endif; ?>
   </div>
+<?php /* 통합 관리자 메뉴 줄(0.12.0) — 홈 /admin/ 과 같은 목록(sbm.ai.kr core sbm_admin_links). 코어가 옛 판이면 줄을 그리지 않는다 */ ?>
+<?php if ($layout_area === 'admin' && $big5HeadAdmin !== null && function_exists('sbm_admin_links')): ?>
+  <nav class="adm-bar" aria-label="통합 관리자 메뉴">
+    <div class="adm-bar-inner">
+<?php foreach (sbm_admin_links() as $big5AdmL): ?>
+      <a href="<?= h($big5AdmL['url']) ?>"<?= $big5AdmL['id'] === 'big5' ? ' aria-current="page"' : '' ?>><?= h($big5AdmL['name']) ?></a>
+<?php endforeach; ?>
+    </div>
+  </nav>
+<?php endif; ?>
 </header>
 <?php endif; ?>
 <main class="page">

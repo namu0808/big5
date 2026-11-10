@@ -4,7 +4,7 @@
  */
 'use strict';
 const fs = require('fs');
-const { BASE, ORIGIN, OUT, startServer, resetDb, openBrowser, ok, done, login, status, sql } = require('./lib');
+const { BASE, ORIGIN, OUT, startServer, resetDb, openBrowser, ok, done, login, isAdminLogin, status, sql } = require('./lib');
 
 (async () => {
   resetDb();
@@ -34,11 +34,11 @@ const { BASE, ORIGIN, OUT, startServer, resetDb, openBrowser, ok, done, login, s
     ok((await page.getAttribute('meta[name=description]', 'content') || '').includes('초등 공부력'), '시작 화면 설명');
     ok(await page.isVisible('footer a[href="/"]'), '꼬리에 SBM 진단 검사 홈 링크');
     await page.goto(`${BASE}/admin/login.php`);
-    ok((await page.getAttribute('meta[name=robots]', 'content')) === 'noindex', '관리자 화면 noindex');
+    ok(isAdminLogin(page.url()) && (await page.getAttribute('meta[name=robots]', 'content')).startsWith('noindex'), '관리자 로그인 → 통합 관리자 로그인, noindex');
 
-    // 3) 보호 화면은 로그인으로 — 사용자 화면은 사이트 공통 로그인(돌아올 곳 유지), 관리자는 다이얼 관리자 로그인
+    // 3) 보호 화면은 로그인으로 — 사용자 화면은 사이트 공통 로그인(돌아올 곳 유지), 관리자는 통합 관리자 로그인(돌아올 곳 유지, 0.12.0)
     await page.goto(`${BASE}/admin/index.php`);
-    ok(page.url().endsWith('/big5/admin/login.php'), '미로그인 관리자 화면 → admin/login.php');
+    ok(page.url() === `${ORIGIN}/admin/login.php?next=%2Fbig5%2Fadmin%2Findex.php`, '미로그인 관리자 화면 → 통합 관리자 로그인(next) (' + page.url() + ')');
     await page.goto(`${BASE}/history.php`);
     ok(page.url() === `${ORIGIN}/account/login.php?next=%2Fbig5%2Fhistory.php`, '미로그인 내 기록 → 공통 로그인(next=/big5/history.php)');
     await page.fill('input[name=username]', 'user');
@@ -66,7 +66,7 @@ const { BASE, ORIGIN, OUT, startServer, resetDb, openBrowser, ok, done, login, s
 
     // 5) 사용자 세션만으로는 관리자 화면 불가 (세션 분리)
     await page.goto(`${BASE}/admin/index.php`);
-    ok(page.url().endsWith('/admin/login.php'), '사용자 로그인만으로 관리자 화면 접근 불가');
+    ok(isAdminLogin(page.url()), '사용자 로그인만으로 관리자 화면 접근 불가');
 
     // 6) 일반 사용자는 관리자 로그인 불가
     await login(page, 'user', 'visang', true);

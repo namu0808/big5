@@ -24,3 +24,11 @@
 .input-sm { min-height: 40px; padding: 0.3rem 0.6rem; font: inherit; border: 1px solid var(--line); border-radius: 8px; margin-left: 0.35rem; }
 .pager a { display: inline-block; padding: 0.2rem 0.5rem; }
 .pager a[aria-current="page"] { font-weight: 700; text-decoration: none; }
+
+/* 통합 관리자 메뉴 줄(0.12.0) — 홈 /admin/ · 회원 · 다이얼 · 공부력 진단. 휴대폰에서도 보인다 */
+.adm-bar { border-top: 1px solid var(--sbm-rule); background: #fff; }
+.adm-bar-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; display: flex; flex-wrap: wrap; gap: 0 1.5rem; }
+.adm-bar a { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--sbm-serif); font-size: 14px; color: var(--sbm-gray-7); text-decoration: none; border-bottom: 2px solid transparent; }
+.adm-bar a:hover { color: var(--sbm-green); }
+.adm-bar a[aria-current="page"] { color: var(--sbm-navy); font-weight: 600; border-bottom-color: var(--sbm-gold); }
+@media (max-width: 520px) { .adm-bar-inner { gap: 0 1rem; } }

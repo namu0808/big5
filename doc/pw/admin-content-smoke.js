@@ -4,7 +4,7 @@
  */
 'use strict';
 const fs = require('fs');
-const { BASE, OUT, startServer, resetDb, openBrowser, ok, done, login, freshInstall } = require('./lib');
+const { BASE, OUT, startServer, resetDb, openBrowser, ok, done, login, isAdminLogin, freshInstall } = require('./lib');
 
 (async () => {
   resetDb();
@@ -16,7 +16,7 @@ const { BASE, OUT, startServer, resetDb, openBrowser, ok, done, login, freshInst
     // 일반 사용자는 관리자 화면 불가
     await login(page, 'user', 'visang');
     await page.goto(`${BASE}/admin/content.php`);
-    ok(page.url().endsWith('/admin/login.php'), '일반 사용자 → 관리자 로그인으로');
+    ok(isAdminLogin(page.url()), '일반 사용자 → 관리자 로그인으로');
 
     await login(page, 'sonbm', 'visang', true);
     await page.goto(`${BASE}/admin/content.php`);

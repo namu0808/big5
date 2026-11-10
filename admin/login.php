@@ -1,8 +1,17 @@
 <?php
-/** 관리자 로그인 — role=admin 계정만. 로그인 화면 자체는 admin_check 를 거치지 않는 유일한 /admin 파일 */
+/**
+ * 관리자 로그인 — 0.12.0부터 통합 관리자 로그인(사이트 /admin/login.php)으로 넘긴다(한 번 로그인으로 세 관리자 화면).
+ * 코어가 옛 판(sbm_admin_url 없음)일 때만 아래의 예전 로그인 화면을 쓴다. admin_check 를 거치지 않는 유일한 /admin 파일.
+ */
 declare(strict_types=1);
 
 require_once __DIR__ . '/../includes/bootstrap.php';
+
+if (function_exists('sbm_admin_url')) {
+    $big5Next = big5_param('next');
+    header('Location: ' . sbm_admin_url('login.php', str_starts_with($big5Next, big5_url('admin/')) ? $big5Next : big5_url('admin/index.php')));
+    exit;
+}
 
 $error = '';
 $username = '';

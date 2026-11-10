@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const { chromium } = require('playwright');
-const { ROOT, BASE, OUT, DB, DB_CONFIG, startServer, resetDb, openBrowser, ok, done, login, freshInstall, sql } = require('./lib');
+const { ROOT, BASE, ORIGIN, OUT, DB, DB_CONFIG, startServer, resetDb, openBrowser, ok, done, login, isAdminLogin, freshInstall, sql } = require('./lib');
 
 const PAGES = ['index', 'users', 'items', 'content', 'norms', 'export'];
 
@@ -26,13 +26,13 @@ const PAGES = ['index', 'users', 'items', 'content', 'norms', 'export'];
     let blocked = 0;
     for (const p of PAGES) {
       await page.goto(`${BASE}/admin/${p}.php`);
-      if (page.url().endsWith('/admin/login.php')) blocked++;
+      if (isAdminLogin(page.url())) blocked++;
     }
     ok(blocked === PAGES.length, `일반 사용자 → 관리자 화면 ${PAGES.length}개 모두 차단`);
     const anon = await chromium.launch();
     const ap = await (await anon.newContext()).newPage();
     const r = await ap.goto(`${BASE}/admin/export.php?download=1&kind=self&type=full120`);
-    ok(ap.url().endsWith('/admin/login.php') && !(await ap.content()).includes('respondent'), '로그인 없이 CSV 내려받기 차단');
+    ok(isAdminLogin(ap.url()) && !(await ap.content()).includes('respondent'), '로그인 없이 CSV 내려받기 차단');
     await anon.close();
 
     await login(page, 'sonbm', 'visang', true);
@@ -48,7 +48,22 @@ const PAGES = ['index', 'users', 'items', 'content', 'norms', 'export'];
     await page.click('a:has-text("품질 플래그 제외")');
     ok(page.url().includes('clean=1'), '분포: 품질 플래그 제외 보기');
 
-    // ── 사용자: 검색·사용 중지
+    // ── 통합 관리자(0.12.0): 다이얼 관리자 머리에 메뉴 줄, 사이트 /admin/ 첫 화면에 다이얼 숫자, 사용자 화면은 통합 '회원 관리'로
+    const bar = await page.$$eval('.adm-bar a', (els) => els.map((e) => e.textContent.trim()));
+    ok(bar[0] === '통합 관리자' && bar[1] === '회원' && bar.includes('다이얼'), '다이얼 관리자: 통합 관리자 메뉴 줄 (' + bar.join(',') + ')');
+    ok((await page.textContent('.adm-bar a[aria-current="page"]')).trim() === '다이얼', '메뉴 줄: 다이얼 표시');
+    ok(!(await page.$('.gnb-menu a:has-text("사용자")')), '다이얼 메뉴에서 사용자 빠짐(통합 회원 관리로)');
+    await page.click('.adm-bar a:has-text("통합 관리자")');
+    await page.waitForLoadState('load');
+    const dialCard = (await page.textContent('#adm-big5-1')).replace(/\s+/g, ' ');
+    ok(page.url() === `${ORIGIN}/admin/` && dialCard.includes('다이얼') && /정식 검사 완료\(120문항\) 4/.test(dialCard) && /간이 검사 완료\(20문항\) 1/.test(dialCard), '통합 첫 화면: 다이얼 숫자(정식 4·간이 1)');
+    ok((await page.textContent('.adm-ver')).includes('다이얼 0.12.0'), '통합 첫 화면: 다이얼 버전');
+    ok(await page.$('#adm-big5-1 a[href="/big5/admin/"]') !== null, '통합 첫 화면: [다이얼 관리] 바로 가기');
+    await page.goto(`${BASE}/admin/users.php?q=use`);
+    ok(page.url() === `${ORIGIN}/admin/users.php?q=use&p=1`, '다이얼 사용자 화면 → 통합 회원 관리(검색어 유지) (' + page.url() + ')');
+    ok((await page.textContent('tr[data-username="user"]')).includes('다이얼 완료한 검사'), '회원 관리: 다이얼 이용 요약');
+
+    // ── 사용자: 검색·사용 중지 (통합 회원 관리 화면)
     await page.goto(`${BASE}/admin/users.php?q=use`);
     ok((await page.$$('#userTable tbody tr')).length === 1 && !!(await page.$('tr[data-username="user"]')), '사용자 검색');
     await page.goto(`${BASE}/admin/users.php?q=%25`);

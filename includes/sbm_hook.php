@@ -31,3 +31,41 @@ function big5_sbm_delete(PDO $pdo, int $userId): void
 {
     big5_user_detach_data($pdo, $userId);
 }
+
+/**
+ * 통합 관리자(sbm.ai.kr /admin/) 첫 화면 숫자 — 다이얼 묶음(0.12.0). 가벼운 COUNT 만, 숫자만.
+ * 쿼리는 includes/admin_stats.php big5_admin_counts() 와 같다(회원 수는 통합 관리자 '회원' 묶음이 센다).
+ * $since = 최근 7일 기준 시각(KST), $base = 앱 주소('/big5/'). 이 파일은 bootstrap·util 을 싣지 않는다.
+ */
+function big5_sbm_admin_summary(PDO $pdo, string $since, string $base = '/big5/'): array
+{
+    require_once __DIR__ . '/version.php';
+    $base = rtrim($base, '/') . '/';
+    $one = static function (string $sql, array $p = []) use ($pdo): int {
+        $st = $pdo->prepare($sql);
+        $st->execute($p);
+        return (int) $st->fetchColumn();
+    };
+    $n = static fn(int $v): string => number_format($v);
+    $full = $one("SELECT COUNT(*) FROM big5_sessions WHERE status = 'completed' AND test_type = 'full120'");
+    $mini = $one("SELECT COUNT(*) FROM big5_sessions WHERE status = 'completed' AND test_type = 'mini20'");
+    $last7 = $one("SELECT COUNT(*) FROM big5_sessions WHERE status = 'completed' AND completed_at >= ?", [$since]);
+    $going = $one("SELECT COUNT(*) FROM big5_sessions WHERE status = 'in_progress'");
+    $ratings = $one("SELECT COUNT(*) FROM big5_ratings WHERE status = 'completed'");
+    return [
+        'version' => BIG5_VERSION,
+        'groups' => [[
+            'title' => '다이얼',
+            'tiles' => [
+                ['label' => '정식 검사 완료(120문항)', 'value' => $n($full)],
+                ['label' => '간이 검사 완료(20문항)', 'value' => $n($mini)],
+                ['label' => '최근 7일 완료', 'value' => $n($last7), 'note' => '진행 중 ' . $n($going)],
+                ['label' => '타인 평가 완료', 'value' => $n($ratings)],
+            ],
+            'links' => [
+                ['label' => '다이얼 관리', 'url' => $base . 'admin/'],
+                ['label' => '내보내기(CSV)', 'url' => $base . 'admin/export.php'],
+            ],
+        ]],
+    ];
+}

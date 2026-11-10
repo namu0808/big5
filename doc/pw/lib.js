@@ -75,7 +75,12 @@ function done() {
   process.exitCode = fail === 0 ? 0 : 1;
 }
 
-/** 로그인 — 사용자는 사이트 공통 /account/login.php(돌아올 곳 /big5/index.php), 관리자는 /big5/admin/login.php */
+/** 통합 관리자 로그인 화면인가(0.12.0 — 다이얼 관리자 로그인은 사이트 /admin/login.php?next=… 로 넘어간다) */
+function isAdminLogin(url) {
+  return new URL(url).pathname === '/admin/login.php';
+}
+
+/** 로그인 — 사용자는 사이트 공통 /account/login.php(돌아올 곳 /big5/index.php), 관리자는 /big5/admin/login.php → 통합 관리자 로그인(돌아올 곳 /big5/admin/index.php) */
 async function login(page, username, password, admin = false) {
   await page.goto(admin ? `${BASE}/admin/login.php` : `${ORIGIN}/account/login.php?next=%2Fbig5%2Findex.php`);
   await page.fill('input[name=username]', username);
@@ -105,4 +110,4 @@ async function freshInstall(page) {
   return (await page.textContent('body')).includes('설치 완료');
 }
 
-module.exports = { ROOT, BASE, ORIGIN, OUT, DB, DB_CONFIG, USE_MYSQL, startServer, resetDb, openBrowser, ok, done, login, status, sql, freshInstall };
+module.exports = { ROOT, BASE, ORIGIN, OUT, DB, DB_CONFIG, USE_MYSQL, startServer, resetDb, openBrowser, ok, done, login, status, sql, freshInstall, isAdminLogin };

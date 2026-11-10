@@ -105,6 +105,16 @@ foreach (glob(dirname(__DIR__) . '/admin/*.php') as $f) {
         $bad[] = basename($f);
     }
 }
+// 통합 관리자 첫 화면 숫자 훅(0.12.0) — 대시보드 집계와 같은 수, 숫자만(아이디·이름 없음)
+require_once dirname(__DIR__) . '/includes/sbm_hook.php';
+$c = big5_admin_counts($pdo);
+$hs = big5_sbm_admin_summary($pdo, big5_now(-7 * 86400), '/big5/');
+$tiles = array_column($hs['groups'][0]['tiles'], 'value', 'label');
+t_ok($hs['version'] === BIG5_VERSION && $hs['groups'][0]['title'] === '다이얼', '관리자 요약 훅: 버전·묶음 이름');
+t_ok($tiles['정식 검사 완료(120문항)'] === (string) $c['full'] && $tiles['간이 검사 완료(20문항)'] === (string) $c['mini'] && $tiles['최근 7일 완료'] === (string) $c['last7'] && $tiles['타인 평가 완료'] === (string) $c['ratings'], '관리자 요약 훅: 대시보드와 같은 수');
+t_ok($hs['groups'][0]['links'][0]['url'] === '/big5/admin/', '관리자 요약 훅: 다이얼 관리 링크');
+t_ok(!preg_match('/user|sonbm|사용자|손병목/', json_encode($hs, JSON_UNESCAPED_UNICODE)), '관리자 요약 훅: 아이디·이름 없음');
+
 t_ok($bad === [], '/admin 모든 파일 첫 문장이 admin_check' . ($bad ? ' — 어긋남: ' . implode(', ', $bad) : ''));
 
 t_done();
