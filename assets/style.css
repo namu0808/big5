@@ -317,3 +317,34 @@ ul.form-error { padding-left: 2rem; }
 .r-legend { display: flex; gap: 1rem; font-size: 0.85rem; color: var(--muted); margin: 0.25rem 0 0.75rem; }
 .r-legend i { display: inline-block; width: 2px; height: 12px; background: var(--ink); vertical-align: middle; margin-right: 0.35rem; }
 .r-legend b { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); vertical-align: middle; margin-right: 0.35rem; }
+
+/* ============ 상단 줄 — 사이트 공통 디자인 '측정 기록지'(홈 sbm.ai.kr 0.10.0과 같게) ============
+ * 상단 줄만 바꾼다(앱 본문·결과지는 그대로). 색은 이 블록 안의 --gnb-* 만 쓴다.
+ * 표식: 먹색 'SBM' 글자 + 아래 눈금자(바늘 하나만 주홍). 'by 손병목' 같은 저자 표시는 네이비 세리프. */
+.gnb {
+  --gnb-ink: #1F2328; --gnb-ink-2: #464C55; --gnb-ink-3: #6A707A; --gnb-line: #D5D8D1; --gnb-accent: #C9522B; --gnb-author: #1A2B4A;
+  --gnb-head: 'Pretendard Variable', Pretendard, 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  background: #FFFFFF; border-bottom: 1px solid var(--gnb-ink); backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.gnb .brand-mark {
+  position: relative; font-family: var(--gnb-head); font-weight: 800; font-size: 17px; letter-spacing: .04em; line-height: 1;
+  color: var(--gnb-ink); background: transparent; padding: 2px 1px 9px; border-radius: 0; box-shadow: none;
+}
+.gnb .brand-mark::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 5px;
+  background: linear-gradient(var(--gnb-ink), var(--gnb-ink)) left bottom / 100% 1px no-repeat, repeating-linear-gradient(90deg, var(--gnb-ink) 0 1px, transparent 1px 8px);
+  background-repeat: no-repeat, repeat-x;
+}
+.gnb .brand-mark::before { content: ''; position: absolute; left: 62%; bottom: 0; width: 2px; height: 8px; background: var(--gnb-accent); }
+.gnb a.brand-mark:hover, .gnb a.brand-mark:focus-visible { background: transparent; color: var(--gnb-accent); }
+.gnb .brand-text { padding-left: 10px; border-left: 1px solid var(--gnb-line); }
+.gnb .brand-name { font-family: var(--gnb-head); font-weight: 700; color: var(--gnb-ink); letter-spacing: -.01em; }
+.gnb .brand-sub { color: var(--gnb-ink-3); }
+.gnb .gnb-menu a { font-family: var(--gnb-head); font-weight: 500; color: var(--gnb-ink-2); border-bottom-width: 2px; }
+.gnb .gnb-menu a:hover, .gnb .gnb-menu a[aria-current="page"] { color: var(--gnb-ink); border-bottom-color: var(--gnb-accent); }
+.gnb .gnb-user-name { color: var(--gnb-ink-2); }
+.gnb .gnb-cta {
+  font-family: var(--gnb-head); font-weight: 600; color: #fff; background: var(--gnb-ink); border: 1px solid var(--gnb-ink);
+  border-radius: 0; min-height: 44px; display: inline-flex; align-items: center;
+}
+.gnb .gnb-cta:hover { background: var(--gnb-accent); border-color: var(--gnb-accent); color: #fff; }
