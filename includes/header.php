@@ -17,6 +17,7 @@ $body_class = isset($body_class) && is_string($body_class) ? $body_class : '';
 $extra_css = isset($extra_css) && is_array($extra_css) ? $extra_css : [];
 $page_indexable = !empty($page_indexable) && $layout_area === 'user';
 $meta_description = isset($meta_description) && is_string($meta_description) ? $meta_description : '';
+$page_jsonld = isset($page_jsonld) && is_array($page_jsonld) ? $page_jsonld : null;   // 시작 화면 구조화 데이터(검색어 보강 2026-11-11)
 
 $big5HeadUser = $layout_area === 'user' ? big5_current_user($pdo ?? null) : null;
 $big5HeadAdmin = $layout_area === 'admin' ? big5_current_admin($pdo ?? null) : null;
@@ -68,6 +69,9 @@ $big5Nav = $layout_area === 'admin'
 <?php foreach ($extra_css as $css): ?>
 <link rel="stylesheet" href="<?= h(big5_url('assets/' . $css)) ?>?v=<?= h(BIG5_VERSION) ?>">
 <?php endforeach; ?>
+<?php if (is_array($page_jsonld)): /* 검색 엔진용 구조화 데이터(시작 화면, 검색어 보강 2026-11-11) */ ?>
+<script type="application/ld+json"><?= json_encode($page_jsonld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
+<?php endif; ?>
 </head>
 <body class="<?= h(trim('area-' . $layout_area . ' ' . $body_class)) ?>" data-base="<?= h(big5_base_url()) ?>">
 <?php if (!$hide_nav): ?>
