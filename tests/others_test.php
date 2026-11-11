@@ -59,6 +59,42 @@ $o2 = big5_others_section($self, [['relation' => 'family', 'domains' => ['C' => 
 t_ok(!$o2['single'] && $o2['rows']['C']['others'] === 70.0 && $o2['relations'] === ['가족' => 2], '평가자 2명 → 평균');
 t_ok(big5_others_section($self, []) === null, '받은 평가 없으면 9장 없음');
 
+// ── 9장 확장: 세 묶음(8·15), 방향, 구간, 남들끼리의 일치, 관계별, 쏠림, 순서, 품질 제외
+t_ok($recv[0]['test_type'] === 'mini20' && is_array($recv[0]['flags']), '받은 평가: 검사 종류와 품질 표시도 함께 (' . implode(',', $recv[0]['flags']) . ')');
+$r1 = $o1['rows'];
+t_ok($r1['C']['level'] === 'far' && $r1['E']['level'] === 'some' && $r1['A']['level'] === 'near' && $r1['O']['level'] === 'some' && $r1['N']['level'] === 'far', '세 묶음: 8점 미만 비슷 / 8~15 조금 / 15 이상 다름');
+t_ok($o1['summary']['far'] === ['C', 'N'] && $o1['summary']['near'] === ['A'] && $o1['summary']['some'] === ['E', 'O'], '요약 묶음 (다르게 보는 곳은 차이 큰 순)');
+t_ok($r1['C']['direction'] === 'higher' && $r1['N']['direction'] === 'lower' && $r1['A']['direction'] === 'same', '방향: 남이 더 높게·낮게·같음');
+t_ok($r1['C']['band_cross'] && $r1['C']['band_self'] === 'mid' && $r1['C']['band_others'] === 'high' && !$r1['N']['band_cross'], '구간이 달라지는 곳 표시 (C 가운데→높은 쪽, N 35.0 은 가운데)');
+t_ok($r1['C']['pattern'] === null && !$r1['C']['split'] && $r1['C']['rel_gap'] === null && $o1['summary']['relation_kinds'] === 1, '평가자 1명: 일치·관계 분석 없음');
+t_ok($o1['summary']['order'] !== null && $o1['summary']['order']['self_top'] === 'E' && $o1['summary']['order']['others_top'] === 'E' && $o1['summary']['order']['top_same'], '높낮이 순서: 가장 높은 다이얼이 같음');
+$flat = big5_others_section(['C' => 50.0, 'E' => 50.0, 'A' => 50.0, 'O' => 50.0, 'N' => 50.0], [['relation' => 'friend', 'domains' => ['C' => 70.0, 'E' => 30.0, 'A' => 50.0, 'O' => 50.0, 'N' => 50.0]]]);
+t_ok($flat['summary']['order'] === null, '한쪽이 평평하면 순서를 말하지 않음');
+// 평가자 여럿: 남들끼리 비슷한데 나와 다름 / 남들끼리도 갈림 / 평균은 비슷한데 갈림 / 관계별 차이
+$mk = static fn(string $rel, array $d, array $flags = [], string $type = 'mini20') => ['relation' => $rel, 'test_type' => $type, 'flags' => $flags, 'domains' => $d];
+$o3 = big5_others_section($self, [
+    $mk('colleague', ['C' => 75.0, 'E' => 60.0, 'A' => 30.0, 'O' => 50.0, 'N' => 50.0]),
+    $mk('colleague', ['C' => 80.0, 'E' => 70.0, 'A' => 40.0, 'O' => 50.0, 'N' => 50.0]),
+    $mk('family', ['C' => 70.0, 'E' => 35.0, 'A' => 80.0, 'O' => 50.0, 'N' => 50.0], [], 'full120'),
+]);
+$r3 = $o3['rows'];
+t_ok($o3['count'] === 3 && $r3['C']['others'] === 75.0 && $r3['C']['min'] === 70.0 && $r3['C']['max'] === 80.0 && $r3['C']['spread'] === 10.0, '평가자 3명: 평균과 범위');
+t_ok($r3['C']['pattern'] === 'consistent' && $r3['E']['pattern'] === 'split' && $r3['A']['pattern'] === 'hidden_split' && $r3['O']['pattern'] === null, '차이 × 남들끼리의 일치 (비슷·갈림·평균 뒤에 숨은 갈림)');
+t_ok($o3['summary']['hidden_split'] === ['A'], '요약: 평균은 비슷하지만 갈린 곳');
+t_ok($r3['A']['by_relation']['colleague'] === ['label' => '동료', 'n' => 2, 'avg' => 35.0] && $r3['A']['by_relation']['family']['n'] === 1, '관계별 평균 (1명뿐인 관계도 보여 줌)');
+t_ok($r3['A']['rel_gap'] !== null && $r3['A']['rel_gap']['hi'] === 'family' && $r3['A']['rel_gap']['lo'] === 'colleague' && $r3['A']['rel_gap']['diff'] === 45.0 && $r3['C']['rel_gap'] === null, '관계에 따라 15점 이상 다르게 보이는 곳');
+t_ok($o3['summary']['relation_gaps'] === ['E', 'A'] && $o3['summary']['relation_kinds'] === 2 && $o3['types'] === ['mini20' => 2, 'full120' => 1], '요약: 관계별 차이·검사 구성');
+// 전체 쏠림 (다섯 가운데 넷 이상이 같은 쪽으로 8점 이상) 과 그것을 뺀 차이
+$o4 = big5_others_section($self, [$mk('friend', ['C' => 60.0, 'E' => 100.0, 'A' => 60.0, 'O' => 80.0, 'N' => 52.0])]);
+t_ok($o4['summary']['tilt'] === 'higher' && $o4['summary']['tilt_count'] === 4 && $o4['summary']['mean_gap'] === 12.4, '쏠림: 넷을 남이 더 높게');
+t_ok($o4['summary']['standout'] === 'O' && $o4['rows']['O']['residual'] === 17.6, '쏠림을 빼고도 가장 튀는 곳');
+t_ok($o1['summary']['tilt'] === null && $o1['summary']['standout'] === null, '쏠림이 아니면 말하지 않음');
+// 품질 표시가 붙은 평가는 뺀다 — 하나도 남지 않으면 모두 쓴다
+$o5 = big5_others_section($self, [$mk('friend', ['C' => 100.0], ['straightline']), $mk('family', ['C' => 60.0])]);
+t_ok($o5['count'] === 1 && $o5['excluded'] === 1 && $o5['rows']['C']['others'] === 60.0 && $o5['relations'] === ['가족' => 1], '품질 표시가 붙은 평가는 평균에서 뺌');
+$o6 = big5_others_section($self, [$mk('friend', ['C' => 100.0], ['fast'])]);
+t_ok($o6['count'] === 1 && $o6['excluded'] === 0 && $o6['rows']['C']['others'] === 100.0, '빼면 하나도 안 남을 때는 그대로 씀');
+
 // ── 10장 비교
 $before = ['domains' => ['C' => ['pomp' => 40.0], 'E' => ['pomp' => 50.0]], 'facets' => ['C1' => ['pomp' => 30.0]]];
 $after = ['domains' => ['C' => ['pomp' => 52.5], 'E' => ['pomp' => 45.0]], 'facets' => []];

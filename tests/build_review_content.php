@@ -252,6 +252,53 @@ $L();
 $list($fx['others']['guide']);
 $L('- 평가자 1명일 때 표기: ' . $fx['others']['single_rater_label'] . ' / 차이 표시: ' . $fx['others']['gap_label'] . ' (' . $fx['others']['gap_note'] . ')');
 $L();
+$ox = $fx['others'];
+$L('### 한 줄 요약·묶음');
+$L();
+$L('- 요약 문장: ' . $ox['summary']['prefix'] . $ox['summary']['near'] . ', ' . $ox['summary']['some'] . ', ' . $ox['summary']['far'] . $ox['summary']['suffix'] . ' / 모두 비슷할 때: ' . $ox['summary']['all_near']);
+$L('- 묶음 이름: ' . implode(' / ', $ox['level_labels']) . ' · 차이 표기: ' . implode(' / ', $ox['direction_labels']) . ' · 구간이 다를 때: ' . $ox['band_cross']);
+$L('- 그림 범례: ' . implode(' / ', $ox['legend']));
+$L();
+$L('### ' . $ox['shape']['title']);
+$L();
+foreach (['order_same', 'top_same', 'top_diff', 'bottom_same', 'bottom_diff', 'tilt_higher', 'tilt_lower', 'standout'] as $k) {
+    $L('- `' . $k . '` ' . $ox['shape'][$k]);
+}
+$L();
+$L('### ' . $ox['far']['title']);
+$L();
+$L($ox['far']['intro']);
+$L();
+foreach (BIG5_DOMAINS as $d) {
+    foreach (['higher', 'lower'] as $dir) {
+        $L('**' . $c['domains'][$d]['name'] . ' — ' . $ox['direction_titles'][$dir] . '**');
+        $L();
+        $list($ox['direction'][$d][$dir]);
+        $L();
+    }
+    $L('- ' . $ox['far']['visibility_label'] . ': ' . $ox['visibility'][$d]);
+    $L('- 물어볼 질문: ' . implode(' / ', $ox['talk']['questions'][$d]));
+    $L();
+}
+$L('### 남들끼리의 일치·관계별 차이');
+$L();
+$L('- 남들끼리 비슷(' . $ox['pattern']['consistent_tag'] . '): ' . $ox['pattern']['consistent']);
+$L('- 남들끼리 갈림(' . $ox['pattern']['split_tag'] . '): ' . $ox['pattern']['split']);
+$L('- ' . $ox['pattern']['hidden_title'] . ': ' . $ox['pattern']['hidden_split'] . ' (' . $ox['pattern']['range'] . ')');
+$L('- ' . $ox['relation']['title'] . ': ' . $ox['relation']['intro'] . ' / ' . $ox['relation']['note']);
+$L('- 다르게 보는 곳이 없을 때: ' . $ox['agree']);
+$L();
+$L('### ' . $ox['trust']['title']);
+$L();
+foreach (['single', 'count', 'mini', 'mixed', 'excluded', 'close'] as $k) {
+    $L('- `' . $k . '` ' . $ox['trust'][$k]);
+}
+$L();
+$L('### ' . $ox['talk']['title']);
+$L();
+$list($ox['talk']['intro']);
+$L('- 다르게 보는 곳이 없을 때 질문: ' . implode(' / ', $ox['talk']['general']));
+$L();
 $L('## 10. ' . $fx['retest']['title']);
 $L();
 $list($fx['retest']['guide']);

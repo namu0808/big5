@@ -3,13 +3,14 @@
  * 개발 전용 — 리포트 확인용 샘플 검사를 개발 DB 에 만든다 (사용자 'user').
  *  all3: 모든 문항 3점 / random: 무작위(고정 시드) / extreme: C·E·O 높게, A·N 낮게 / mini: 간이 검사 무작위 / nhigh: N·A 높게, 나머지 낮게
  * 실행: BIG5_DB_CONFIG=doc/dev-db-sqlite.php php doc/dev-seed-reports.php  → JSON {이름: 검사 id}
+ *  --others 를 붙이면 받은 타인 평가 4건도 만든다(리포트 9장 확인용: 동료 2·가족 1·친구 1, 관계에 따라 갈리게)
  */
 declare(strict_types=1);
 
 putenv('BIG5_DB_QUIET=1');
 require dirname(__DIR__) . '/includes/db_config.php';
 require dirname(__DIR__) . '/includes/util.php';
-require dirname(__DIR__) . '/includes/test_session.php';
+require dirname(__DIR__) . '/includes/others.php';
 
 if ($pdo === null) {
     fwrite(STDERR, "DB 없음\n");
@@ -48,4 +49,25 @@ $out = [
         return ($it['keyed'] === '+') === $high ? 5 : 1;
     }),
 ];
+
+if (in_array('--others', $argv, true)) {
+    /** 타인 평가 한 건 — $high = [요인 => true(높게)|false(낮게)|null(가운데)] */
+    $rate = static function (string $relation, array $high) use ($pdo, $uid): void {
+        $token = big5_invite_create($pdo, $uid, $relation, 'mini20');
+        $rid = big5_rating_start($pdo, big5_invite_by_token($pdo, $token));
+        $pdo->prepare('UPDATE big5_ratings SET started_at = ? WHERE id = ?')->execute([big5_now(-600), $rid]);
+        foreach (big5_items('mini20')['items'] as $i => $it) {
+            $h = $high[$it['domain'] ?? $it['facet'][0]] ?? null;
+            $v = $h === null ? ($i % 2 === 0 ? 3 : (($it['keyed'] === '+') ? 4 : 2)) : ((($it['keyed'] === '+') === $h) ? ($i % 3 === 0 ? 4 : 5) : ($i % 3 === 0 ? 2 : 1));
+            big5_response_save($pdo, 'rating', $rid, (int) $it['no'], $v);
+        }
+        $st = $pdo->prepare('SELECT * FROM big5_ratings WHERE id = ?');
+        $st->execute([$rid]);
+        big5_rating_finish($pdo, $st->fetch());
+    };
+    $rate('colleague', ['C' => true, 'E' => true, 'A' => false, 'O' => null, 'N' => false]);
+    $rate('colleague', ['C' => true, 'E' => null, 'A' => false, 'O' => true, 'N' => false]);
+    $rate('family', ['C' => null, 'E' => false, 'A' => true, 'O' => null, 'N' => true]);
+    $rate('friend', ['C' => true, 'E' => true, 'A' => null, 'O' => true, 'N' => null]);
+}
 echo json_encode($out), "\n";

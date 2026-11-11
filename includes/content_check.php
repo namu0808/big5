@@ -88,6 +88,37 @@ function big5_content_strings(array $a, string $path = ''): array
     return $out;
 }
 
+/** 9장(나와 남) 문구 가운데 요인별이 아닌 것 — 화면(report.php)이 읽는 키가 모두 있는지 */
+function big5_others_content_ok(array $o): bool
+{
+    $need = [
+        'summary' => ['prefix', 'near', 'some', 'far', 'suffix', 'all_near'],
+        'level_labels' => ['near', 'some', 'far'],
+        'direction_labels' => ['higher', 'lower', 'same'],
+        'direction_titles' => ['higher', 'lower'],
+        'legend' => ['self', 'range', 'relation', 'radar_self', 'radar_others'],
+        'shape' => ['title', 'order_same', 'top_diff', 'top_same', 'bottom_diff', 'bottom_same', 'tilt_higher', 'tilt_lower', 'standout'],
+        'far' => ['title', 'intro', 'visibility_label'],
+        'pattern' => ['consistent', 'split', 'consistent_tag', 'split_tag', 'hidden_title', 'hidden_split', 'range'],
+        'relation' => ['title', 'intro', 'one', 'note'],
+        'trust' => ['title', 'single', 'count', 'mini', 'mixed', 'excluded', 'close'],
+    ];
+    foreach ($need as $group => $keys) {
+        foreach ($keys as $k) {
+            if (!big5_nonempty($o[$group][$k] ?? null)) {
+                return false;
+            }
+        }
+    }
+    foreach (['title', 'single_rater_label', 'average_label', 'gap_label', 'gap_note', 'band_cross', 'agree'] as $k) {
+        if (!big5_nonempty($o[$k] ?? null)) {
+            return false;
+        }
+    }
+    return big5_nonempty($o['talk']['title'] ?? null) && big5_list_count($o['talk']['intro'] ?? null, 1, 3)
+        && big5_list_count($o['talk']['general'] ?? null, 1, 4);
+}
+
 function big5_nonempty($v): bool
 {
     return is_string($v) && trim($v) !== '';
@@ -268,6 +299,7 @@ function big5_content_check(array $c, array $facetCodes = []): array
         '4장 경계 근처·편차 안내' => big5_nonempty($fx['detail']['near_boundary_note'] ?? null) && big5_nonempty($fx['detail']['facet_spread_note'] ?? null),
         '8장 머리말 2문단' => big5_list_count($fx['growth']['paragraphs'] ?? null, 2, 2),
         '9장·10장 고정 안내' => big5_list_count($fx['others']['guide'] ?? null, 1, 5) && big5_list_count($fx['retest']['guide'] ?? null, 1, 5),
+        '9장 요약·라벨·모양·믿을 만한 정도' => big5_others_content_ok($fx['others'] ?? []),
         '부록 계산법·용어·읽을거리·출처' => big5_list_count($fx['appendix']['scoring']['paragraphs'] ?? null, 1, 8)
             && count($fx['appendix']['glossary'] ?? []) >= 5 && count($fx['appendix']['reading'] ?? []) >= 3 && count($fx['appendix']['sources'] ?? []) >= 1,
         '인쇄 꼬리말' => big5_nonempty($fx['print_footer'] ?? null),
@@ -278,6 +310,18 @@ function big5_content_check(array $c, array $facetCodes = []): array
         $about += (big5_nonempty($a['about'] ?? null) && count($a['misconceptions'] ?? []) >= 1 && count($a['misconceptions'] ?? []) <= 2) ? 1 : 0;
     }
     $need['요인별 무엇을 재나·흔한 오해 (5)'] = $about === 5;
+    // 9장: 요인 × 방향(남이 더 높게·낮게) 해설, 남에게 보이는 정도, 물어볼 질문
+    $oDir = 0;
+    $oVis = 0;
+    $oTalk = 0;
+    foreach (BIG5_DOMAINS as $dm) {
+        foreach (['higher', 'lower'] as $dir) {
+            $oDir += big5_list_count($fx['others']['direction'][$dm][$dir] ?? null, 2, 4) ? 1 : 0;
+        }
+        $oVis += big5_nonempty($fx['others']['visibility'][$dm] ?? null) ? 1 : 0;
+        $oTalk += big5_list_count($fx['others']['talk']['questions'][$dm] ?? null, 1, 3) ? 1 : 0;
+    }
+    $need['9장 요인 × 방향 해설 (10)·보이는 정도 (5)·질문 (5)'] = $oDir === 10 && $oVis === 5 && $oTalk === 5;
     $nOk = 0;
     foreach ($need as $label => $ok) {
         if ($ok) {

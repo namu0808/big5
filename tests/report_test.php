@@ -92,6 +92,18 @@ t_ok(!$R['is_full'] && count($R['domains']) === 5 && $R['domains']['C']['facets'
 // 레이더 SVG
 $svg = big5_radar_svg([['label' => '성실성', 'value' => 80, 'color' => '#2F6F5E'], ['label' => '외향성<b>', 'value' => 20, 'color' => '#D9822B'], ['label' => '친화성', 'value' => 50, 'color' => '#C2547A'], ['label' => '개방성', 'value' => 0, 'color' => '#4C6EB1'], ['label' => '신경성', 'value' => 100, 'color' => '#7A6A9B']]);
 t_ok(str_starts_with($svg, '<svg') && substr_count($svg, '<circle') === 5 && str_contains($svg, '외향성&lt;b&gt;'), '레이더 SVG: 점 5개, 글자 이스케이프');
+// 9장 그림: 겹친 레이더(두 번째 계열은 점선, 점수 글자는 뺌) · 아령
+$pts5 = [['label' => '성실성', 'value' => 80, 'color' => '#2F6F5E'], ['label' => '외향성', 'value' => 20, 'color' => '#D9822B'], ['label' => '친화성', 'value' => 50, 'color' => '#C2547A'], ['label' => '개방성', 'value' => 0, 'color' => '#4C6EB1'], ['label' => '신경성', 'value' => 100, 'color' => '#7A6A9B']];
+$svg2 = big5_radar_svg($pts5, 320, [60, 40, 50, 120, -5]);
+t_ok(substr_count($svg2, 'class="radar-shape"') === 1 && substr_count($svg2, 'class="radar-shape2"') === 1 && substr_count($svg2, 'radar-dot2') === 5 && !str_contains($svg2, 'radar-value'), '겹친 레이더: 두 계열, 점수 글자 없음');
+t_ok(!str_contains(big5_radar_svg($pts5, 320, [1, 2]), 'radar-shape2') && str_contains(big5_radar_svg($pts5), 'radar-value'), '레이더: 개수가 다른 두 번째 계열은 무시, 기본은 그대로');
+$db = big5_dumbbell_html(['self' => 50.0, 'others' => 130.0, 'min' => 60.0, 'max' => 130.0, 'by_relation' => ['family' => ['label' => '가족<', 'n' => 1, 'avg' => 60.0]]], '#000', '성실성<b>', true);
+t_ok(str_contains($db, 'db-self" style="left:50.0%') && str_contains($db, 'db-others" style="left:100.0%') && str_contains($db, 'db-range" style="left:60.0%;width:40.0%') && str_contains($db, 'db-link" style="left:50.0%;width:50.0%'), '아령: 나·남 점, 잇는 선, 범위 띠 (100 넘는 값은 100)');
+t_ok(str_contains($db, 'db-rel-family') && str_contains($db, '>가</span>') && !str_contains($db, '<b>') && !str_contains($db, '가족<"'), '아령: 관계 표식은 첫 글자, 글자 이스케이프');
+$dbm = big5_dumbbell_html(['self' => 50.0, 'others' => 60.0, 'min' => 40.0, 'max' => 80.0, 'by_relation' => ['family' => ['label' => '가족', 'n' => 1, 'avg' => 60.0], 'friend' => ['label' => '친구', 'n' => 1, 'avg' => 62.0], 'colleague' => ['label' => '동료', 'n' => 1, 'avg' => 20.0]]], '#000', 'x', true);
+t_ok(substr_count($dbm, 'class="db-rel ') === 2 && str_contains($dbm, 'db-rel-family db-rel-friend" style="left:61.0%') && str_contains($dbm, '>가·친</span>'), '아령: 점수가 가까운 관계는 한 표식에 나란히');
+$db1 = big5_dumbbell_html(['self' => 50.0, 'others' => 70.0, 'min' => 70.0, 'max' => 70.0, 'by_relation' => ['family' => ['label' => '가족', 'n' => 1, 'avg' => 70.0]]], '#000', 'x');
+t_ok(!str_contains($db1, 'db-range') && !str_contains($db1, 'db-rels'), '아령: 평가자 1명이면 범위 띠·관계 표식 없음');
 $bar = big5_bar_html(120.0, '#000', 'x');
 t_ok(str_contains($bar, 'width:100.0%'), '막대: 100 넘는 값은 100으로');
 

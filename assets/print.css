@@ -11,7 +11,8 @@
   .r-domain { break-before: page; page-break-before: always; margin-top: 0; }
   .r-domain:first-of-type { break-before: auto; page-break-before: auto; }
   h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
-  .r-card, .r-combo, .r-facet, .r-near, .r-bar-row, tr, .r-radar { break-inside: avoid; page-break-inside: avoid; }
+  .r-card, .r-combo, .r-facet, .r-near, .r-bar-row, tr, .r-radar, .o-row, .o-group, .o-talk li, .o-sum { break-inside: avoid; page-break-inside: avoid; }
+  .o-top { grid-template-columns: 1.2fr 1fr; align-items: center; }
   .r-glance { grid-template-columns: 1.3fr 1fr; }
   .r-two { grid-template-columns: 1fr 1fr; }
   .r-standout { grid-template-columns: 1fr 1fr; }

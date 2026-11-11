@@ -80,6 +80,11 @@ async function rateOnce(link, pick) {
     ok(othersText.includes('한 사람의 시선') && othersText.includes('동료 1'), '리포트 9장: 한 사람의 시선, 관계 범주만');
     ok((await page.$$('#others .c-row')).length === 5, '리포트 9장: 다섯 다이얼 나란히');
     ok(!!(await page.$('a[href="#others"]')), '목차에 9장');
+    ok(!!(await page.$('#othersSummary')) && (await page.$$('#others .o-group .chip')).length === 5, '9장: 한 줄 요약 + 다섯 다이얼을 세 묶음으로');
+    ok((await page.$$('#others svg.radar .radar-shape2')).length === 1 && (await page.$$('#others .db-self')).length === 5 && (await page.$$('#others .db-others')).length === 5, '9장: 겹친 레이더 + 아령 그림(나·남 점)');
+    ok((await page.$$('#others .db-range')).length === 0 && (await page.$$('#others .db-rels')).length === 0 && !(await page.$('#othersRelation')), '9장: 평가자 1명이면 범위 띠·관계별 비교 없음');
+    ok(othersText.includes('한 사람이 본 모습입니다') && othersText.includes('간이 평가는 다이얼마다 네 문항'), '9장: 얼마나 믿을까(한 사람·간이 평가 안내)');
+    ok((await page.$$('#othersTalk li')).length >= 2, '9장: 대화로 이어 가기 질문');
 
     // 두 번째 평가 → 평균
     await rateOnce(link, () => 5);
@@ -87,6 +92,27 @@ async function rateOnce(link, pick) {
     othersText = await page.textContent('#others');
     ok(othersText.includes('다른 사람들의 평균') && othersText.includes('동료 2'), '평가 2건 → 평균 표시');
     ok(othersText.includes('내가 보는 나와 남이 보는 나가 다른 곳'), '15점 이상 차이 표시');
+    ok((await page.$$('#others .db-range')).length >= 1 && othersText.includes('받은 평가 2건을 모았습니다'), '평가 2건 → 평가자들 점수의 범위 띠');
+    const cards = (await page.$$('#others .o-card')).length;
+    ok(cards >= 1 && cards === (await page.$$('#others .o-row.is-flag')).length && othersText.includes('이 다이얼이 남에게 보이는 정도'), "9장: '다르게 보는 곳'마다 해설 카드(방향별 까닭·남에게 보이는 정도)");
+    // 다른 관계(가족)의 평가가 더해지면 관계별 표식·비교가 나온다
+    await page.goto(`${BASE}/invite.php`);
+    ok((await page.textContent('body')).includes('같은 관계로 한 명만 답하면'), '초대 화면: 관계별 점수가 드러난다는 안내');
+    await page.selectOption('select[name=relation]', 'family');
+    await Promise.all([page.waitForLoadState('load'), page.click('button:has-text("링크 만들기")')]);
+    await rateOnce(await page.inputValue("#inviteLink"), (no) => ((no * 2) % 5) + 1);
+    await page.goto(`${BASE}/report.php?id=${latest}`);
+    othersText = await page.textContent('#others');
+    ok(othersText.includes('동료 2') && othersText.includes('가족 1') && (await page.$$('#others .db-rel-family')).length === 5 && (await page.$$('#others .db-rel-colleague')).length === 5, '관계 2종류 → 아령 아래 관계별 표식');
+    ok(!!(await page.$('#othersRelation')) && (await page.textContent('#othersRelation')).includes('(한 사람)'), "관계에 따라 다르게 보이는 곳 + 한 명뿐인 관계는 '한 사람' 표기");
+    ok(!othersText.includes('백분위') && !othersText.includes('상위 '), '9장: 백분위 표현 없음');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.reload();
+    ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), '9장 포함 리포트: 390px 에서 가로 넘침 없음');
+    await page.setViewportSize({ width: 1100, height: 900 });
+    await page.goto(`${BASE}/invite.php`);
+    await Promise.all([page.waitForLoadState('load'), page.locator('#inviteTable button:has-text("멈추기")').first().click()]);
+    await page.goto(`${BASE}/report.php?id=${latest}`);
     fs.mkdirSync(OUT, { recursive: true });
     await (await page.$('#others')).screenshot({ path: `${OUT}/stage6-report-others.png` });
     await (await page.$('#retest')).screenshot({ path: `${OUT}/stage6-report-retest.png` });

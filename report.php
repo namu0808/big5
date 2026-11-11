@@ -432,29 +432,206 @@ foreach ($savedKeys as $k): if (!isset($savedText[$k])) { continue; } ?>
   </div>
 </section>
 
-<?php if ($others !== null): ?>
+<?php if ($others !== null):
+    // 9장 — 계산은 includes/others.php (big5_others_section), 문구는 fixed.json 의 others
+    $ox = $fx['others'];
+    $os = $others['summary'];
+    $oName = static fn(string $d): string => (string) $D[$d]['name'];
+    $oNames = static fn(array $ds): string => implode(' · ', array_map($oName, $ds));
+    $oFill = static fn(string $tpl, array $vars): string => strtr($tpl, $vars);
+    $oPt = static fn(float $v): string => number_format($v, 1);
+    $oOthersLabel = (string) ($others['single'] ? $ox['single_rater_label'] : $ox['average_label']);
+    $oShowRel = $os['relation_kinds'] >= 2;
+    // 한 줄 요약
+    if (count($os['near']) === count($others['rows'])) {
+        $oSummary = (string) $ox['summary']['all_near'];
+    } else {
+        $parts = [];
+        foreach (['near', 'some', 'far'] as $lv) {
+            if ($os[$lv] !== []) {
+                $parts[] = $oFill((string) $ox['summary'][$lv], ['{n}' => (string) count($os[$lv])]);
+            }
+        }
+        $oSummary = $ox['summary']['prefix'] . implode(', ', $parts) . $ox['summary']['suffix'];
+    }
+    // 전체 모양 문장
+    $oShape = [];
+    if ($os['order'] !== null) {
+        $od = $os['order'];
+        if ($od['top_same'] && $od['bottom_same']) {
+            $oShape[] = $oFill((string) $ox['shape']['order_same'], ['{top}' => $oName($od['self_top']), '{bottom}' => $oName($od['self_bottom'])]);
+        } else {
+            $oShape[] = $od['top_same']
+                ? $oFill((string) $ox['shape']['top_same'], ['{a}' => $oName($od['self_top'])])
+                : $oFill((string) $ox['shape']['top_diff'], ['{a}' => $oName($od['self_top']), '{b}' => $oName($od['others_top'])]);
+            $oShape[] = $od['bottom_same']
+                ? $oFill((string) $ox['shape']['bottom_same'], ['{a}' => $oName($od['self_bottom'])])
+                : $oFill((string) $ox['shape']['bottom_diff'], ['{a}' => $oName($od['self_bottom']), '{b}' => $oName($od['others_bottom'])]);
+        }
+    }
+    if ($os['tilt'] !== null) {
+        $oShape[] = $oFill((string) $ox['shape']['tilt_' . $os['tilt']], ['{n}' => (string) $os['tilt_count']]);
+        if ($os['standout'] !== null) {
+            $oShape[] = $oFill((string) $ox['shape']['standout'], ['{a}' => $oName($os['standout'])]);
+        }
+    }
+    $oRadar = big5_radar_svg(
+        array_values(array_map(static fn($d) => ['label' => $D[$d]['name'], 'value' => $others['rows'][$d]['self'], 'color' => $D[$d]['color']], array_keys($others['rows']))),
+        320,
+        array_values(array_map(static fn($r) => $r['others'], $others['rows']))
+    );
+    // 믿을 만한 정도 안내
+    $oTrust = [$others['single'] ? (string) $ox['trust']['single'] : $oFill((string) $ox['trust']['count'], ['{n}' => (string) $others['count']])];
+    if (isset($others['types']['mini20'])) {
+        $oTrust[] = (string) $ox['trust']['mini'];
+    }
+    if (array_diff(array_keys($others['types']), [(string) $session['test_type']]) !== []) {
+        $oTrust[] = (string) $ox['trust']['mixed'];
+    }
+    if ($others['excluded'] > 0) {
+        $oTrust[] = $oFill((string) $ox['trust']['excluded'], ['{n}' => (string) $others['excluded']]);
+    }
+    $oTrust[] = (string) $ox['trust']['close'];
+    // 대화 질문: 다르게 보는 곳 → 없으면 조금 다른 곳 → 그것도 없으면 일반 질문
+    $oTalk = $os['far'] !== [] ? $os['far'] : $os['some'];
+?>
 <!-- 9. 다른 사람이 본 나 -->
 <section class="r-chapter" id="others">
   <h2><?= h($hd('others')) ?></h2>
-<?php foreach ($fx['others']['guide'] as $g): ?>
+<?php foreach ($ox['guide'] as $g): ?>
   <p><?= h((string) $g) ?></p>
 <?php endforeach; ?>
   <p class="r-others-rel">받은 평가 <?= (int) $others['count'] ?>건 ·
 <?php $relTxt = []; foreach ($others['relations'] as $label => $cnt) { $relTxt[] = $label . ' ' . $cnt; } echo h(implode(', ', $relTxt)); ?>
   </p>
-  <p class="r-legend"><span><b></b>나</span><span><i></i><?= h((string) ($others['single'] ? $fx['others']['single_rater_label'] : $fx['others']['average_label'])) ?></span></p>
-  <div class="c-list">
+
+  <div class="o-top">
+    <div class="o-sum">
+      <p class="o-sum-line" id="othersSummary"><?= h($oSummary) ?></p>
+      <ul class="o-groups">
+<?php foreach (['far', 'some', 'near'] as $lv): if ($os[$lv] === []) { continue; } ?>
+        <li class="o-group o-group-<?= h($lv) ?>"><span class="o-group-label"><?= h((string) $ox['level_labels'][$lv]) ?></span>
+<?php foreach ($os[$lv] as $d): ?>
+          <span class="chip" style="--c: <?= h($D[$d]['color']) ?>"><?= h($oName($d)) ?></span>
+<?php endforeach; ?>
+        </li>
+<?php endforeach; ?>
+      </ul>
+      <p class="form-help"><?= h((string) $ox['gap_note']) ?></p>
+    </div>
+    <div class="o-radar">
+      <div class="r-radar"><?= $oRadar ?></div>
+      <p class="r-legend o-legend-radar"><span><em class="lg-shape"></em><?= h((string) $ox['legend']['radar_self']) ?></span><span><em class="lg-shape2"></em><?= h((string) $ox['legend']['radar_others']) ?></span></p>
+    </div>
+  </div>
+
+  <p class="r-legend o-legend">
+    <span><em class="lg-self"></em><?= h((string) $ox['legend']['self']) ?></span>
+    <span><em class="lg-others"></em><?= h($oOthersLabel) ?></span>
+<?php if (!$others['single']): ?>
+    <span><em class="lg-range"></em><?= h((string) $ox['legend']['range']) ?></span>
+<?php endif; ?>
+<?php if ($oShowRel): ?>
+    <span><em class="lg-rel">가</em><?= h((string) $ox['legend']['relation']) ?></span>
+<?php endif; ?>
+  </p>
+  <div class="c-list o-list">
 <?php foreach ($others['rows'] as $d => $row): $x = $D[$d]; ?>
-    <div class="c-row<?= $row['flag'] ? ' is-flag' : '' ?>">
+    <div class="c-row o-row<?= $row['flag'] ? ' is-flag' : '' ?>" data-level="<?= h($row['level']) ?>">
       <div class="dial-head">
         <span class="dial-name" style="--c: <?= h($x['color']) ?>"><?= h($x['name']) ?></span>
-        <span class="dial-score">나 <?= h(number_format($row['self'], 1)) ?> · <?= h((string) ($others['single'] ? '한 사람' : '평균')) ?> <strong><?= h(number_format($row['others'], 1)) ?></strong><?php if ($row['flag']): ?> <span class="tag-near"><?= h((string) $fx['others']['gap_label']) ?></span><?php endif; ?></span>
+        <span class="dial-score">나 <?= h($oPt($row['self'])) ?> · <?= h((string) ($others['single'] ? '한 사람' : '평균')) ?> <strong><?= h($oPt($row['others'])) ?></strong></span>
       </div>
-      <?= big5_bar_html($row['self'], $x['color'], $x['name'], 'lg', $row['others']) ?>
+      <?= big5_dumbbell_html($row, $x['color'], $x['name'], $oShowRel) ?>
+      <p class="o-row-note">
+        <span class="o-gap o-gap-<?= h($row['level']) ?>"><?= h($oFill((string) $ox['direction_labels'][$row['direction']], ['{gap}' => $oPt(abs($row['gap']))])) ?></span>
+<?php if ($row['flag']): ?>
+        <span class="tag-near"><?= h((string) $ox['gap_label']) ?></span>
+<?php endif; ?>
+<?php if ($row['band_cross']): ?>
+        <span class="o-cross"><?= h($oFill((string) $ox['band_cross'], ['{self}' => (string) $fx['band_labels'][$row['band_self']], '{others}' => (string) $fx['band_labels'][$row['band_others']]])) ?></span>
+<?php endif; ?>
+<?php if ($row['pattern'] === 'consistent' || $row['pattern'] === 'split'): ?>
+        <span class="o-pat"><?= h((string) $ox['pattern'][$row['pattern'] . '_tag']) ?></span>
+<?php endif; ?>
+      </p>
     </div>
 <?php endforeach; ?>
   </div>
-  <p class="form-help"><?= h((string) $fx['others']['gap_note']) ?></p>
+
+<?php if ($oShape !== []): ?>
+  <h3><?= h((string) $ox['shape']['title']) ?></h3>
+  <div id="othersShape">
+<?php foreach ($oShape as $t): ?>
+    <p><?= h($t) ?></p>
+<?php endforeach; ?>
+  </div>
+<?php endif; ?>
+
+<?php if ($os['far'] !== []): ?>
+  <h3><?= h((string) $ox['far']['title']) ?></h3>
+  <p><?= h((string) $ox['far']['intro']) ?></p>
+<?php foreach ($os['far'] as $d): $row = $others['rows'][$d]; $x = $D[$d]; ?>
+  <div class="r-card o-card" style="--c: <?= h($x['color']) ?>">
+    <p class="r-card-title"><?= h($x['name'] . ' — ' . $ox['direction_titles'][$row['direction']]) ?> <span>나 <?= h($oPt($row['self'])) ?> · 남 <?= h($oPt($row['others'])) ?></span></p>
+    <ul>
+<?php foreach ($ox['direction'][$d][$row['direction']] as $t): ?>
+      <li><?= h((string) $t) ?></li>
+<?php endforeach; ?>
+    </ul>
+<?php if ($row['pattern'] !== null): ?>
+    <p class="o-card-pat"><?= h((string) $ox['pattern'][$row['pattern']]) ?> <span class="muted">(<?= h($oFill((string) $ox['pattern']['range'], ['{min}' => $oPt($row['min']), '{max}' => $oPt($row['max'])])) ?>)</span></p>
+<?php endif; ?>
+    <p class="o-card-vis"><strong><?= h((string) $ox['far']['visibility_label']) ?></strong> <?= h((string) $ox['visibility'][$d]) ?></p>
+  </div>
+<?php endforeach; ?>
+<?php else: ?>
+  <div class="r-near" id="othersAgree"><p><?= h((string) $ox['agree']) ?></p></div>
+<?php endif; ?>
+
+<?php if ($os['hidden_split'] !== []): ?>
+  <h3><?= h((string) $ox['pattern']['hidden_title']) ?></h3>
+  <p><?= h((string) $ox['pattern']['hidden_split']) ?></p>
+  <ul id="othersHidden">
+<?php foreach ($os['hidden_split'] as $d): $row = $others['rows'][$d]; ?>
+    <li><strong><?= h($oName($d)) ?></strong> — <?= h($oFill((string) $ox['pattern']['range'], ['{min}' => $oPt($row['min']), '{max}' => $oPt($row['max'])])) ?></li>
+<?php endforeach; ?>
+  </ul>
+<?php endif; ?>
+
+<?php if ($os['relation_gaps'] !== []): ?>
+  <h3><?= h((string) $ox['relation']['title']) ?></h3>
+  <p><?= h((string) $ox['relation']['intro']) ?></p>
+  <ul id="othersRelation">
+<?php $oOne = false; foreach ($os['relation_gaps'] as $d): $row = $others['rows'][$d]; ?>
+    <li><strong><?= h($oName($d)) ?></strong> —
+<?php $relParts = []; foreach ($row['by_relation'] as $g) { $oOne = $oOne || $g['n'] === 1; $relParts[] = $g['label'] . ' ' . $oPt($g['avg']) . ($g['n'] === 1 ? ' (' . $ox['relation']['one'] . ')' : ''); } echo h(implode(' · ', $relParts)); ?>
+    </li>
+<?php endforeach; ?>
+  </ul>
+<?php if ($oOne): ?>
+  <p class="form-help"><?= h((string) $ox['relation']['note']) ?></p>
+<?php endif; ?>
+<?php endif; ?>
+
+  <div class="r-near o-trust" id="othersTrust">
+    <p><strong><?= h((string) $ox['trust']['title']) ?></strong></p>
+<?php foreach ($oTrust as $t): ?>
+    <p><?= h($t) ?></p>
+<?php endforeach; ?>
+  </div>
+
+  <h3><?= h((string) $ox['talk']['title']) ?></h3>
+<?php foreach ($ox['talk']['intro'] as $t): ?>
+  <p><?= h((string) $t) ?></p>
+<?php endforeach; ?>
+  <ul class="o-talk" id="othersTalk">
+<?php if ($oTalk === []): foreach ($ox['talk']['general'] as $q): ?>
+    <li><?= h((string) $q) ?></li>
+<?php endforeach; else: foreach ($oTalk as $d): foreach ($ox['talk']['questions'][$d] as $q): ?>
+    <li><span class="o-talk-dial" style="--c: <?= h($D[$d]['color']) ?>"><?= h($oName($d)) ?></span> <?= h((string) $q) ?></li>
+<?php endforeach; endforeach; endif; ?>
+  </ul>
 </section>
 <?php endif; ?>
 

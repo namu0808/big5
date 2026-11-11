@@ -318,6 +318,57 @@ ul.form-error { padding-left: 2rem; }
 .r-legend i { display: inline-block; width: 2px; height: 12px; background: var(--ink); vertical-align: middle; margin-right: 0.35rem; }
 .r-legend b { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); vertical-align: middle; margin-right: 0.35rem; }
 
+/* ── 리포트 9장: 나와 남 (요약 묶음 · 겹친 레이더 · 아령 그림 · 해설) ── */
+.o-top { display: grid; gap: 1.25rem; margin: 1rem 0 1.5rem; }
+@media (min-width: 760px) { .o-top { grid-template-columns: 1.2fr 1fr; align-items: center; } }
+.o-sum-line { font-size: 1.15rem; font-weight: 700; margin: 0 0 0.75rem; }
+.o-groups { list-style: none; padding: 0; margin: 0 0 0.5rem; display: grid; gap: 0.5rem; }
+.o-group { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; padding: 0.55rem 0.75rem; border-radius: var(--radius); background: var(--bg-soft); border-left: 4px solid var(--line); }
+.o-group-far { border-left-color: var(--accent); background: var(--accent-soft); }
+.o-group-some { border-left-color: #9aa7b8; }
+.o-group-label { font-size: 0.85rem; font-weight: 700; color: var(--ink-soft); margin-right: 0.35rem; }
+.o-group .chip { background: var(--bg); }
+svg.radar { overflow: visible; }
+.o-radar { padding: 0 1.5rem; }
+.o-radar .r-radar { max-width: 300px; }
+.radar-shape2 { fill: none; stroke: var(--ink); stroke-width: 2; stroke-dasharray: 5 4; }
+.radar-dot2 { fill: #fff; stroke: var(--ink); stroke-width: 2; }
+.r-legend { flex-wrap: wrap; row-gap: 0.3rem; }
+.r-legend em { display: inline-block; vertical-align: middle; margin-right: 0.35rem; font-style: normal; }
+.o-legend-radar { justify-content: center; margin-top: 0.4rem; }
+.lg-shape { width: 16px; height: 10px; background: rgba(38, 73, 110, 0.12); border: 2px solid var(--accent); }
+.lg-shape2 { width: 16px; height: 10px; border: 2px dashed var(--ink); }
+.lg-self { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+.lg-others { width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 3px solid var(--ink); }
+.lg-range { width: 22px; height: 10px; border-radius: 5px; background: rgba(29, 35, 43, 0.16); border: 1px dashed rgba(29, 35, 43, 0.45); }
+.lg-rel, .db-rel { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--ink-soft); background: #fff; color: var(--ink-soft); font-size: 0.68rem; font-weight: 700; line-height: 16px; text-align: center; }
+.db { padding: 5px 0 2px; }
+.db-track { position: relative; height: 14px; border-radius: 7px; background: var(--bg-soft); }
+.db-track .zone { position: absolute; top: 0; bottom: 0; }
+.db-track .zone-low { left: 0; width: 35%; background: #f1f2f5; border-radius: 7px 0 0 7px; }
+.db-track .zone-mid { left: 35%; width: 30%; background: #e7e9ee; }
+.db-track .zone-high { left: 65%; width: 35%; background: #f1f2f5; border-radius: 0 7px 7px 0; }
+.db-range { position: absolute; top: -4px; bottom: -4px; min-width: 4px; border-radius: 7px; background: rgba(29, 35, 43, 0.13); border: 1px dashed rgba(29, 35, 43, 0.45); }
+.db-link { position: absolute; top: 50%; height: 4px; margin-top: -2px; background: var(--c); opacity: 0.75; }
+.db-dot { position: absolute; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; }
+.db-self { background: var(--c); border: 2px solid #fff; box-shadow: 0 0 0 1px var(--c); }
+.db-others { background: #fff; border: 4px solid var(--ink); }
+.db-rels { position: relative; height: 20px; margin-top: 6px; }
+.db-rel { position: absolute; top: 0; width: auto; min-width: 18px; padding: 0 4px; border-radius: 9px; white-space: nowrap; transform: translateX(-50%); }
+.o-row-note { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--muted); }
+.o-gap { font-weight: 700; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.o-gap-far { color: var(--accent); }
+.o-cross, .o-pat { padding: 0.05rem 0.45rem; border-radius: 999px; border: 1px solid var(--line); font-size: 0.78rem; }
+.o-list { gap: 1.25rem; }
+.o-card { margin: 0.75rem 0; }
+.o-card ul { padding-left: 1.15rem; margin: 0.4rem 0; }
+.o-card-vis { font-size: 0.93rem; color: var(--ink-soft); border-top: 1px dashed var(--line); padding-top: 0.5rem; }
+.o-card-vis strong { display: block; font-size: 0.85rem; color: var(--muted); }
+.o-trust { margin: 1.5rem 0; }
+.o-talk { list-style: none; padding: 0; display: grid; gap: 0.45rem; }
+.o-talk li { border: 1px solid var(--line); border-radius: var(--radius); padding: 0.6rem 0.85rem; }
+.o-talk-dial { font-size: 0.8rem; font-weight: 700; color: var(--c); margin-right: 0.3rem; }
+
 /* ============ 상단 줄 — 사이트 공통 디자인 '측정 기록지'(홈 sbm.ai.kr 0.10.0과 같게) ============
  * 상단 줄만 바꾼다(앱 본문·결과지는 그대로). 색은 이 블록 안의 --gnb-* 만 쓴다.
  * 표식: 먹색 'SBM' 글자 + 아래 눈금자(바늘 하나만 주홍). 'by 손병목' 같은 저자 표시는 네이비 세리프. */

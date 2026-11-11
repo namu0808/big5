@@ -5,7 +5,10 @@
  * 파일과 키 (5단계 report_builder 가 이 키 이름을 그대로 읽는다):
  *  fixed.json      리포트 0~2장(reading_guide, intro, seven_cautions), glance, detail(소제목·경계 근처·편차 안내),
  *                  domain_about[요인]{tagline, about, misconceptions[]}, combos/work/relations 머리말,
- *                  growth{paragraphs, how_to}, others(9장), retest(10장), appendix(계산법·용어·읽을거리·출처),
+ *                  growth{paragraphs, how_to}, retest(10장), appendix(계산법·용어·읽을거리·출처),
+ *                  others(9장){guide[], summary, level_labels, direction_labels·direction_titles, legend, band_cross,
+ *                    shape(전체 모양), far, direction[요인]{higher[]|lower[]}, visibility[요인], pattern, relation,
+ *                    agree, trust, talk{intro[], questions[요인][], general[]}} — 문장 안 {n}·{a}·{gap} 등은 report.php 가 채운다
  *                  help{line}, print_footer, band_labels
  *  domains.json    [요인]{name, color, low|mid|high{summary_line, body[], strengths[], cautions[], closing, (N.high) help_line}}
  *  facets.json     facets[하위 요인 코드]{name, definition, low, mid, high}

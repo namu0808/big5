@@ -97,3 +97,4 @@
 9. 문구 검사 로직 공유(`includes/content_check.php` → CLI·관리자 화면)
 10. 역문항 일관성: 정·역 문항이 섞인 하위 요인마다 (+문항 평균)과 (−문항 역채점 평균) 차이 ≥ 2.0 이 해당 하위 요인의 30% 이상이면 `inconsistent` (Mini-IPIP는 요인 단위)
 11. `compare.php`는 이전 vs 지금만, 나 vs 타인은 리포트 9장
+12. (2026-11-11 승인, 0.13.0) 리포트 9장 확장 — PLAN 5.2의 9장 '확장' 항목. 계산은 `big5_others_section()`(순수 함수: 세 묶음 8·15점, 평가자 범위 20점 '갈림', 관계별 평균, 쏠림, 순서, 품질 표시가 붙은 평가 제외), 그림은 `big5_dumbbell_html()`·`big5_radar_svg(…, $compare)`, 문구는 `fixed.json` 의 `others`(문장 안 `{n}`·`{a}`·`{gap}` 은 `report.php` 가 채움). '남에게 보이는 정도'에 한해 원고 밖 성격 연구를 쓴다. 관계별 평균은 1명뿐이어도 보여 준다(초대 화면 안내). 9장 샘플: `php doc/dev-seed-reports.php --others`
