@@ -17,6 +17,23 @@ function big5_session_get(PDO $pdo, int $id, int $userId): ?array
     return is_array($row) ? $row : null;
 }
 
+/**
+ * 관리자 보기용 — 누구의 검사든 id 로 읽는다(삭제한 계정의 보존 기록 포함). 관리자 화면에서만 부른다.
+ * owner_label: 아이디, 은퇴 계정('~'로 시작)이면 '삭제한 계정' / owner_retired: bool
+ */
+function big5_admin_session_get(PDO $pdo, int $id): ?array
+{
+    $st = $pdo->prepare('SELECT s.*, u.username AS owner_username FROM big5_sessions s JOIN sbm_users u ON u.id = s.user_id WHERE s.id = ?');
+    $st->execute([$id]);
+    $row = $st->fetch();
+    if (!is_array($row)) {
+        return null;
+    }
+    $row['owner_retired'] = str_starts_with((string) $row['owner_username'], '~');
+    $row['owner_label'] = $row['owner_retired'] ? '삭제한 계정' : (string) $row['owner_username'];
+    return $row;
+}
+
 /** 같은 종류의 진행 중 검사 (가장 최근) */
 function big5_session_in_progress(PDO $pdo, int $userId, string $testType): ?array
 {

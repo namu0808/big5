@@ -181,6 +181,15 @@ async function rateOnce(link, pick) {
       (SELECT COUNT(*) FROM big5_sessions s JOIN sbm_users u ON u.id = s.user_id WHERE u.username LIKE '~del%' AND u.is_active = 0) AS s,
       (SELECT COUNT(*) FROM big5_ratings) AS ra`)[0];
     ok(kept.s > 0 && kept.ra > 0, `지운 기록은 DB 에 보존 ${JSON.stringify(kept)}`);
+    // 관리자는 사용자가 지운 기록의 결과지도 본다 (받은 평가 = 9장 포함)
+    const bAdm = await chromium.launch();
+    const pAdm = await (await bAdm.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
+    await login(pAdm, 'sonbm', 'visang', true);
+    await pAdm.goto(`${BASE}/admin/results.php?owner=deleted`);
+    ok((await pAdm.$$('#resultsTable tbody tr.row-retired')).length === 5 && (await pAdm.textContent('#resultsTable')).includes('삭제한 계정'), "관리자 결과지 목록: 사용자가 지운 검사 5건이 '삭제한 계정'으로");
+    await pAdm.goto(`${BASE}/admin/report.php?id=${latest}`);
+    ok((await pAdm.textContent('#adminViewBar')).includes('사용자가 지운 기록') && !!(await pAdm.$('#report .r-cover')) && !!(await pAdm.$('#others .o-row')), '관리자: 지운 기록의 결과지 보기(9장 받은 평가 포함)');
+    await bAdm.close();
     await page.goto(`${BASE}/history.php`);
     ok(await page.locator('a[href*="report.php?id="]').count() === 0, '지운 뒤 내 기록 화면에 옛 검사 없음');
     ok(sql("SELECT COUNT(*) AS n FROM sbm_users WHERE username = 'user'")[0].n === 1, '계정은 남음');

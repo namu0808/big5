@@ -228,3 +228,70 @@ function big5_export_rows(PDO $pdo, string $kind, string $testType, bool $exclud
     }
     return $rows;
 }
+
+const BIG5_ADMIN_RESULTS_PER = 50;
+
+/**
+ * 관리자 '결과지' 목록 — 완료한 본인 검사를 최근 순으로(삭제한 계정의 보존 기록 포함).
+ * $filter: type 'full120'|'mini20'|''(전체), owner 'active'|'deleted'|''(전체), q 아이디 일부
+ * → ['total' => 전체 건수, 'pages' => 쪽수, 'page' => 지금 쪽, 'rows' => [...]]
+ *   rows[]{id, user_id, username, retired(bool), test_type, completed_at, quality_flags[], ratings(받은 평가 수), domains[요인 => pomp]}
+ */
+function big5_admin_results(PDO $pdo, array $filter, int $page): array
+{
+    $where = ["s.status = 'completed'"];
+    $args = [];
+    if (in_array($filter['type'] ?? '', ['full120', 'mini20'], true)) {
+        $where[] = 's.test_type = ?';
+        $args[] = $filter['type'];
+    }
+    if (($filter['owner'] ?? '') === 'deleted') {
+        $where[] = "u.username LIKE '~%'";
+    } elseif (($filter['owner'] ?? '') === 'active') {
+        $where[] = "u.username NOT LIKE '~%'";
+    }
+    $q = trim((string) ($filter['q'] ?? ''));
+    if ($q !== '') {
+        $where[] = "u.username LIKE ? ESCAPE '!'";
+        $args[] = '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $q) . '%';
+    }
+    $cond = implode(' AND ', $where);
+    $st = $pdo->prepare("SELECT COUNT(*) FROM big5_sessions s JOIN sbm_users u ON u.id = s.user_id WHERE {$cond}");
+    $st->execute($args);
+    $total = (int) $st->fetchColumn();
+    $pages = max(1, (int) ceil($total / BIG5_ADMIN_RESULTS_PER));
+    $page = max(1, min($pages, $page));
+    $st = $pdo->prepare(
+        "SELECT s.id, s.user_id, s.test_type, s.completed_at, s.quality_flags, u.username,
+                (SELECT COUNT(*) FROM big5_ratings r JOIN big5_invites i ON i.id = r.invite_id
+                  WHERE i.user_id = s.user_id AND r.status = 'completed') AS ratings
+           FROM big5_sessions s JOIN sbm_users u ON u.id = s.user_id
+          WHERE {$cond} ORDER BY s.completed_at DESC, s.id DESC LIMIT ? OFFSET ?"
+    );
+    $n = 1;
+    foreach ($args as $a) {
+        $st->bindValue($n++, $a);
+    }
+    $st->bindValue($n++, BIG5_ADMIN_RESULTS_PER, PDO::PARAM_INT);
+    $st->bindValue($n, ($page - 1) * BIG5_ADMIN_RESULTS_PER, PDO::PARAM_INT);
+    $st->execute();
+    $rows = [];
+    foreach ($st->fetchAll() as $r) {
+        $flags = trim((string) ($r['quality_flags'] ?? ''));
+        $rows[(int) $r['id']] = [
+            'id' => (int) $r['id'], 'user_id' => (int) $r['user_id'], 'username' => (string) $r['username'],
+            'retired' => str_starts_with((string) $r['username'], '~'),
+            'test_type' => (string) $r['test_type'], 'completed_at' => (string) $r['completed_at'],
+            'quality_flags' => $flags === '' ? [] : explode(',', $flags), 'ratings' => (int) $r['ratings'], 'domains' => [],
+        ];
+    }
+    if ($rows !== []) {
+        $in = implode(',', array_fill(0, count($rows), '?'));
+        $sc = $pdo->prepare("SELECT owner_id, code, pomp FROM big5_scores WHERE owner_type = 'session' AND level = 'domain' AND owner_id IN ({$in})");
+        $sc->execute(array_keys($rows));
+        foreach ($sc->fetchAll() as $x) {
+            $rows[(int) $x['owner_id']]['domains'][(string) $x['code']] = (float) $x['pomp'];
+        }
+    }
+    return ['total' => $total, 'pages' => $pages, 'page' => $page, 'rows' => array_values($rows)];
+}

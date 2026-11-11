@@ -28,6 +28,8 @@ require __DIR__ . '/../includes/header.php';
   <div class="stat"><span class="stat-label">최근 7일 완료</span><span class="stat-value"><?= $c['last7'] ?></span></div>
 </div>
 
+<p><a class="btn btn-outline btn-sm" href="<?= h(big5_url('admin/results.php')) ?>">회원 결과지 보기</a> <span class="muted small">완료한 검사의 실제 결과지(사용자가 지운 보존 기록 포함)</span></p>
+
 <h2>응답 품질</h2>
 <p>본인 검사 완료 가운데 품질 플래그가 붙은 응답: <strong id="flagRatio"><?= $c['flagged'] ?>건 (<?= h(number_format($c['flag_ratio'], 1)) ?>%)</strong></p>
 <ul>

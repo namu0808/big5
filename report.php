@@ -4,11 +4,16 @@
  *  표지 · 0 읽는 법 · 1 빅파이브란 · 2 일곱 가지 · 3 한눈에 · 4 다이얼별 · 5 조합 · 6 일터 · 7 관계 · 8 성장 · 부록
  *  9 다른 사람이 본 나(받은 타인 평가가 있을 때) · 10 지난번과 비교(앞선 완료 검사가 있을 때)
  * 본인 검사만 열람 — id 만 바꿔 남의 결과를 볼 수 없다.
+ * 관리자 보기(0.14.0): admin/report.php 가 admin_check 뒤 BIG5_ADMIN_REPORT 를 정하고 이 파일을 싣는다 — 어느 계정의 완료 검사든
+ *  (삭제한 계정의 보존 기록 포함) 같은 결과지를 읽기 전용으로 본다. POST 는 받지 않고 성장 행동 고르기·비교 링크는 그리지 않는다.
  * 새로고침 없는 동작(ajax=1 POST): action=growth_add | growth_remove (domain, direction, action_key)
  */
 declare(strict_types=1);
 
-require_once __DIR__ . '/includes/auth_check.php';
+$big5AdminView = defined('BIG5_ADMIN_REPORT'); // 관리자 화면에서 실은 경우 — admin_check 가 이미 관리자 로그인을 확인했다
+if (!$big5AdminView) {
+    require_once __DIR__ . '/includes/auth_check.php';
+}
 require_once __DIR__ . '/includes/test_session.php';
 require_once __DIR__ . '/includes/not_found.php';
 require_once __DIR__ . '/includes/content_loader.php';
@@ -19,8 +24,23 @@ require_once __DIR__ . '/includes/others.php';
 const BIG5_GROWTH_MAX = 9; // 검사 한 번에 저장할 수 있는 성장 행동 수
 
 $id = (int) big5_param('id', '0');
-$userId = (int) $big5User['id'];
-$session = $id > 0 ? big5_session_get($pdo, $id, $userId) : null;
+if ($big5AdminView) {
+    if (big5_is_post()) { // 읽기 전용
+        http_response_code(405);
+        exit;
+    }
+    $session = $id > 0 ? big5_admin_session_get($pdo, $id) : null;
+    if ($session === null || $session['status'] !== 'completed') {
+        $layout_area = 'admin';
+        big5_not_found();
+    }
+    // 결과지 안의 '나'는 이 검사의 주인 — 9장(받은 평가)·10장(앞선 검사)도 그 계정 기준
+    $userId = (int) $session['user_id'];
+    $big5User = ['id' => $userId, 'display_name' => $session['owner_label']];
+} else {
+    $userId = (int) $big5User['id'];
+    $session = $id > 0 ? big5_session_get($pdo, $id, $userId) : null;
+}
 $isAjax = big5_is_post() && ($_POST['ajax'] ?? '') === '1';
 
 if ($session === null) {
@@ -139,8 +159,15 @@ $page_title = '나의 다섯 다이얼';
 $body_class = 'page-report';
 $extra_css = ['print.css'];
 $extra_js = ['report.js'];
+if ($big5AdminView) {
+    $layout_area = 'admin';
+    $nav_active = 'results';
+}
 require __DIR__ . '/includes/header.php';
 ?>
+<?php if ($big5AdminView): ?>
+<p class="notice-box no-print" id="adminViewBar"><strong>관리자 보기(읽기 전용)</strong> · 검사 #<?= $id ?> · <?= h((string) $session['owner_label']) ?><?= $session['owner_retired'] ? ' · 사용자가 지운 기록(보존)' : '' ?> · <a href="<?= h(big5_url('admin/results.php')) ?>">결과지 목록으로</a></p>
+<?php endif; ?>
 <div class="report" id="report">
 
 <!-- 표지 -->
@@ -398,6 +425,7 @@ require __DIR__ . '/includes/header.php';
 <?php foreach ($fx['growth']['paragraphs'] as $p): ?>
   <p><?= h_lines((string) $p) ?></p>
 <?php endforeach; ?>
+<?php if (!$big5AdminView): ?>
   <p class="muted no-print"><?= h((string) $fx['growth']['how_to']) ?></p>
   <div class="r-growth no-print" id="growthApp"
        data-growth-b64="<?= h(base64_encode((string) json_encode($growthPayload, JSON_UNESCAPED_UNICODE))) ?>"
@@ -409,6 +437,7 @@ require __DIR__ . '/includes/header.php';
     <div class="r-growth-list" id="growthList" aria-live="polite"></div>
     <p class="form-error" id="growthError" hidden></p>
   </div>
+<?php endif; ?>
   <div class="r-growth-saved">
     <h3>저장한 성장 행동</h3>
     <ul id="growthSaved">
@@ -673,7 +702,11 @@ foreach ($savedKeys as $k): if (!isset($savedText[$k])) { continue; } ?>
 <?php endforeach; ?>
   </ul>
 <?php endif; ?>
+<?php if (!$big5AdminView): ?>
   <p class="no-print"><a href="<?= h(big5_url('compare.php?pick[]=' . (int) $pv['id'] . '&pick[]=' . $id)) ?>">하위 요인까지 자세히 비교하기</a></p>
+<?php else: ?>
+  <p class="no-print"><a href="<?= h(big5_url('admin/report.php?id=' . (int) $pv['id'])) ?>">지난번 결과지 보기</a></p>
+<?php endif; ?>
 </section>
 <?php endif; ?>
 

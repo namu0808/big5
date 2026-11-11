@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 function big5_not_found(): void
 {
-    global $pdo;
+    global $pdo, $layout_area; // 관리자 화면에서 부르면 관리자 머리말 그대로
     http_response_code(404);
     $page_title = '찾을 수 없음';
     require __DIR__ . '/header.php';

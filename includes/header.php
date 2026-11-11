@@ -25,6 +25,7 @@ $big5HeadAdmin = $layout_area === 'admin' ? big5_current_admin($pdo ?? null) : n
 $big5Nav = $layout_area === 'admin'
     ? [
         'dash' => ['admin/index.php', '대시보드'],
+        'results' => ['admin/results.php', '결과지'],
         'items' => ['admin/items.php', '문항'],
         'content' => ['admin/content.php', '해석 문구'],
         'norms' => ['admin/norms.php', '규준'],

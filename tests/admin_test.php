@@ -94,6 +94,24 @@ t_ok(count($cleanRows) === 301 && !str_contains(implode(',', array_column(array_
 $mini = big5_export_rows($pdo, 'self', 'mini20', false);
 t_ok(count($mini) === 2 && !in_array('pomp_C1', $mini[0], true) && in_array('q20', $mini[0], true), '간이 CSV: 하위 요인 열 없음');
 
+// ── 관리자 '결과지' 목록·보기 (삭제한 계정의 보존 기록 포함)
+$cnt = static fn(string $where): int => (int) $pdo->query("SELECT COUNT(*) FROM big5_sessions WHERE status = 'completed'" . $where)->fetchColumn();
+$rs = big5_admin_results($pdo, ['type' => '', 'owner' => '', 'q' => ''], 1);
+t_ok($rs['total'] === $cnt('') && count($rs['rows']) === min($rs['total'], BIG5_ADMIN_RESULTS_PER) && $rs['rows'][0]['id'] > $rs['rows'][1]['id'], '결과지 목록: 완료 검사 전부, 최근 순, 한 쪽 ' . BIG5_ADMIN_RESULTS_PER . '건');
+t_ok(count($rs['rows'][0]['domains']) === 5 && $rs['rows'][0]['username'] === 'user' && !$rs['rows'][0]['retired'] && is_array($rs['rows'][0]['quality_flags']), '결과지 목록: 요인 점수 5개·계정·응답 품질');
+$mini = big5_admin_results($pdo, ['type' => 'mini20', 'owner' => '', 'q' => ''], 1);
+t_ok($mini['total'] === $cnt(" AND test_type = 'mini20'") && $mini['total'] > 0 && $mini['rows'][0]['test_type'] === 'mini20' && big5_admin_results($pdo, ['type' => '', 'owner' => 'deleted', 'q' => ''], 1)['total'] === 0, '결과지 목록: 종류·계정 거르기');
+t_ok(big5_admin_results($pdo, ['type' => '', 'owner' => '', 'q' => 'us%'], 1)['total'] === 0 && big5_admin_results($pdo, ['type' => '', 'owner' => '', 'q' => 'use'], 1)['total'] === $rs['total'], '결과지 목록: 아이디 찾기(와일드카드 글자는 글자 그대로)');
+$lastPage = big5_admin_results($pdo, ['type' => '', 'owner' => '', 'q' => ''], 9999);
+t_ok($lastPage['page'] === $lastPage['pages'] && $lastPage['rows'] !== [], '결과지 목록: 범위를 넘는 쪽은 마지막 쪽으로');
+$firstId = $rs['rows'][0]['id'];
+$pdo->prepare('UPDATE sbm_users SET username = ? WHERE id = ?')->execute(['~del' . $uid, $uid]);
+$del = big5_admin_results($pdo, ['type' => '', 'owner' => 'deleted', 'q' => ''], 1);
+$as = big5_admin_session_get($pdo, $firstId);
+t_ok($del['total'] === $rs['total'] && $del['rows'][0]['retired'] && $as !== null && $as['owner_retired'] && $as['owner_label'] === '삭제한 계정', '삭제한 계정의 기록도 목록·보기에 나옴');
+$pdo->prepare('UPDATE sbm_users SET username = ? WHERE id = ?')->execute(['user', $uid]);
+t_ok(big5_admin_session_get($pdo, $firstId)['owner_label'] === 'user' && big5_admin_session_get($pdo, 999999) === null, '관리자 보기: 계정 표시·없는 검사는 null');
+
 // ── /admin 파일 규칙: declare 바로 다음 첫 문장이 admin_check (login.php 제외)
 $bad = [];
 foreach (glob(dirname(__DIR__) . '/admin/*.php') as $f) {

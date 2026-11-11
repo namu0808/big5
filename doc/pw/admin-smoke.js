@@ -10,7 +10,7 @@ const { execFileSync } = require('child_process');
 const { chromium } = require('playwright');
 const { ROOT, BASE, ORIGIN, OUT, DB, DB_CONFIG, startServer, resetDb, openBrowser, ok, done, login, isAdminLogin, freshInstall, sql } = require('./lib');
 
-const PAGES = ['index', 'users', 'items', 'content', 'norms', 'export'];
+const PAGES = ['index', 'users', 'items', 'content', 'norms', 'export', 'results', 'report'];
 
 (async () => {
   resetDb();
@@ -121,6 +121,29 @@ const PAGES = ['index', 'users', 'items', 'content', 'norms', 'export'];
     ok(mini.body.trim().split('\n').length === 2 && !mini.body.includes('pomp_C1'), '간이 CSV: 1건, 하위 요인 열 없음');
     await page.goto(`${BASE}/admin/export.php`);
     await page.screenshot({ path: `${OUT}/stage7-admin-export.png` });
+
+    // ── 결과지: 목록 → 회원이 보는 결과지 그대로(읽기 전용)
+    await page.goto(`${BASE}/admin/results.php`);
+    ok((await page.$$('#resultsTable tbody tr')).length === 5 && (await page.textContent('#resultsTotal')).includes('5건'), '결과지 목록: 완료 검사 5건');
+    ok(!!(await page.$('.topbar a[href$="admin/results.php"][aria-current="page"]')), "관리자 메뉴에 '결과지'");
+    await page.screenshot({ path: `${OUT}/admin-results.png` });
+    await page.goto(`${BASE}/admin/results.php?type=mini20`);
+    ok((await page.$$('#resultsTable tbody tr')).length === 1, '결과지 목록: 간이만 거르기');
+    await page.goto(`${BASE}/admin/results.php`);
+    await Promise.all([page.waitForLoadState('load'), page.click('#resultsTable a:has-text("결과지 보기")')]);
+    ok(page.url().includes('admin/report.php?id=') && (await page.textContent('#adminViewBar')).includes('읽기 전용'), '결과지 보기: 관리자 보기 표시');
+    ok(!!(await page.$('#report .r-cover')) && (await page.$$('#report .r-chapter')).length >= 10 && !(await page.$('#growthApp')), '결과지 보기: 회원 결과지 그대로, 성장 행동 고르기는 없음');
+    const postRes = await page.request.post(page.url(), { form: { ajax: '1', action: 'growth_add' } });
+    ok(postRes.status() === 405, '결과지 보기: 바꾸는 요청은 받지 않음(405)');
+    ok((await page.goto(`${BASE}/admin/report.php?id=999999`)).status() === 404, '결과지 보기: 없는 검사 → 404');
+    const ctx2 = await browser.newContext();
+    const p2 = await ctx2.newPage();
+    await login(p2, 'user', 'visang');
+    await p2.goto(`${BASE}/admin/report.php?id=1`);
+    ok(isAdminLogin(p2.url()), '일반 사용자는 관리자 결과지 보기에 들어가지 못함');
+    await p2.goto(`${BASE}/admin/results.php`);
+    ok(isAdminLogin(p2.url()), '일반 사용자는 결과지 목록에 들어가지 못함');
+    await ctx2.close();
   } catch (e) {
     ok(false, `예외: ${e.message}`);
   } finally {
