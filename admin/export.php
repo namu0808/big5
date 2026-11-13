@@ -3,7 +3,7 @@ declare(strict_types=1);
 require_once '../includes/admin_check.php';
 
 /**
- * 익명 응답 데이터 CSV 내보내기 (PLAN 8장) — 아이디·이름 없음, 응답자는 HMAC 해시(BIG5_EXPORT_SALT).
+ * CSV 내려받기 — 익명 응답 데이터 (PLAN 8장) — 아이디·이름 없음, 응답자는 HMAC 해시(BIG5_EXPORT_SALT).
  * ?download=1&kind=self|ratings&type=full120|mini20&clean=1 (품질 플래그 제외)
  */
 require_once __DIR__ . '/../includes/admin_stats.php';
@@ -41,28 +41,35 @@ if (big5_param('download') === '1') {
     exit;
 }
 
-$page_title = '내보내기';
+$page_title = 'CSV 내려받기';
 $layout_area = 'admin';
 $nav_active = 'export';
 require __DIR__ . '/../includes/header.php';
 ?>
-<h1>익명 응답 데이터 내보내기</h1>
-<ul>
-  <li>CSV에는 <strong>아이디·이름·내부 번호를 넣지 않습니다.</strong> 응답자는 설정 파일의 비밀 값으로 만든 해시(HMAC-SHA256)로만 구별됩니다. 같은 사람의 여러 검사는 같은 해시가 됩니다.</li>
-  <li>열: 응답자 해시, 본인/타인, 관계(타인 평가), 검사 종류, 문항·채점 버전, 완료일(날짜만), 소요 초, 품질 플래그, 요인 0~100, 하위 요인 0~100(정식), 문항별 응답</li>
-</ul>
+<div class="adm">
+  <header class="adm-head">
+    <div class="adm-head-text">
+      <h1 class="adm-title">CSV 내려받기</h1>
+      <p class="adm-lead">익명 응답 데이터를 CSV 로 내려받습니다.</p>
+    </div>
+  </header>
+  <ul class="export-notes">
+    <li>CSV에는 <strong>아이디·이름·내부 번호를 넣지 않습니다.</strong> 응답자는 설정 파일의 비밀 값으로 만든 해시(HMAC-SHA256)로만 구별됩니다. 같은 사람의 여러 검사는 같은 해시가 됩니다.</li>
+    <li>열: 응답자 해시, 본인/타인, 관계(타인 평가), 검사 종류, 문항·채점 버전, 완료일(날짜만), 소요 초, 품질 플래그, 요인 0~100, 하위 요인 0~100(정식), 문항별 응답</li>
+  </ul>
 <?php if (!$saltOk): ?>
-<p class="form-error">설정 파일에 <code>BIG5_EXPORT_SALT</code>(16자 이상)가 없어 내보낼 수 없습니다.</p>
+  <p class="adm-error" role="alert">설정 파일에 <code class="adm-code">BIG5_EXPORT_SALT</code>(16자 이상)가 없어 내려받을 수 없습니다.</p>
 <?php endif; ?>
-<form method="get" action="<?= h(big5_url('admin/export.php')) ?>" class="form-card" id="exportForm">
-  <input type="hidden" name="download" value="1">
-  <label class="field"><span>대상</span>
-    <select name="kind"><option value="self">본인 검사</option><option value="ratings">받은 타인 평가</option></select>
-  </label>
-  <label class="field"><span>검사 종류</span>
-    <select name="type"><option value="full120">정식 120문항</option><option value="mini20">간이 20문항</option></select>
-  </label>
-  <label class="check"><input type="checkbox" name="clean" value="1"><span>품질 플래그가 붙은 응답은 빼기</span></label>
-  <button type="submit" class="btn btn-primary btn-block"<?= $saltOk ? '' : ' disabled' ?>>CSV 내려받기</button>
-</form>
+  <form method="get" action="<?= h(big5_url('admin/export.php')) ?>" class="adm-box" id="exportForm">
+    <input type="hidden" name="download" value="1">
+    <label class="adm-field"><span>응답</span>
+      <select name="kind"><option value="self">본인 검사</option><option value="ratings">받은 타인 평가</option></select>
+    </label>
+    <label class="adm-field"><span>대상</span>
+      <select name="type"><option value="full120">정식 120문항</option><option value="mini20">간이 20문항</option></select>
+    </label>
+    <label class="adm-check"><input type="checkbox" name="clean" value="1"><span>품질 플래그가 붙은 응답은 빼기</span></label>
+    <button type="submit" class="adm-btn adm-btn-main adm-btn-block"<?= $saltOk ? '' : ' disabled' ?>>CSV 내려받기</button>
+  </form>
+</div>
 <?php require __DIR__ . '/../includes/footer.php';

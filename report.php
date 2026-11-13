@@ -165,8 +165,19 @@ if ($big5AdminView) {
 }
 require __DIR__ . '/includes/header.php';
 ?>
-<?php if ($big5AdminView): ?>
-<p class="notice-box no-print" id="adminViewBar"><strong>관리자 보기(읽기 전용)</strong> · 검사 #<?= $id ?> · <?= h((string) $session['owner_label']) ?><?= $session['owner_retired'] ? ' · 사용자가 지운 기록(보존)' : '' ?> · <a href="<?= h(big5_url('admin/results.php')) ?>">결과지 목록으로</a></p>
+<?php if ($big5AdminView): /* 관리자 화면 규격(0.15.0, sbm.ai.kr doc/ADMIN-UI.md) — 머리는 .adm.adm-slim, 결과지는 .adm-report 안에 사용자 화면 그대로 */ ?>
+<div class="adm adm-slim">
+  <header class="adm-head">
+    <div class="adm-head-text">
+      <p class="adm-crumb"><a href="<?= h(big5_url('admin/results.php')) ?>">검사 기록</a> › 결과지 그대로 보기</p>
+      <h1 class="adm-title">결과지 그대로 보기 <small class="adm-code">#<?= $id ?></small></h1>
+      <p class="adm-lead">회원이 본 결과지 그대로입니다.</p>
+    </div>
+    <p class="adm-actions"><a class="adm-btn adm-btn-sm" href="<?= h(big5_url('admin/results.php')) ?>">검사 기록으로</a></p>
+  </header>
+  <p class="adm-note no-print" id="adminViewBar"><strong>관리자 보기(읽기 전용)</strong> · 검사 #<?= $id ?> · <?= $session['owner_retired'] ? '<span class="adm-badge adm-badge-off">삭제한 계정</span> · 사용자가 지운 기록(보존)' : h((string) $session['owner_label']) ?></p>
+</div>
+<div class="adm-report">
 <?php endif; ?>
 <div class="report" id="report">
 
@@ -756,4 +767,7 @@ $footerText = (string) $big5User['display_name'] . ' · 검사일 ' . $R['date']
 ?>
 <style>@media print { @page { @bottom-center { content: "<?= $cssStr($footerText) ?>"; font-size: 8pt; color: #666; font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; } @bottom-right { content: counter(page) " / " counter(pages); font-size: 8pt; color: #999; } } }</style>
 </div>
+<?php if ($big5AdminView): ?>
+</div>
+<?php endif; ?>
 <?php require __DIR__ . '/includes/footer.php';

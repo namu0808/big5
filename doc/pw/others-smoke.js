@@ -186,7 +186,7 @@ async function rateOnce(link, pick) {
     const pAdm = await (await bAdm.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
     await login(pAdm, 'sonbm', 'visang', true);
     await pAdm.goto(`${BASE}/admin/results.php?owner=deleted`);
-    ok((await pAdm.$$('#resultsTable tbody tr.row-retired')).length === 5 && (await pAdm.textContent('#resultsTable')).includes('삭제한 계정'), "관리자 결과지 목록: 사용자가 지운 검사 5건이 '삭제한 계정'으로");
+    ok((await pAdm.$$('#resultsTable tbody tr.adm-row-off')).length === 5 && (await pAdm.$$('#resultsTable .adm-badge.adm-badge-off')).length === 5 && (await pAdm.textContent('#resultsTable')).includes('삭제한 계정'), "관리자 결과지 목록: 사용자가 지운 검사 5건이 '삭제한 계정'으로");
     await pAdm.goto(`${BASE}/admin/report.php?id=${latest}`);
     ok((await pAdm.textContent('#adminViewBar')).includes('사용자가 지운 기록') && !!(await pAdm.$('#report .r-cover')) && !!(await pAdm.$('#others .o-row')), '관리자: 지운 기록의 결과지 보기(9장 받은 평가 포함)');
     await bAdm.close();

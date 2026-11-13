@@ -54,15 +54,15 @@ const WIDTHS = [390, 768, 1280];
 
       await login(page, 'sonbm', 'visang', true);
       const adminOver = [];
-      for (const p of ['index', 'users', 'items', 'content', 'norms', 'export']) {
+      for (const p of ['index', 'users', 'results', 'analysis', 'items', 'content', 'norms', 'export']) {
         await page.goto(`${BASE}/admin/${p}.php`);
         const o = await page.evaluate(() => {
-          // 표는 .table-wrap 안에서 가로로 스크롤되므로 페이지 자체가 넘치는지만 본다
+          // 표는 .adm-table-wrap 안에서 가로로 스크롤되므로 페이지 자체가 넘치는지만 본다
           return document.documentElement.scrollWidth - window.innerWidth;
         });
         if (o > 1) adminOver.push(`${p}(+${o}px)`);
       }
-      ok(adminOver.length === 0, `${w}px 관리자 화면 6개 가로 넘침 없음${adminOver.length ? ' — ' + adminOver.join(', ') : ''}`);
+      ok(adminOver.length === 0, `${w}px 관리자 화면 8개 가로 넘침 없음${adminOver.length ? ' — ' + adminOver.join(', ') : ''}`);
       await browser.close();
     }
   } catch (e) {

@@ -74,8 +74,8 @@ const { BASE, ORIGIN, OUT, startServer, resetDb, openBrowser, ok, done, login, i
 
     // 7) 관리자 로그인
     await login(page, 'sonbm', 'visang', true);
-    ok(page.url().endsWith('/big5/admin/index.php'), 'sonbm/visang 관리자 로그인 → 대시보드');
-    ok((await page.textContent('h1')).includes('대시보드'), '대시보드 표시');
+    ok(page.url().endsWith('/big5/admin/index.php'), 'sonbm/visang 관리자 로그인 → 한눈에 보기');
+    ok((await page.textContent('h1')).includes('한눈에 보기'), '한눈에 보기 표시');
 
     // 8) 관리자 로그아웃해도 사용자 로그인은 유지
     await page.goto(`${BASE}/admin/logout.php`);

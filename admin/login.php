@@ -41,22 +41,24 @@ $page_title = '관리자 로그인';
 $layout_area = 'admin';
 require __DIR__ . '/../includes/header.php';
 ?>
-<section class="form-card">
-  <h1>관리자 로그인</h1>
+<div class="adm adm-narrow">
+  <header class="adm-head">
+    <div class="adm-head-text"><h1 class="adm-title">관리자 로그인</h1></div>
+  </header>
 <?php if ($error !== ''): ?>
-  <p class="form-error" role="alert"><?= h($error) ?></p>
+  <p class="adm-error" role="alert"><?= h($error) ?></p>
 <?php endif; ?>
-  <form method="post" action="<?= h(big5_url('admin/login.php')) ?>" novalidate>
+  <form method="post" action="<?= h(big5_url('admin/login.php')) ?>" class="adm-box" novalidate>
     <?= big5_csrf_field() ?>
-    <label class="field">
+    <label class="adm-field">
       <span>아이디</span>
       <input type="text" name="username" value="<?= h($username) ?>" autocomplete="username" autocapitalize="off" required>
     </label>
-    <label class="field">
+    <label class="adm-field">
       <span>비밀번호</span>
       <input type="password" name="password" autocomplete="current-password" required>
     </label>
-    <button type="submit" class="btn btn-primary btn-block">로그인</button>
+    <button type="submit" class="adm-btn adm-btn-main adm-btn-block">로그인</button>
   </form>
-</section>
+</div>
 <?php require __DIR__ . '/../includes/footer.php';

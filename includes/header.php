@@ -4,6 +4,7 @@
  *   $page_title(문자열), $layout_area('user'|'admin'), $nav_active(메뉴 키), $hide_nav(bool),
  *   $body_class(문자열), $extra_css(경로 배열, assets/ 기준), $extra_head(이미 이스케이프된 HTML — 쓰지 않는 것이 원칙)
  *   $page_indexable(bool, 검색 노출 허용 — 시작 화면만), $meta_description(문자열, 검색 결과 요약)
+ * 관리자 화면($layout_area 'admin')은 사이트 공통 관리자 규격(sbm.ai.kr doc/ADMIN-UI.md, 0.15.0): 머리 세 줄·공용 CSS /assets/admin.css.
  */
 declare(strict_types=1);
 
@@ -24,12 +25,14 @@ $big5HeadAdmin = $layout_area === 'admin' ? big5_current_admin($pdo ?? null) : n
 
 $big5Nav = $layout_area === 'admin'
     ? [
-        'dash' => ['admin/index.php', '대시보드'],
-        'results' => ['admin/results.php', '결과지'],
+        // 관리자 메뉴 — 이름·순서는 사이트 공통 규격(sbm.ai.kr doc/ADMIN-UI.md). 메뉴 이름 = 화면 제목(h1)
+        'dash' => ['admin/index.php', '한눈에 보기'],
+        'results' => ['admin/results.php', '검사 기록'],
+        'analysis' => ['admin/analysis.php', '분석'],
         'items' => ['admin/items.php', '문항'],
-        'content' => ['admin/content.php', '해석 문구'],
+        'content' => ['admin/content.php', '결과 문장'],
         'norms' => ['admin/norms.php', '규준'],
-        'export' => ['admin/export.php', '내보내기'],
+        'export' => ['admin/export.php', 'CSV 내려받기'],
     ]
     : [
         'history' => ['history.php', '내 기록'],
@@ -64,7 +67,10 @@ $big5Nav = $layout_area === 'admin'
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap">
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="<?= h(big5_url('assets/style.css')) ?>?v=<?= h(BIG5_VERSION) ?>">
-<?php if ($layout_area === 'admin'): ?>
+<?php if ($layout_area === 'admin'): /* 관리자 공용 CSS 는 사이트 루트의 것(홈 저장소) — 그 파일이 바뀐 때를 주소에 붙인다. Pretendard 는 위에서 이미 실었다 */ ?>
+<?php $big5AdmCssV = @filemtime(rtrim((string) ($_SERVER['DOCUMENT_ROOT'] ?? ''), '/') . '/assets/admin.css') ?: BIG5_VERSION; ?>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/admin.css?v=<?= h((string) $big5AdmCssV) ?>">
 <link rel="stylesheet" href="<?= h(big5_url('assets/admin.css')) ?>?v=<?= h(BIG5_VERSION) ?>">
 <?php endif; ?>
 <?php foreach ($extra_css as $css): ?>
@@ -75,45 +81,18 @@ $big5Nav = $layout_area === 'admin'
 <?php endif; ?>
 </head>
 <body class="<?= h(trim('area-' . $layout_area . ' ' . $body_class)) ?>" data-base="<?= h(big5_base_url()) ?>">
-<?php if (!$hide_nav): ?>
-<?php /* 상단 — 공부력 진단(sbmtest includes/header.php)과 같은 모양: SBM 표식 · 서비스 이름 · 'SBM 진단 검사 홈' · 내 계정/로그인. .topbar 는 인쇄 숨김(print.css)용 */ ?>
-<header class="gnb topbar">
-  <div class="gnb-inner">
-    <span class="brand">
-      <a class="brand-mark" href="/" aria-label="SBM 진단 검사 홈" title="SBM 진단 검사 홈">SBM</a>
-      <a class="brand-text" href="<?= h(big5_url($layout_area === 'admin' ? 'admin/index.php' : 'index.php')) ?>" aria-label="다이얼 시작 화면">
-        <span class="brand-name">Dial<?= $layout_area === 'admin' ? ' 관리자' : '' ?></span>
-        <span class="brand-sub">빅파이브(Big5) 성격 검사</span>
-      </a>
-    </span>
-    <nav class="gnb-menu" aria-label="주 메뉴">
-<?php if ($layout_area === 'admin'): ?>
+<?php if ($layout_area === 'admin'): /* 관리자 머리 세 줄(규격 sbm.ai.kr doc/ADMIN-UI.md): ① SBM 표식·관리자·이름·로그아웃 ② 서비스 줄 ③ 이 앱의 메뉴. .topbar 는 인쇄 숨김(print.css)용 */ ?>
+<header class="adm-top topbar">
+  <div class="adm-top-inner">
+    <a class="adm-mark" href="/" aria-label="SBM 진단 검사 홈" title="SBM 진단 검사 홈">SBM</a>
+    <a class="adm-brand" href="<?= h(big5_url('admin/index.php')) ?>" aria-label="다이얼 관리자 첫 화면"><b>관리자</b><span>다이얼</span></a>
 <?php if ($big5HeadAdmin !== null): ?>
-<?php foreach ($big5Nav as $big5NavKey => [$big5NavHref, $big5NavLabel]): ?>
-      <a href="<?= h(big5_url($big5NavHref)) ?>"<?= $big5NavKey === $nav_active ? ' aria-current="page"' : '' ?>><?= h($big5NavLabel) ?></a>
-<?php endforeach; ?>
-      <a href="<?= h(function_exists('sbm_admin_url') ? sbm_admin_url('logout.php') : big5_url('admin/logout.php')) ?>">로그아웃</a>
-<?php endif; ?>
-<?php else: ?>
-      <a href="/">SBM 진단 검사 홈</a>
-<?php if ($big5HeadUser !== null): ?>
-<?php foreach ($big5Nav as $big5NavKey => [$big5NavHref, $big5NavLabel]): ?>
-      <a href="<?= h(big5_url($big5NavHref)) ?>"<?= $big5NavKey === $nav_active ? ' aria-current="page"' : '' ?>><?= h($big5NavLabel) ?></a>
-<?php endforeach; ?>
-<?php endif; ?>
-<?php endif; ?>
-    </nav>
-<?php if ($layout_area === 'user'): ?>
-<?php if ($big5HeadUser !== null): ?>
-    <span class="gnb-user"><span class="gnb-user-name"><?= h((string) $big5HeadUser['display_name']) ?>님</span><a class="gnb-cta" href="/account/">내 계정</a></span>
-<?php else: ?>
-    <a class="gnb-cta" href="<?= h(big5_account_url('login.php', big5_current_path())) ?>">로그인</a>
-<?php endif; ?>
+    <span class="adm-who"><span class="adm-who-name"><?= h((string) $big5HeadAdmin['display_name']) ?>님</span><a class="adm-btn adm-btn-sm" href="<?= h(function_exists('sbm_admin_url') ? sbm_admin_url('logout.php') : big5_url('admin/logout.php')) ?>">로그아웃</a></span>
 <?php endif; ?>
   </div>
-<?php /* 통합 관리자 메뉴 줄(0.12.0) — 홈 /admin/ 과 같은 목록(sbm.ai.kr core sbm_admin_links). 코어가 옛 판이면 줄을 그리지 않는다 */ ?>
-<?php if ($layout_area === 'admin' && $big5HeadAdmin !== null && function_exists('sbm_admin_links')): ?>
-  <nav class="adm-bar" aria-label="통합 관리자 메뉴">
+<?php if ($big5HeadAdmin !== null): ?>
+<?php if (function_exists('sbm_admin_links')): /* 코어가 옛 판이면 서비스 줄을 그리지 않는다 */ ?>
+  <nav class="adm-bar" aria-label="관리자 메뉴">
     <div class="adm-bar-inner">
 <?php foreach (sbm_admin_links() as $big5AdmL): ?>
       <a href="<?= h($big5AdmL['url']) ?>"<?= $big5AdmL['id'] === 'big5' ? ' aria-current="page"' : '' ?>><?= h($big5AdmL['name']) ?></a>
@@ -121,6 +100,40 @@ $big5Nav = $layout_area === 'admin'
     </div>
   </nav>
 <?php endif; ?>
+  <nav class="adm-sub" aria-label="다이얼 관리자 메뉴">
+    <div class="adm-sub-inner">
+<?php foreach ($big5Nav as $big5NavKey => [$big5NavHref, $big5NavLabel]): ?>
+      <a href="<?= h(big5_url($big5NavHref)) ?>"<?= $big5NavKey === $nav_active ? ' aria-current="page"' : '' ?>><?= h($big5NavLabel) ?></a>
+<?php endforeach; ?>
+    </div>
+  </nav>
+<?php endif; ?>
+</header>
+<?php elseif (!$hide_nav): ?>
+<?php /* 상단 — 공부력 진단(sbmtest includes/header.php)과 같은 모양: SBM 표식 · 서비스 이름 · 'SBM 진단 검사 홈' · 내 계정/로그인. .topbar 는 인쇄 숨김(print.css)용 */ ?>
+<header class="gnb topbar">
+  <div class="gnb-inner">
+    <span class="brand">
+      <a class="brand-mark" href="/" aria-label="SBM 진단 검사 홈" title="SBM 진단 검사 홈">SBM</a>
+      <a class="brand-text" href="<?= h(big5_url('index.php')) ?>" aria-label="다이얼 시작 화면">
+        <span class="brand-name">Dial</span>
+        <span class="brand-sub">빅파이브(Big5) 성격 검사</span>
+      </a>
+    </span>
+    <nav class="gnb-menu" aria-label="주 메뉴">
+      <a href="/">SBM 진단 검사 홈</a>
+<?php if ($big5HeadUser !== null): ?>
+<?php foreach ($big5Nav as $big5NavKey => [$big5NavHref, $big5NavLabel]): ?>
+      <a href="<?= h(big5_url($big5NavHref)) ?>"<?= $big5NavKey === $nav_active ? ' aria-current="page"' : '' ?>><?= h($big5NavLabel) ?></a>
+<?php endforeach; ?>
+<?php endif; ?>
+    </nav>
+<?php if ($big5HeadUser !== null): ?>
+    <span class="gnb-user"><span class="gnb-user-name"><?= h((string) $big5HeadUser['display_name']) ?>님</span><a class="gnb-cta" href="/account/">내 계정</a></span>
+<?php else: ?>
+    <a class="gnb-cta" href="<?= h(big5_account_url('login.php', big5_current_path())) ?>">로그인</a>
+<?php endif; ?>
+  </div>
 </header>
 <?php endif; ?>
 <main class="page">

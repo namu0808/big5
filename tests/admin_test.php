@@ -20,6 +20,12 @@ big5_seed_accounts($pdo);
 $uid = (int) $pdo->query("SELECT id FROM sbm_users WHERE username = 'user'")->fetchColumn();
 $items = big5_items('full120');
 
+/** 같은 값인지 — 다르면 실제 값을 함께 보인다 */
+function adm_eq(mixed $expected, mixed $actual, string $name): void
+{
+    t_ok($expected === $actual, $name . ($expected === $actual ? '' : ' — 실제 ' . json_encode($actual, JSON_UNESCAPED_UNICODE)));
+}
+
 /** 완료 검사 하나 (모든 문항 같은 값 $v, 플래그 지정) */
 function seed_done(PDO $pdo, int $uid, string $type, int $v, ?string $flags): int
 {
@@ -104,6 +110,16 @@ t_ok($mini['total'] === $cnt(" AND test_type = 'mini20'") && $mini['total'] > 0 
 t_ok(big5_admin_results($pdo, ['type' => '', 'owner' => '', 'q' => 'us%'], 1)['total'] === 0 && big5_admin_results($pdo, ['type' => '', 'owner' => '', 'q' => 'use'], 1)['total'] === $rs['total'], '결과지 목록: 아이디 찾기(와일드카드 글자는 글자 그대로)');
 $lastPage = big5_admin_results($pdo, ['type' => '', 'owner' => '', 'q' => ''], 9999);
 t_ok($lastPage['page'] === $lastPage['pages'] && $lastPage['rows'] !== [], '결과지 목록: 범위를 넘는 쪽은 마지막 쪽으로');
+// 0.15.0: 끝낸 날 필터(그날 포함·기간 밖 0건·틀린 값 무시) — 인자가 없으면 예전과 같은 결과
+$today = substr(big5_now(), 0, 10);
+$f = static fn(string $from, string $to, string $type = ''): int => big5_admin_results($pdo, ['type' => $type, 'owner' => '', 'q' => '', 'from' => $from, 'to' => $to], 1)['total'];
+$pdo->prepare('UPDATE big5_sessions SET completed_at = ? WHERE id = ?')->execute(['2020-03-05 23:59:59', $rs['rows'][0]['id']]);
+$pdo->prepare('UPDATE big5_sessions SET completed_at = ? WHERE id = ?')->execute(['2020-03-06 00:00:00', $rs['rows'][1]['id']]);
+adm_eq([$rs['total'] - 2, 1, 1, 2, 0], [$f($today, $today), $f('2020-03-05', '2020-03-05'), $f('2020-03-06', '2020-03-06'), $f('2020-03-01', '2020-03-31'), $f('2000-01-01', '2000-01-02')], '검사 기록: 끝낸 날 필터(그날 포함)·기간 밖 0건');
+adm_eq([$rs['total'], $rs['total'] - 2, 2], [$f("x' OR 1=1", '2026-13-40'), $f($today, ''), $f('', '2020-12-31')], '검사 기록: 틀린 날짜는 무시·한쪽만 주어도 됨');
+adm_eq($mini['total'], $f($today, $today, 'mini20'), '검사 기록: 끝낸 날 + 대상 함께 거르기');
+adm_eq(['2026-02-28', '', '', ''], [big5_admin_date('2026-02-28'), big5_admin_date('2026-02-30'), big5_admin_date('20260228'), big5_admin_date('')], '날짜 값 검사');
+$pdo->prepare('UPDATE big5_sessions SET completed_at = ? WHERE id IN (?, ?)')->execute([big5_now(), $rs['rows'][0]['id'], $rs['rows'][1]['id']]);
 $firstId = $rs['rows'][0]['id'];
 $pdo->prepare('UPDATE sbm_users SET username = ? WHERE id = ?')->execute(['~del' . $uid, $uid]);
 $del = big5_admin_results($pdo, ['type' => '', 'owner' => 'deleted', 'q' => ''], 1);
@@ -132,6 +148,15 @@ t_ok($hs['version'] === BIG5_VERSION && $hs['groups'][0]['title'] === '다이얼
 t_ok($tiles['정식 검사 완료(120문항)'] === (string) $c['full'] && $tiles['간이 검사 완료(20문항)'] === (string) $c['mini'] && $tiles['최근 7일 완료'] === (string) $c['last7'] && $tiles['타인 평가 완료'] === (string) $c['ratings'], '관리자 요약 훅: 대시보드와 같은 수');
 t_ok($hs['groups'][0]['links'][0]['url'] === '/big5/admin/', '관리자 요약 훅: 다이얼 관리 링크');
 t_ok(!preg_match('/user|sonbm|사용자|손병목/', json_encode($hs, JSON_UNESCAPED_UNICODE)), '관리자 요약 훅: 아이디·이름 없음');
+adm_eq(['다이얼 관리', '검사 기록', '분석', 'CSV 내려받기'], array_column($hs['groups'][0]['links'], 'label'), '관리자 요약 훅: 바로 가기 이름(규격 낱말)');
+// 통합 관리자 '최근 끝낸 검사' 훅(0.15.0) — 끝낸 때·대상·결과지 주소만(아이디·식별자 없음), 타인 평가 없음
+$rec = big5_sbm_admin_recent($pdo, 2, '/big5/');
+adm_eq(2, count($rec), '최근 끝낸 검사: 건수 제한');
+t_ok(array_keys($rec[0]) === ['at', 'kind', 'url'] && in_array($rec[0]['kind'], ['정식 120문항', '간이 20문항'], true) && preg_match('#^/big5/admin/report\.php\?id=\d+$#', $rec[0]['url']) === 1, '최근 끝낸 검사: 끝낸 때·대상·결과지 주소만');
+t_ok($rec[0]['at'] >= $rec[1]['at'] && $rec[0]['url'] === '/big5/admin/report.php?id=' . big5_admin_results($pdo, ['type' => '', 'owner' => '', 'q' => ''], 1)['rows'][0]['id'], '최근 끝낸 검사: 최신순(검사 기록 첫 줄과 같음)');
+$allRec = big5_sbm_admin_recent($pdo, 50, '/big5/');
+t_ok(in_array('간이 20문항', array_column($allRec, 'kind'), true) || count($allRec) === 50, '최근 끝낸 검사: 대상 이름');
+t_ok(!preg_match('/user|sonbm|사용자|손병목/', json_encode($allRec, JSON_UNESCAPED_UNICODE)), '최근 끝낸 검사: 아이디·이름 없음');
 
 t_ok($bad === [], '/admin 모든 파일 첫 문장이 admin_check' . ($bad ? ' — 어긋남: ' . implode(', ', $bad) : ''));
 

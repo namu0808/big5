@@ -1,5 +1,5 @@
 /**
- * 4단계 스모크 — 관리자 '해석 문구' 화면: 점검표 통과, 위반 0, 미리보기, 일반 사용자 접근 차단.
+ * 4단계 스모크 — 관리자 '결과 문장'(해석 문구) 화면: 점검표 통과, 위반 0, 미리보기, 일반 사용자 접근 차단.
  * 실행: node doc/pw/admin-content-smoke.js
  */
 'use strict';
@@ -20,11 +20,11 @@ const { BASE, OUT, startServer, resetDb, openBrowser, ok, done, login, isAdminLo
 
     await login(page, 'sonbm', 'visang', true);
     await page.goto(`${BASE}/admin/content.php`);
-    ok((await page.textContent('h1')).includes('해석 문구'), '관리자 해석 문구 화면');
+    ok((await page.textContent('h1')).trim() === '결과 문장', '관리자 결과 문장 화면');
     const rows = await page.$$eval('#contentCheck tbody tr', (trs) => trs.map((t) => t.lastElementChild.textContent.trim()));
     ok(rows.length >= 15 && rows.every((r) => r === '통과'), `누락 점검표 ${rows.length}행 모두 통과`);
     ok(await page.isVisible('#violationsNone'), '문구 원칙 위반 0건');
-    ok((await page.textContent('h2:has-text("누락 점검표") .badge')).includes('통과'), '점검표 배지 통과');
+    ok((await page.textContent('h2:has-text("누락 점검표") .adm-badge.adm-badge-ok')).includes('통과'), '점검표 배지 통과');
 
     // 미리보기: 신경성 높은 쪽 → 도움 안내
     await page.selectOption('select[name=d]', 'N');

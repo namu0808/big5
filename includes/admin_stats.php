@@ -231,9 +231,16 @@ function big5_export_rows(PDO $pdo, string $kind, string $testType, bool $exclud
 
 const BIG5_ADMIN_RESULTS_PER = 50;
 
+/** 날짜 값 검사 — 'Y-m-d' 꼴이고 달력에 있는 날이면 그대로, 아니면 ''(무시) */
+function big5_admin_date(string $v): string
+{
+    return preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $v, $m) === 1 && checkdate((int) $m[2], (int) $m[3], (int) $m[1]) ? $v : '';
+}
+
 /**
  * 관리자 '결과지' 목록 — 완료한 본인 검사를 최근 순으로(삭제한 계정의 보존 기록 포함).
- * $filter: type 'full120'|'mini20'|''(전체), owner 'active'|'deleted'|''(전체), q 아이디 일부
+ * $filter: type 'full120'|'mini20'|''(전체), owner 'active'|'deleted'|''(전체), q 아이디 일부,
+ *          from·to 끝낸 날 'Y-m-d'(0.15.0 — completed_at 기준, 그날 포함. 없거나 틀린 값이면 거르지 않는다)
  * → ['total' => 전체 건수, 'pages' => 쪽수, 'page' => 지금 쪽, 'rows' => [...]]
  *   rows[]{id, user_id, username, retired(bool), test_type, completed_at, quality_flags[], ratings(받은 평가 수), domains[요인 => pomp]}
  */
@@ -254,6 +261,16 @@ function big5_admin_results(PDO $pdo, array $filter, int $page): array
     if ($q !== '') {
         $where[] = "u.username LIKE ? ESCAPE '!'";
         $args[] = '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $q) . '%';
+    }
+    $from = big5_admin_date((string) ($filter['from'] ?? ''));
+    if ($from !== '') {
+        $where[] = 's.completed_at >= ?';
+        $args[] = $from . ' 00:00:00';
+    }
+    $to = big5_admin_date((string) ($filter['to'] ?? ''));
+    if ($to !== '') {
+        $where[] = 's.completed_at <= ?';
+        $args[] = $to . ' 23:59:59';
     }
     $cond = implode(' AND ', $where);
     $st = $pdo->prepare("SELECT COUNT(*) FROM big5_sessions s JOIN sbm_users u ON u.id = s.user_id WHERE {$cond}");

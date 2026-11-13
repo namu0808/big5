@@ -44,41 +44,50 @@ $layout_area = 'admin';
 $nav_active = 'norms';
 require __DIR__ . '/../includes/header.php';
 ?>
-<h1>규준</h1>
-<p>규준은 이 사이트 응답자들의 요인·하위 요인별 평균과 표준편차입니다. 규준이 생기면 리포트에 '참고 백분위(이 사이트 응답자 기준)'를 보탤 수 있습니다. <strong>기본값은 비활성</strong>이고, 규준이 없거나 비활성이면 리포트는 0~100 환산 점수만 씁니다.</p>
-<div class="stat-grid">
-  <div class="stat"><span class="stat-label">계산 대상 (품질 통과 정식 검사)</span><span class="stat-value" id="eligible"><?= $eligible ?></span><span class="muted small">필요 <?= BIG5_NORM_MIN ?>건</span></div>
-</div>
+<div class="adm">
+  <header class="adm-head">
+    <div class="adm-head-text">
+      <h1 class="adm-title">규준</h1>
+      <p class="adm-lead">규준은 이 사이트 응답자들의 요인·하위 요인별 평균과 표준편차입니다. 규준이 생기면 리포트에 '참고 백분위(이 사이트 응답자 기준)'를 보탤 수 있습니다. <strong>기본값은 비활성</strong>이고, 규준이 없거나 비활성이면 리포트는 0~100 환산 점수만 씁니다.</p>
+    </div>
+  </header>
+  <section class="adm-sec">
+    <dl class="adm-tiles">
+      <div class="adm-tile"><dt>계산 대상 (품질 통과 정식 검사)</dt><dd><b id="eligible"><?= $eligible ?></b><small>필요 <?= BIG5_NORM_MIN ?>건</small></dd></div>
+    </dl>
 <?php if ($error !== ''): ?>
-<p class="form-error" role="alert"><?= h($error) ?></p>
+    <p class="adm-error norms-msg" role="alert"><?= h($error) ?></p>
 <?php endif; ?>
 <?php if (!$ready): ?>
-<p class="notice-box" id="normsLocked">아직 <?= BIG5_NORM_MIN ?>건이 되지 않아 규준을 계산할 수 없습니다. (지금 <?= $eligible ?>건, <?= BIG5_NORM_MIN - $eligible ?>건 더 필요)</p>
+    <p class="adm-note norms-msg" id="normsLocked">아직 <?= BIG5_NORM_MIN ?>건이 되지 않아 규준을 계산할 수 없습니다. (지금 <?= $eligible ?>건, <?= BIG5_NORM_MIN - $eligible ?>건 더 필요)</p>
 <?php endif; ?>
-<form method="post" action="<?= h(big5_url('admin/norms.php')) ?>">
-  <?= big5_csrf_field() ?>
-  <input type="hidden" name="action" value="compute">
-  <button type="submit" class="btn btn-primary" id="btnCompute"<?= $ready ? '' : ' disabled' ?>>규준 계산</button>
-</form>
-
-<h2>저장된 규준</h2>
+    <form method="post" action="<?= h(big5_url('admin/norms.php')) ?>">
+      <?= big5_csrf_field() ?>
+      <input type="hidden" name="action" value="compute">
+      <p class="adm-row"><button type="submit" class="adm-btn adm-btn-main" id="btnCompute"<?= $ready ? '' : ' disabled' ?>>규준 계산</button></p>
+    </form>
+  </section>
+  <section class="adm-sec">
+    <h2 class="adm-h">저장된 규준</h2>
 <?php if ($sets === []): ?>
-<p class="muted">저장된 규준이 없습니다.</p>
+    <p class="adm-muted">저장된 규준이 없습니다.</p>
 <?php else: ?>
-<div class="table-wrap"><table class="table">
-  <thead><tr><th>이름</th><th>표본 수</th><th>항목</th><th>만든 때</th><th>상태</th><th></th></tr></thead>
-  <tbody>
+    <div class="adm-table-wrap"><table class="adm-table" id="normsTable">
+      <thead><tr><th>이름</th><th class="adm-num">표본 수</th><th class="adm-num">항목</th><th>만든 때</th><th>상태</th><th><span class="adm-sr">바꾸기</span></th></tr></thead>
+      <tbody>
 <?php foreach ($sets as $s): ?>
-    <tr>
-      <td><?= h((string) $s['norm_set']) ?></td><td><?= (int) $s['n'] ?></td><td><?= (int) $s['rows_count'] ?></td>
-      <td><?= h(substr((string) $s['created_at'], 0, 16)) ?></td><td><?= (int) $s['active'] === 1 ? '<strong>활성</strong>' : '비활성' ?></td>
-      <td><form method="post" action="<?= h(big5_url('admin/norms.php')) ?>"><?= big5_csrf_field() ?>
-        <input type="hidden" name="norm_set" value="<?= h((string) $s['norm_set']) ?>">
-        <input type="hidden" name="action" value="<?= (int) $s['active'] === 1 ? 'deactivate' : 'activate' ?>">
-        <button type="submit" class="btn btn-outline btn-sm"><?= (int) $s['active'] === 1 ? '비활성으로' : '활성화' ?></button></form></td>
-    </tr>
+        <tr>
+          <td class="adm-code"><?= h((string) $s['norm_set']) ?></td><td class="adm-num"><?= (int) $s['n'] ?></td><td class="adm-num"><?= (int) $s['rows_count'] ?></td>
+          <td class="adm-code adm-nw"><?= h(substr((string) $s['created_at'], 0, 16)) ?></td><td><?= (int) $s['active'] === 1 ? '<span class="adm-badge adm-badge-ok">활성</span>' : '<span class="adm-badge adm-badge-off">비활성</span>' ?></td>
+          <td><form method="post" action="<?= h(big5_url('admin/norms.php')) ?>"><?= big5_csrf_field() ?>
+            <input type="hidden" name="norm_set" value="<?= h((string) $s['norm_set']) ?>">
+            <input type="hidden" name="action" value="<?= (int) $s['active'] === 1 ? 'deactivate' : 'activate' ?>">
+            <button type="submit" class="adm-btn adm-btn-sm"><?= (int) $s['active'] === 1 ? '비활성으로' : '활성화' ?></button></form></td>
+        </tr>
 <?php endforeach; ?>
-  </tbody>
-</table></div>
+      </tbody>
+    </table></div>
 <?php endif; ?>
+  </section>
+</div>
 <?php require __DIR__ . '/../includes/footer.php';

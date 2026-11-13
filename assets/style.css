@@ -81,11 +81,6 @@ a.brand-mark:hover, a.brand-mark:focus-visible { background: var(--sbm-green); }
   .gnb-user-name { display: none; }
   .gnb-cta { padding: 6px 10px; font-size: 12px; }
 }
-/* 관리자 메뉴는 항목이 많아 좁은 화면에서 줄을 바꾼다 */
-@media (max-width: 900px) {
-  .area-admin .gnb-inner { flex-wrap: wrap; padding-top: .4rem; padding-bottom: .4rem; }
-  .area-admin .gnb-menu { flex-wrap: wrap; gap: .25rem 1rem; margin-left: 0; width: 100%; }
-}
 
 /* ── 본문 ── */
 .page { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 3rem; min-height: 60vh; }
