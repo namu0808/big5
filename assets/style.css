@@ -364,33 +364,29 @@ svg.radar { overflow: visible; }
 .o-talk li { border: 1px solid var(--line); border-radius: var(--radius); padding: 0.6rem 0.85rem; }
 .o-talk-dial { font-size: 0.8rem; font-weight: 700; color: var(--c); margin-right: 0.3rem; }
 
-/* ============ 상단 줄 — 사이트 공통 디자인 '측정 기록지'(홈 sbm.ai.kr 0.10.0과 같게) ============
+/* ============ 상단 줄 — 사이트 공통 디자인 '맑은 하늘'(홈 sbm.ai.kr 0.13.0과 같게) ============
  * 상단 줄만 바꾼다(앱 본문·결과지는 그대로). 색은 이 블록 안의 --gnb-* 만 쓴다.
- * 표식: 먹색 'SBM' 글자 + 아래 눈금자(바늘 하나만 주홍). 'by 손병목' 같은 저자 표시는 네이비 세리프. */
+ * 표식: 맑은 파랑 둥근 네모 안의 흰 'SBM'(누르면 사이트 홈). 흰 바탕·옅은 아래선, 메뉴는 회청색 글자, 버튼은 파랑 알약. */
 .gnb {
-  --gnb-ink: #1F2328; --gnb-ink-2: #464C55; --gnb-ink-3: #6A707A; --gnb-line: #D5D8D1; --gnb-accent: #C9522B; --gnb-author: #1A2B4A;
+  --gnb-ink: #1C2230; --gnb-ink-2: #4F5868; --gnb-ink-3: #677083; --gnb-line: #E3E8EF; --gnb-accent: #1F6AE0; --gnb-accent-deep: #1858BE;
   --gnb-head: 'Pretendard Variable', Pretendard, 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  background: #FFFFFF; border-bottom: 1px solid var(--gnb-ink); backdrop-filter: none; -webkit-backdrop-filter: none;
+  background: #FFFFFF; border-bottom: 1px solid var(--gnb-line); backdrop-filter: none; -webkit-backdrop-filter: none;
 }
 .gnb .brand-mark {
-  position: relative; font-family: var(--gnb-head); font-weight: 800; font-size: 17px; letter-spacing: .04em; line-height: 1;
-  color: var(--gnb-ink); background: transparent; padding: 2px 1px 9px; border-radius: 0; box-shadow: none;
+  position: relative; display: inline-flex; align-items: center; justify-content: center; height: 30px; padding: 0 8px;
+  font-family: var(--gnb-head); font-weight: 800; font-size: 14px; letter-spacing: .04em; line-height: 1;
+  color: #fff; background: var(--gnb-accent); border-radius: 8px; box-shadow: none;
 }
-.gnb .brand-mark::after {
-  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 5px;
-  background: linear-gradient(var(--gnb-ink), var(--gnb-ink)) left bottom / 100% 1px no-repeat, repeating-linear-gradient(90deg, var(--gnb-ink) 0 1px, transparent 1px 8px);
-  background-repeat: no-repeat, repeat-x;
-}
-.gnb .brand-mark::before { content: ''; position: absolute; left: 62%; bottom: 0; width: 2px; height: 8px; background: var(--gnb-accent); }
-.gnb a.brand-mark:hover, .gnb a.brand-mark:focus-visible { background: transparent; color: var(--gnb-accent); }
-.gnb .brand-text { padding-left: 10px; border-left: 1px solid var(--gnb-line); }
+.gnb .brand-mark::after, .gnb .brand-mark::before { content: none; }
+.gnb a.brand-mark:hover, .gnb a.brand-mark:focus-visible { background: var(--gnb-accent-deep); color: #fff; }
+.gnb .brand-text { padding-left: 10px; border-left: 0; }
 .gnb .brand-name { font-family: var(--gnb-head); font-weight: 700; color: var(--gnb-ink); letter-spacing: -.01em; }
-.gnb .brand-sub { color: var(--gnb-ink-3); }
-.gnb .gnb-menu a { font-family: var(--gnb-head); font-weight: 500; color: var(--gnb-ink-2); border-bottom-width: 2px; }
-.gnb .gnb-menu a:hover, .gnb .gnb-menu a[aria-current="page"] { color: var(--gnb-ink); border-bottom-color: var(--gnb-accent); }
-.gnb .gnb-user-name { color: var(--gnb-ink-2); }
+.gnb .brand-sub { font-family: var(--gnb-head); color: var(--gnb-ink-3); }
+.gnb .gnb-menu a { font-family: var(--gnb-head); font-weight: 500; color: var(--gnb-ink-2); border-bottom: 2px solid transparent; }
+.gnb .gnb-menu a:hover, .gnb .gnb-menu a[aria-current="page"] { color: var(--gnb-accent); border-bottom-color: var(--gnb-accent); }
+.gnb .gnb-user-name { font-family: var(--gnb-head); color: var(--gnb-ink-2); }
 .gnb .gnb-cta {
-  font-family: var(--gnb-head); font-weight: 600; color: #fff; background: var(--gnb-ink); border: 1px solid var(--gnb-ink);
-  border-radius: 0; min-height: 44px; display: inline-flex; align-items: center;
+  font-family: var(--gnb-head); font-weight: 600; color: #fff; background: var(--gnb-accent); border: 1px solid var(--gnb-accent);
+  border-radius: 999px; min-height: 44px; display: inline-flex; align-items: center;
 }
-.gnb .gnb-cta:hover { background: var(--gnb-accent); border-color: var(--gnb-accent); color: #fff; }
+.gnb .gnb-cta:hover { background: var(--gnb-accent-deep); border-color: var(--gnb-accent-deep); color: #fff; }

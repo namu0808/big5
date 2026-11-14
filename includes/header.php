@@ -64,7 +64,6 @@ $big5Nav = $layout_area === 'admin'
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap">
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="<?= h(big5_url('assets/style.css')) ?>?v=<?= h(BIG5_VERSION) ?>">
 <?php if ($layout_area === 'admin'): /* 관리자 공용 CSS 는 사이트 루트의 것(홈 저장소) — 그 파일이 바뀐 때를 주소에 붙인다. Pretendard 는 위에서 이미 실었다 */ ?>
