@@ -201,7 +201,7 @@ async function rateOnce(link, pick) {
     const sid = sql("SELECT id FROM sbm_users WHERE username = 'user'")[0].id;
     sql("INSERT INTO big5_sessions (user_id, test_type, item_version, status, started_at, consent_at) VALUES (?, 'mini20', 'v', 'in_progress', '2026-11-05 00:00:00', '2026-11-05 00:00:00')", [sid]);
     await page.goto(`${ORIGIN}/account/`);
-    ok(/Dial|Big5 Test/.test(await page.textContent('.svc-list')), '내 계정: 이용 중인 도구에 Big5 Test(홈 코어의 서비스 이름 — 옛 이름 Dial 도 허용)');
+    { const sl = await page.textContent('.svc-list'); ok(sl.includes('Big5 Test') && !sl.includes('Dial —'), '내 계정: 이용 중인 도구에 Big5 Test(홈 코어의 서비스 이름, 옛 이름 Dial 없음)'); }
     await page.fill('#deleteForm input[name=current]', 'visang');
     await page.fill('#deleteForm input[name=phrase]', '모두 삭제');
     await Promise.all([page.waitForLoadState('load'), page.click('#deleteForm button')]);
