@@ -50,7 +50,7 @@ require __DIR__ . '/../includes/header.php';
   <header class="adm-head">
     <div class="adm-head-text">
       <h1 class="adm-title">CSV 내려받기</h1>
-      <p class="adm-lead">익명 응답 데이터를 CSV 로 내려받습니다.</p>
+      <p class="adm-lead">익명 응답 데이터를 CSV 로 내려받습니다. 맨 끝 칸은 <b>학술 연구 동의</b>(동의 · 동의 안 함 · 미응답, 다른 사람이 해 준 평가는 해당 없음) — 논문·발표에는 '동의'인 줄만 씁니다.</p>
     </div>
   </header>
   <ul class="export-notes">

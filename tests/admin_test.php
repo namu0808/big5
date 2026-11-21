@@ -97,6 +97,15 @@ t_ok($rows[1][0] === hash_hmac('sha256', (string) $uid, BIG5_EXPORT_SALT) && $ro
 t_ok(preg_match('/^\d{4}-\d{2}-\d{2}$/', $rows[1][6]) === 1, '완료일은 날짜만');
 $cleanRows = big5_export_rows($pdo, 'self', 'full120', true);
 t_ok(count($cleanRows) === 301 && !str_contains(implode(',', array_column(array_slice($cleanRows, 1), 8)), 'straightline'), '품질 플래그 제외 옵션: 300건, 플래그 없음');
+t_ok(end($header) === 'research_consent', 'CSV: 맨 끝 칸 research_consent(학술 연구 동의)');
+t_ok(count(array_filter(array_slice($rows, 1), static fn($r) => !in_array(end($r), ['동의', '동의 안 함', '미응답'], true))) === 0, 'CSV: 연구 동의는 세 가지 값만');
+if (function_exists('sbm_research_consent_set')) {
+    sbm_research_consent_set($pdo, (int) $uid, true);
+    $rc = big5_export_rows($pdo, 'self', 'full120', false);
+    t_ok(end($rc[1]) === '동의', 'CSV: 동의한 계정의 검사 → 동의');
+}
+$rt = big5_export_rows($pdo, 'ratings', 'full120', false);
+t_ok(end($rt[0]) === 'research_consent' && count(array_filter(array_slice($rt, 1), static fn($r) => end($r) !== '해당 없음')) === 0, '평가 CSV: 연구 동의는 해당 없음');
 $mini = big5_export_rows($pdo, 'self', 'mini20', false);
 t_ok(count($mini) === 2 && !in_array('pomp_C1', $mini[0], true) && in_array('q20', $mini[0], true), '간이 CSV: 하위 요인 열 없음');
 

@@ -183,7 +183,10 @@ function big5_export_rows(PDO $pdo, string $kind, string $testType, bool $exclud
         ['respondent', 'kind', 'relation', 'test_type', 'item_version', 'scoring_version', 'completed_date', 'duration_sec', 'quality_flags'],
         array_map(static fn($c) => 'pomp_' . $c, $codes),
         array_map(static fn($c) => 'pomp_' . $c, $facetCodes),
-        array_map(static fn($n) => 'q' . $n, $itemNos)
+        array_map(static fn($n) => 'q' . $n, $itemNos),
+        // 학술 연구 선택 동의(0.16.2, 홈 0.16.0) — 본인 검사는 그 계정의 동의 · 동의 안 함 · 미응답,
+        // 다른 사람이 해 준 평가는 평가한 사람이 계정이 없어 동의를 받지 않았으므로 '해당 없음'. 맨 끝(앞 칸 모양 그대로)
+        ['research_consent']
     );
     if ($kind === 'ratings') {
         $sql = "SELECT r.id, i.user_id, i.relation, r.test_type, r.item_version, r.scoring_version, r.completed_at, r.duration_sec, r.quality_flags
@@ -201,7 +204,9 @@ function big5_export_rows(PDO $pdo, string $kind, string $testType, bool $exclud
     $st = $pdo->prepare($sql);
     $st->execute([$testType]);
     $rows = [$header];
-    foreach ($st->fetchAll() as $r) {
+    $all = $st->fetchAll();
+    $cm = $kind === 'self' && function_exists('sbm_research_consent_map') ? sbm_research_consent_map($pdo, array_map(static fn($r) => (int) $r['user_id'], $all)) : [];
+    foreach ($all as $r) {
         $sc = big5_scores_load($pdo, $owner, (int) $r['id']);
         $resp = big5_responses_load($pdo, $owner, (int) $r['id']);
         $row = [
@@ -224,6 +229,7 @@ function big5_export_rows(PDO $pdo, string $kind, string $testType, bool $exclud
         foreach ($itemNos as $n) {
             $row[] = isset($resp[$n]) ? (string) $resp[$n] : '';
         }
+        $row[] = $kind === 'ratings' ? '해당 없음' : (function_exists('sbm_research_consent_label') ? sbm_research_consent_label($cm[(int) $r['user_id']] ?? null) : '');
         $rows[] = $row;
     }
     return $rows;
