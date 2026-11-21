@@ -390,3 +390,12 @@ svg.radar { overflow: visible; }
   border-radius: 999px; min-height: 44px; display: inline-flex; align-items: center;
 }
 .gnb .gnb-cta:hover { background: var(--gnb-accent-deep); border-color: var(--gnb-accent-deep); color: #fff; }
+/* 좁은 휴대폰 — 앱 이름이 'Big5 Test'로 길어져(0.16.0) 로그인 상태 상단이 390px 에 넘치지 않게 간격만 줄인다 */
+@media (max-width: 420px) {
+  .gnb .gnb-inner { gap: .4rem; padding: 0 .85rem; }
+  .gnb .gnb-menu { gap: .5rem; }
+  .gnb .gnb-menu a { font-size: 12px; }
+  .gnb .brand-text { padding-left: 6px; }
+  .gnb .brand-name { font-size: 15px; white-space: nowrap; }
+  .gnb .gnb-cta { padding: 6px 9px; }
+}

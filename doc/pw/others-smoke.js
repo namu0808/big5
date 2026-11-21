@@ -108,7 +108,8 @@ async function rateOnce(link, pick) {
     ok(!othersText.includes('백분위') && !othersText.includes('상위 '), '9장: 백분위 표현 없음');
     await page.setViewportSize({ width: 390, height: 844 });
     await page.reload();
-    ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), '9장 포함 리포트: 390px 에서 가로 넘침 없음');
+    const ovf = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth, wide: [...document.querySelectorAll('body *')].filter(e => e.getBoundingClientRect().right > window.innerWidth + 1).slice(0, 5).map(e => e.tagName + '.' + e.className + ':' + Math.round(e.getBoundingClientRect().right)) }));
+    ok(ovf.sw <= ovf.iw, '9장 포함 리포트: 390px 에서 가로 넘침 없음 ' + JSON.stringify(ovf));
     await page.setViewportSize({ width: 1100, height: 900 });
     await page.goto(`${BASE}/invite.php`);
     await Promise.all([page.waitForLoadState('load'), page.locator('#inviteTable button:has-text("멈추기")').first().click()]);
@@ -170,7 +171,7 @@ async function rateOnce(link, pick) {
     await page.fill('#deleteForm input[name=current]', 'visang');
     await page.fill('#deleteForm input[name=phrase]', '모두 삭제');
     await Promise.all([page.waitForLoadState('load'), page.click('#deleteForm button')]);
-    ok((await page.textContent('body')).includes('다이얼 검사 기록을 모두 지웠습니다'), '다이얼 기록 삭제 완료 → 시작 화면 안내');
+    ok((await page.textContent('body')).includes('Big5 Test 기록을 모두 지웠습니다'), 'Big5 기록 삭제 완료 → 시작 화면 안내');
     const left = sql(`SELECT
       (SELECT COUNT(*) FROM big5_sessions WHERE user_id = (SELECT id FROM sbm_users WHERE username = 'user')) AS s,
       (SELECT COUNT(*) FROM big5_invites WHERE user_id = (SELECT id FROM sbm_users WHERE username = 'user')) AS i,
@@ -200,7 +201,7 @@ async function rateOnce(link, pick) {
     const sid = sql("SELECT id FROM sbm_users WHERE username = 'user'")[0].id;
     sql("INSERT INTO big5_sessions (user_id, test_type, item_version, status, started_at, consent_at) VALUES (?, 'mini20', 'v', 'in_progress', '2026-11-05 00:00:00', '2026-11-05 00:00:00')", [sid]);
     await page.goto(`${ORIGIN}/account/`);
-    ok((await page.textContent('.svc-list')).includes('Dial'), '내 계정: 이용 중인 검사에 다이얼');
+    ok(/Dial|Big5 Test/.test(await page.textContent('.svc-list')), '내 계정: 이용 중인 도구에 Big5 Test(홈 코어의 서비스 이름 — 옛 이름 Dial 도 허용)');
     await page.fill('#deleteForm input[name=current]', 'visang');
     await page.fill('#deleteForm input[name=phrase]', '모두 삭제');
     await Promise.all([page.waitForLoadState('load'), page.click('#deleteForm button')]);

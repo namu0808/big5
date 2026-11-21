@@ -56,6 +56,7 @@ if ($isAjax) {
             if (!$r['ok']) {
                 big5_json(['ok' => 0, 'code' => $r['code'], 'missing' => $r['missing'] ?? [], 'error' => '아직 답하지 않은 문항이 있습니다.']);
             }
+            big5_flash('Big5 Dial이 그려졌습니다.');   // 막 끝낸 때만 결과지 위에 한 줄(리포지셔닝 0.16.0) — 관리자 보기에는 나오지 않는다
             big5_json(['ok' => 1, 'redirect' => big5_url('report.php?id=' . $id)]);
         }
         big5_json(['ok' => 0, 'code' => 'action', 'error' => '알 수 없는 요청입니다.']);

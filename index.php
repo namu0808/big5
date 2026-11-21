@@ -8,17 +8,17 @@ $user = big5_current_user($pdo);
 $page_title = '';
 $nav_active = 'home';
 $page_indexable = true;
-$meta_description = '다섯 개의 다이얼로 나를 읽는 빅파이브(Big5) 성격 검사. 정식 120문항·간이 20문항, 『초등 공부력』 저자 손병목.';
+$meta_description = '다섯 눈금판(Big5 Dial)으로 나를 읽는 빅파이브(Big5) 성격 검사. 정식 120문항·간이 20문항, 『초등 공부력』 저자 손병목.';
 $page_jsonld = [   // 검색 엔진용 — 이 화면이 무엇인지·누가 만들었는지(검색어 보강 2026-11-11)
     '@context' => 'https://schema.org',
     '@type' => 'WebPage',
-    'name' => 'Dial — 빅파이브(Big5) 성격검사',
+    'name' => 'Big5 Test — 빅파이브(Big5) 성격검사',
     'description' => $meta_description,
     'url' => big5_origin() . big5_url(''),
     'inLanguage' => 'ko-KR',
     'about' => '빅파이브 성격검사, Big5, 성격 검사',
     'author' => ['@type' => 'Person', 'name' => '손병목', 'url' => 'https://sonbm.com/'],
-    'isPartOf' => ['@type' => 'WebSite', 'name' => 'SBM 진단 검사', 'url' => big5_origin() . '/'],
+    'isPartOf' => ['@type' => 'WebSite', 'name' => 'SBM 공부력 지도', 'url' => big5_origin() . '/'],
 ];
 require __DIR__ . '/includes/header.php';
 
@@ -28,7 +28,7 @@ $mini = big5_url('consent.php?type=mini20');
 ?>
 <section class="hero">
   <h1>나의 다섯 다이얼</h1>
-  <p class="lead">사람은 칸에 들어가는 존재가 아니라 눈금 위에 놓인 존재입니다. 다이얼은 성실성·외향성·친화성·개방성·신경성, 다섯 개의 다이얼이 지금 어디쯤 놓여 있는지 보여 주는 빅파이브(Big5) 성격검사예요. 유형으로 나누지 않고, 높고 낮음을 좋고 나쁨으로 말하지 않습니다.</p>
+  <p class="lead">사람은 칸에 들어가는 존재가 아니라 눈금 위에 놓인 존재입니다. Big5 Test는 성실성·외향성·친화성·개방성·신경성, 다섯 개의 다이얼이 지금 어디쯤 놓여 있는지 보여 주는 빅파이브(Big5) 성격검사예요. 유형으로 나누지 않고, 높고 낮음을 좋고 나쁨으로 말하지 않습니다.</p>
   <div class="start-buttons">
     <a class="btn btn-primary btn-lg" href="<?= h($full) ?>">정식 검사<span class="btn-note">120문항 · 약 15분</span></a>
     <a class="btn btn-outline btn-lg" href="<?= h($mini) ?>">간이 검사<span class="btn-note">20문항 · 약 3분</span></a>

@@ -24,7 +24,7 @@ function big5_rate_page(string $title, string $html, int $status = 200): void
     $page_title = $title;
     $hide_nav = true;
     require __DIR__ . '/includes/header.php';
-    echo '<article class="reading rate-box"><p class="r-kicker">다이얼 · 타인 평가</p><h1>' . h($title) . '</h1>' . $html . '</article>';
+    echo '<article class="reading rate-box"><p class="r-kicker">Big5 Test · 타인 평가</p><h1>' . h($title) . '</h1>' . $html . '</article>';
     require __DIR__ . '/includes/footer.php';
     exit;
 }
@@ -132,7 +132,7 @@ $hide_nav = true;
 require __DIR__ . '/includes/header.php';
 ?>
 <article class="reading rate-box">
-  <p class="r-kicker">다이얼 · 타인 평가</p>
+  <p class="r-kicker">Big5 Test · 타인 평가</p>
   <h1><?= h($owner) ?>님이 평가를 부탁했어요</h1>
   <p><?= h($owner) ?>님은 빅파이브 성격 검사를 하고, 다른 사람 눈에 비친 자신의 모습도 궁금해하고 있어요. 문장 <?= $n ?>개를 읽고, 평소의 <?= h($owner) ?>님에게 얼마나 들어맞는지 골라 주세요. <?= $n > 20 ? '약 15분' : '약 3분' ?> 걸립니다.</p>
   <ul>

@@ -109,6 +109,7 @@ async function waitSaved(page) {
     await Promise.all([page.waitForURL(/report\.php\?id=/, { timeout: 15000 }), page.click('#btnNext')]);
     ok(page.url().includes(`report.php?id=${sid}`), '결과 보기 → 리포트');
     ok((await page.$$('.r-domain')).length === 5, '리포트에 다섯 다이얼');
+    ok(((await page.textContent('.flash').catch(() => '')) || '').includes('Big5 Dial이 그려졌습니다') && (await page.title()).startsWith('Big5 Dial') && (await page.textContent('.r-kicker')).trim() === 'Big5 Dial', '막 끝낸 결과지: \'Big5 Dial이 그려졌습니다\'·제목 Big5 Dial(0.16.0)');
     const r = sql("SELECT status, duration_sec, scoring_version FROM big5_sessions WHERE id = ?", [sid])[0];
     const nScores = sql("SELECT COUNT(*) AS n FROM big5_scores WHERE owner_type = 'session' AND owner_id = ?", [sid])[0].n;
     ok(r.status === 'completed' && r.scoring_version === '1.0' && nScores === 35, `완료 저장: 상태·채점 버전·점수 35행 (${nScores})`);
@@ -117,6 +118,7 @@ async function waitSaved(page) {
     // 끝난 검사의 test.php 는 리포트로
     await page.goto(`${BASE}/test.php?id=${sid}`);
     ok(page.url().includes(`report.php?id=${sid}`), '완료한 검사 test.php → 리포트로');
+    ok(!((await page.textContent('body')).includes('Big5 Dial이 그려졌습니다')), '다시 열면 \'그려졌습니다\' 한 줄은 나오지 않음');
 
     // ── 간이 검사: 모두 3점, 빠르게 → 품질 안내
     await page.goto(`${BASE}/consent.php?type=mini20`);

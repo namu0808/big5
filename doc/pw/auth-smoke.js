@@ -32,7 +32,7 @@ const { BASE, ORIGIN, OUT, startServer, resetDb, openBrowser, ok, done, login, i
     ok((await page.title()).includes('빅파이브(Big5)'), '시작 화면 제목에 빅파이브(Big5)');
     ok((await page.getAttribute('link[rel=canonical]', 'href')).endsWith('/big5/'), '시작 화면 canonical');
     ok((await page.getAttribute('meta[name=description]', 'content') || '').includes('초등 공부력'), '시작 화면 설명');
-    ok(await page.isVisible('footer a[href="/"]'), '꼬리에 SBM 진단 검사 홈 링크');
+    ok(await page.isVisible('footer a[href="/"]'), '꼬리에 SBM 공부력 지도 홈 링크');
     await page.goto(`${BASE}/admin/login.php`);
     ok(isAdminLogin(page.url()) && (await page.getAttribute('meta[name=robots]', 'content')).startsWith('noindex'), '관리자 로그인 → 통합 관리자 로그인, noindex');
 
@@ -59,9 +59,9 @@ const { BASE, ORIGIN, OUT, startServer, resetDb, openBrowser, ok, done, login, i
     await login(page, 'user', 'visang');
     ok(page.url().endsWith('/big5/index.php'), 'user/visang 공통 로그인 → 다이얼 시작 화면');
     ok((await page.textContent('body')).includes('사용자님, 반갑습니다'), '시작 화면에 표시 이름');
-    // 상단(0.10.1) — 공부력 진단과 같은 모양: SBM 표식·Dial·'SBM 진단 검사 홈'·내 메뉴·[내 계정]
+    // 상단(0.10.1, 이름 0.16.0) — SBM 표식·Big5 Test·'SBM 공부력 지도 홈'·내 메뉴·[내 계정]
     ok((await page.getAttribute('.gnb a.brand-mark', 'href')) === '/', '상단: SBM 표식 → 사이트 홈(휴대폰에서도 홈으로 가는 길)');
-    ok(await page.isVisible('.gnb .brand-mark') && (await page.textContent('.gnb .brand-name')).trim() === 'Dial' && (await page.getAttribute('.gnb-menu a:has-text("SBM 진단 검사 홈")', 'href')) === '/', '상단: SBM 표식·Dial·사이트 홈 링크');
+    ok(await page.isVisible('.gnb .brand-mark') && (await page.textContent('.gnb .brand-name')).trim() === 'Big5 Test' && (await page.getAttribute('.gnb-menu a:has-text("SBM 공부력 지도 홈")', 'href')) === '/', '상단: SBM 표식·Big5 Test·사이트 홈 링크');
     ok(await page.isVisible('.gnb-menu a:has-text("내 기록")') && (await page.getAttribute('.gnb a.gnb-cta', 'href')) === '/account/' && (await page.textContent('.gnb-user-name')).includes('사용자님'), '로그인 상태 상단: 내 기록·[내 계정]');
 
     // 5) 사용자 세션만으로는 관리자 화면 불가 (세션 분리)

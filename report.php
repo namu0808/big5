@@ -155,7 +155,7 @@ $hd = static fn(string $k): string => $chapters[$k][0] . '. ' . $chapters[$k][1]
 
 $radar = big5_radar_svg(array_values(array_map(static fn($x) => ['label' => $x['name'], 'value' => $x['pomp'], 'color' => $x['color']], $D)));
 
-$page_title = '나의 다섯 다이얼';
+$page_title = 'Big5 Dial — 나의 다섯 다이얼';
 $body_class = 'page-report';
 $extra_css = ['print.css'];
 $extra_js = ['report.js'];
@@ -183,7 +183,7 @@ require __DIR__ . '/includes/header.php';
 
 <!-- 표지 -->
 <section class="r-cover" id="cover">
-  <p class="r-kicker">빅파이브 성격 리포트</p>
+  <p class="r-kicker">Big5 Dial</p>
   <h1><?= h((string) $fx['report_title']) ?></h1>
   <p class="r-meta"><strong><?= h((string) $big5User['display_name']) ?></strong> · 검사일 <?= h($R['date']) ?> · <?= h($R['test_label']) ?> · 문항 <?= h($R['item_version']) ?></p>
   <div class="r-mini">

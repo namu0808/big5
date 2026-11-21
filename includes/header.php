@@ -37,7 +37,7 @@ $big5Nav = $layout_area === 'admin'
     : [
         'history' => ['history.php', '내 기록'],
         'invite' => ['invite.php', '타인 평가'],
-        'account' => ['account.php', '다이얼 기록'],
+        'account' => ['account.php', 'Big5 기록'],
     ];
 ?><!DOCTYPE html>
 <html lang="ko">
@@ -53,14 +53,14 @@ $big5Nav = $layout_area === 'admin'
 <?php if ($meta_description !== ''): ?>
 <meta name="description" content="<?= h($meta_description) ?>">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="SBM 진단 검사">
-<meta property="og:title" content="<?= h($page_title !== '' ? $page_title : 'Dial — 빅파이브(Big5) 성격 검사') ?>">
+<meta property="og:site_name" content="SBM 공부력 지도">
+<meta property="og:title" content="<?= h($page_title !== '' ? $page_title : 'Big5 Test — 빅파이브(Big5) 성격 검사') ?>">
 <meta property="og:description" content="<?= h($meta_description) ?>">
 <meta property="og:url" content="<?= h(big5_origin() . big5_url('')) ?>">
 <meta property="og:image" content="<?= h(big5_origin() . '/assets/img/og.jpg') ?>">
 <?php endif; ?>
 <meta name="referrer" content="same-origin">
-<title><?= h($page_title !== '' ? $page_title . ' · 다이얼' : 'Dial — 빅파이브(Big5) 성격 검사 | SBM 진단 검사') ?></title>
+<title><?= h($page_title !== '' ? $page_title . ' · Big5 Test' : 'Big5 Test — 빅파이브(Big5) 성격검사 | SBM 공부력 지도') ?></title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,7 +83,7 @@ $big5Nav = $layout_area === 'admin'
 <?php if ($layout_area === 'admin'): /* 관리자 머리 세 줄(규격 sbm.ai.kr doc/ADMIN-UI.md): ① SBM 표식·관리자·이름·로그아웃 ② 서비스 줄 ③ 이 앱의 메뉴. .topbar 는 인쇄 숨김(print.css)용 */ ?>
 <header class="adm-top topbar">
   <div class="adm-top-inner">
-    <a class="adm-mark" href="/" aria-label="SBM 진단 검사 홈" title="SBM 진단 검사 홈">SBM</a>
+    <a class="adm-mark" href="/" aria-label="SBM 공부력 지도 홈" title="SBM 공부력 지도 홈">SBM</a>
     <a class="adm-brand" href="<?= h(big5_url('admin/index.php')) ?>" aria-label="다이얼 관리자 첫 화면"><b>관리자</b><span>다이얼</span></a>
 <?php if ($big5HeadAdmin !== null): ?>
     <span class="adm-who"><span class="adm-who-name"><?= h((string) $big5HeadAdmin['display_name']) ?>님</span><a class="adm-btn adm-btn-sm" href="<?= h(function_exists('sbm_admin_url') ? sbm_admin_url('logout.php') : big5_url('admin/logout.php')) ?>">로그아웃</a></span>
@@ -109,18 +109,18 @@ $big5Nav = $layout_area === 'admin'
 <?php endif; ?>
 </header>
 <?php elseif (!$hide_nav): ?>
-<?php /* 상단 — 공부력 진단(sbmtest includes/header.php)과 같은 모양: SBM 표식 · 서비스 이름 · 'SBM 진단 검사 홈' · 내 계정/로그인. .topbar 는 인쇄 숨김(print.css)용 */ ?>
+<?php /* 상단 — 공부력 진단(sbmtest includes/header.php)과 같은 모양: SBM 표식 · 서비스 이름 · 'SBM 공부력 지도 홈' · 내 계정/로그인. .topbar 는 인쇄 숨김(print.css)용 */ ?>
 <header class="gnb topbar">
   <div class="gnb-inner">
     <span class="brand">
-      <a class="brand-mark" href="/" aria-label="SBM 진단 검사 홈" title="SBM 진단 검사 홈">SBM</a>
-      <a class="brand-text" href="<?= h(big5_url('index.php')) ?>" aria-label="다이얼 시작 화면">
-        <span class="brand-name">Dial</span>
+      <a class="brand-mark" href="/" aria-label="SBM 공부력 지도 홈" title="SBM 공부력 지도 홈">SBM</a>
+      <a class="brand-text" href="<?= h(big5_url('index.php')) ?>" aria-label="Big5 Test 시작 화면">
+        <span class="brand-name">Big5 Test</span>
         <span class="brand-sub">빅파이브(Big5) 성격 검사</span>
       </a>
     </span>
     <nav class="gnb-menu" aria-label="주 메뉴">
-      <a href="/">SBM 진단 검사 홈</a>
+      <a href="/">SBM 공부력 지도 홈</a>
 <?php if ($big5HeadUser !== null): ?>
 <?php foreach ($big5Nav as $big5NavKey => [$big5NavHref, $big5NavLabel]): ?>
       <a href="<?= h(big5_url($big5NavHref)) ?>"<?= $big5NavKey === $nav_active ? ' aria-current="page"' : '' ?>><?= h($big5NavLabel) ?></a>

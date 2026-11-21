@@ -24,7 +24,7 @@ if (big5_is_post()) {
         } else {
             try {
                 big5_user_delete_data_tx($pdo, $userId);
-                big5_flash('다이얼 검사 기록을 모두 지웠습니다. 계정은 그대로 남아 있어요.');
+                big5_flash('Big5 Test 기록을 모두 지웠습니다. 계정은 그대로 남아 있어요.');
                 big5_redirect('index.php');
             } catch (Throwable $e) {
                 error_log('다이얼 기록 삭제 오류: ' . $e->getMessage());
@@ -42,13 +42,13 @@ require __DIR__ . '/includes/header.php';
   <h1>계정</h1>
   <p class="muted">아이디 <?= h((string) $big5User['username']) ?> · 표시 이름 <?= h((string) $big5User['display_name']) ?> · 가입 <?= h(substr((string) $big5User['created_at'], 0, 10)) ?></p>
 
-  <h2>SBM 진단 검사 공통 계정</h2>
-  <p>다이얼은 <strong>SBM 진단 검사</strong>의 한 계정으로 이용합니다. 비밀번호 바꾸기와 계정 전체 삭제(모든 검사 기록 포함)는 [내 계정]에서 할 수 있어요.</p>
+  <h2>SBM 공부력 지도 공통 계정</h2>
+  <p>Big5 Test는 <strong>SBM 공부력 지도</strong>의 한 계정으로 이용합니다. 비밀번호 바꾸기와 계정 전체 삭제(모든 검사 기록 포함)는 [내 계정]에서 할 수 있어요.</p>
   <p><a class="btn btn-primary btn-block" href="/account/" id="sbmAccountLink">내 계정으로 가기</a></p>
 
-  <h2>다이얼 기록만 삭제</h2>
+  <h2>Big5 기록만 삭제</h2>
   <div class="danger-box">
-    <p>다이얼의 <strong>모든 검사 기록, 응답, 점수, 성장 행동, 보낸 초대 링크, 받은 타인 평가</strong>가 내 화면에서 사라지고, 보낸 초대 링크는 더 열리지 않습니다. 계정은 남아 다른 검사를 계속 이용할 수 있어요. <strong>되돌릴 수 없습니다.</strong></p>
+    <p>Big5 Test의 <strong>모든 검사 기록, 응답, 점수, 성장 행동, 보낸 초대 링크, 받은 타인 평가</strong>가 내 화면에서 사라지고, 보낸 초대 링크는 더 열리지 않습니다. 계정은 남아 다른 검사를 계속 이용할 수 있어요. <strong>되돌릴 수 없습니다.</strong></p>
     <p class="muted small">아이디·이름과 떼어 낸 익명 응답 기록은 검사 개선을 위한 연구 자료로 보관됩니다(<a href="/privacy.php">개인정보 처리 안내</a>).</p>
 <?php if ($delError !== ''): ?>
     <p class="form-error" role="alert"><?= h($delError) ?></p>
@@ -58,7 +58,7 @@ require __DIR__ . '/includes/header.php';
       <input type="hidden" name="action" value="delete">
       <label class="field"><span>비밀번호</span><input type="password" name="current" autocomplete="current-password" required></label>
       <label class="field"><span>확인을 위해 '<?= h(BIG5_DELETE_PHRASE) ?>'라고 적어 주세요</span><input type="text" name="phrase" autocomplete="off" required></label>
-      <button type="submit" class="btn btn-danger btn-block">다이얼 기록 전체 삭제</button>
+      <button type="submit" class="btn btn-danger btn-block">Big5 기록 전체 삭제</button>
     </form>
   </div>
 </article>
