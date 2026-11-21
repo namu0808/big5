@@ -303,7 +303,7 @@ ul.form-error { padding-left: 2rem; }
 .chip-btn[aria-pressed="true"] { background: var(--c); color: #fff; }
 .r-growth-title { font-weight: 700; margin: 1rem 0 0.3rem; }
 .r-growth-actions { list-style: none; padding: 0; margin: 0 0 0.75rem; }
-.btn-sm { min-height: 38px; padding: 0.35rem 0.9rem; font-size: 0.9rem; }
+.btn-sm { min-height: 44px; padding: 0.35rem 0.9rem; font-size: 0.9rem; } /* 8단계 휴대폰 점검 — 38px → 44px */
 .print-footer { margin-top: 2.5rem; font-size: 0.85rem; text-align: center; }
 
 /* ── 내 기록·비교·초대·평가·계정 ── */
@@ -410,3 +410,12 @@ svg.radar { overflow: visible; }
   .gnb .brand-name { font-size: 15px; white-space: nowrap; }
   .gnb .gnb-cta { padding: 6px 9px; }
 }
+
+/* 리뉴얼 8단계 휴대폰 점검(2026-11-21) — 상단 줄 링크의 누르는 곳을 44px 로. 투명한 덧칸이라 보이는 모양은 그대로 */
+.gnb a.brand-mark, .gnb a.brand-text, .gnb .gnb-menu a { position: relative; }
+.gnb a.brand-mark::after, .gnb a.brand-text::after, .gnb .gnb-menu a::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 46px; transform: translateY(-50%);
+}
+/* 결과지 목차·기록 고르기 — 휴대폰에서 엄지로 누르기 쉽게(44px) */
+.h-pick { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; cursor: pointer; }
+@media (max-width: 900px) { .r-toc li { margin: 0; } .r-toc a { display: block; padding: 13px 0; } }
