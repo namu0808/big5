@@ -19,3 +19,8 @@ if ($big5User === null) {
     header('Location: ' . big5_account_url('login.php', is_string($next) && $next !== '' ? $next : null));
     exit;
 }
+
+// 학술 연구 동의는 이용 조건(홈 0.16.0, 대표 결정 2026-11-21) — 아직 동의하지 않은 계정은 공통 동의 화면으로(관리자는 그대로)
+if (function_exists('sbm_require_research_consent')) {
+    sbm_require_research_consent($pdo, $big5User, null);
+}

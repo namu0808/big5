@@ -184,7 +184,7 @@ function big5_export_rows(PDO $pdo, string $kind, string $testType, bool $exclud
         array_map(static fn($c) => 'pomp_' . $c, $codes),
         array_map(static fn($c) => 'pomp_' . $c, $facetCodes),
         array_map(static fn($n) => 'q' . $n, $itemNos),
-        // 학술 연구 선택 동의(0.16.2, 홈 0.16.0) — 본인 검사는 그 계정의 동의 · 동의 안 함 · 미응답,
+        // 학술 연구 동의(0.16.2, 홈 0.16.0) — 본인 검사는 그 계정의 동의 · 동의 안 함 · 미응답,
         // 다른 사람이 해 준 평가는 평가한 사람이 계정이 없어 동의를 받지 않았으므로 '해당 없음'. 맨 끝(앞 칸 모양 그대로)
         ['research_consent']
     );

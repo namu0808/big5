@@ -103,6 +103,7 @@ const { BASE, ORIGIN, OUT, startServer, resetDb, openBrowser, ok, done, login, i
     await page.fill('input[name=password]', 'password1');
     await page.fill('input[name=password2]', 'password1');
     await page.check('input[name=age14]');
+    await page.check('input[name=research]'); // 학술 연구 동의(필수, 홈 0.16.0)
     await Promise.all([page.waitForLoadState('load'), page.click('button[type=submit]')]);
     ok(page.url() === `${BASE}/index.php` && (await page.textContent('body')).includes('시험님, 반갑습니다'), '가입 후 자동 로그인 → 다이얼 시작 화면');
     ok(sql("SELECT COUNT(*) AS n FROM sbm_users WHERE username = 'tester1'")[0].n === 1, '가입 계정은 공통 계정 테이블(sbm_users)');
