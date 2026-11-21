@@ -1,22 +1,33 @@
-/* 다이얼 — 공통 스타일 (모바일 우선, 흰 바탕, 넉넉한 여백, 강조색 하나) */
+/* Big5 Test — 공통 스타일 (모바일 우선, 흰 바탕, 넉넉한 여백, 강조색 하나) */
 
 :root {
+  /* 색 — 리뉴얼 6단계(sbm.ai.kr 기획서 v0.2 6-2, 2026-11-21): 사이트 주조색 '맑은 바이올렛' + Big5 는 회색(소품이라 따로 색을 두지 않는다).
+     홈 assets/sbm.css 의 --color-* 와 같은 값. 색은 여기 한 곳에서만 바꾼다 */
+  --color-main: #6B4EDB;        /* 버튼·링크·강조(흰 바탕 대비 약 5.6) */
+  --color-main-hover: #5A3EC8;
+  --color-main-ink: #3E2A99;    /* 연한 바탕 위 글자 */
+  --color-main-mid: #B9A9F0;    /* 테두리·보조선 */
+  --color-main-soft: #F3F0FD;   /* 연한 바탕 */
+  --color-main-bright: #8C74EC; /* 초점 */
+  --color-big5: #6A7385;
+  --color-big5-ink: #4A5263;
+  --color-big5-soft: #EEF0F4;
   --ink: #1d232b;
   --ink-soft: #4a5260;
   --muted: #7a818c;
   --line: #e4e6ea;
   --bg: #ffffff;
   --bg-soft: #f6f7f9;
-  --accent: #26496e;        /* 강조색 하나 */
-  --accent-soft: #e8eef5;
+  --accent: var(--color-main);        /* 강조색 하나 */
+  --accent-soft: var(--color-main-soft);
   --danger: #a33a3a;
   --danger-soft: #fbeeee;
-  /* 다섯 요인 고정 색 — 차트·막대·제목 아이콘 공통 */
-  --c-C: #2F6F5E;
+  /* 다섯 요인 고정 색 — 차트·막대·제목 아이콘 공통(data/content/domains.json 의 color 와 같게). 6단계: 청록 C → 초록, 파랑 O → 주조색, N → Big5 회색 */
+  --c-C: #4F7F3A;
   --c-E: #D9822B;
   --c-A: #C2547A;
-  --c-O: #4C6EB1;
-  --c-N: #7A6A9B;
+  --c-O: var(--color-main);
+  --c-N: var(--color-big5);
   --radius: 10px;
   --read: 680px;            /* 본문 최대 폭 */
   --font: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
@@ -86,7 +97,7 @@ a.brand-mark:hover, a.brand-mark:focus-visible { background: var(--sbm-green); }
 .page { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 3rem; min-height: 60vh; }
 .flash {
   max-width: var(--read); margin: 0 auto 1.5rem; padding: 0.75rem 1rem;
-  background: var(--accent-soft); border-radius: var(--radius); color: var(--accent);
+  background: var(--accent-soft); border-radius: var(--radius); color: var(--color-main-ink);
 }
 
 /* ── 시작 화면 ── */
@@ -111,7 +122,7 @@ a.brand-mark:hover, a.brand-mark:focus-visible { background: var(--sbm-green); }
 }
 .btn:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
 .btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: #1c3a59; }
+.btn-primary:hover { background: var(--color-main-hover); }
 .btn-outline { background: var(--bg); color: var(--accent); border-color: var(--accent); }
 .btn-outline:hover { background: var(--accent-soft); }
 .btn-danger { background: var(--danger); color: #fff; }
@@ -170,7 +181,7 @@ ul.form-error { padding-left: 2rem; }
 .save-state.is-error { color: var(--danger); }
 .questions { display: grid; gap: 0.75rem; }
 .q { border: 1px solid var(--line); border-radius: var(--radius); margin: 0; padding: 1rem 1rem 1.1rem; min-width: 0; }
-.q.is-answered { border-color: #cfd8e3; }
+.q.is-answered { border-color: var(--color-main-mid); }
 .q.is-failed { border-color: var(--danger); background: var(--danger-soft); }
 .q-text { float: left; width: 100%; padding: 0; font-size: 1.05rem; font-weight: 500; line-height: 1.55; margin-bottom: 0.8rem; } /* float: legend 를 테두리 위가 아니라 카드 안에 둔다 */
 .q-no { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 0.15rem; }
@@ -242,7 +253,7 @@ ul.form-error { padding-left: 2rem; }
 .radar-ring { fill: none; stroke: #d9dce3; stroke-width: 1; }
 .radar-outer { stroke: #c4c8d1; }
 .radar-axis { stroke: #e2e5ea; stroke-width: 1; }
-.radar-shape { fill: rgba(38, 73, 110, 0.12); stroke: var(--accent); stroke-width: 2; }
+.radar-shape { fill: rgba(107, 78, 219, 0.12); stroke: var(--accent); stroke-width: 2; }
 .radar-label { font-size: 13px; font-weight: 700; fill: var(--ink); font-family: var(--font); }
 .radar-value { font-size: 12px; font-weight: 400; fill: var(--muted); }
 
@@ -259,7 +270,7 @@ ul.form-error { padding-left: 2rem; }
 .r-domain-no { color: var(--c); }
 .r-near { background: var(--bg-soft); border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 0.95rem; }
 .r-near p { margin: 0.2rem 0; }
-.tag-near { display: inline-block; font-size: 0.78rem; padding: 0.05rem 0.45rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.tag-near { display: inline-block; font-size: 0.78rem; padding: 0.05rem 0.45rem; border-radius: 999px; background: var(--accent-soft); color: var(--color-main-ink); }
 .r-two { display: grid; gap: 0 1.5rem; }
 @media (min-width: 600px) { .r-two { grid-template-columns: 1fr 1fr; } }
 .r-two ul, .r-myths { padding-left: 1.15rem; margin: 0.3rem 0; }
@@ -331,7 +342,7 @@ svg.radar { overflow: visible; }
 .r-legend { flex-wrap: wrap; row-gap: 0.3rem; }
 .r-legend em { display: inline-block; vertical-align: middle; margin-right: 0.35rem; font-style: normal; }
 .o-legend-radar { justify-content: center; margin-top: 0.4rem; }
-.lg-shape { width: 16px; height: 10px; background: rgba(38, 73, 110, 0.12); border: 2px solid var(--accent); }
+.lg-shape { width: 16px; height: 10px; background: rgba(107, 78, 219, 0.12); border: 2px solid var(--accent); }
 .lg-shape2 { width: 16px; height: 10px; border: 2px dashed var(--ink); }
 .lg-self { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
 .lg-others { width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 3px solid var(--ink); }
@@ -366,9 +377,9 @@ svg.radar { overflow: visible; }
 
 /* ============ 상단 줄 — 사이트 공통 디자인 '맑은 하늘'(홈 sbm.ai.kr 0.13.0과 같게) ============
  * 상단 줄만 바꾼다(앱 본문·결과지는 그대로). 색은 이 블록 안의 --gnb-* 만 쓴다.
- * 표식: 맑은 파랑 둥근 네모 안의 흰 'SBM'(누르면 사이트 홈). 흰 바탕·옅은 아래선, 메뉴는 회청색 글자, 버튼은 파랑 알약. */
+ * 표식: 맑은 바이올렛 둥근 네모 안의 흰 'SBM'(누르면 사이트 홈, 6단계 2026-11-21 — 옛 맑은 파랑). 흰 바탕·옅은 아래선, 메뉴는 회청색 글자, 버튼은 바이올렛 알약. */
 .gnb {
-  --gnb-ink: #1C2230; --gnb-ink-2: #4F5868; --gnb-ink-3: #677083; --gnb-line: #E3E8EF; --gnb-accent: #1F6AE0; --gnb-accent-deep: #1858BE;
+  --gnb-ink: #1C2230; --gnb-ink-2: #4F5868; --gnb-ink-3: #677083; --gnb-line: #E5E3EE; --gnb-accent: var(--color-main); --gnb-accent-deep: var(--color-main-hover);
   --gnb-head: 'Pretendard Variable', Pretendard, 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   background: #FFFFFF; border-bottom: 1px solid var(--gnb-line); backdrop-filter: none; -webkit-backdrop-filter: none;
 }

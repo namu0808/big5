@@ -14,6 +14,7 @@
 - PHP 8.x 바닐라(Composer 불가), MariaDB 10.x `utf8mb4_unicode_ci`, 카페24 FTP 배포, 빌드 없음
 - 서버 www.sbm.ai.kr(카페24), 설치 위치 **`{홈}/www/big5/`** (https://www.sbm.ai.kr/big5/). 2026-11-04 sonbm.com/big5/ 에서 옮김(새로 설치, 기존 주소 정리는 대표님이 직접). 앱 코드에는 도메인을 쓰지 않는다 — 경로는 `/big5` 기준, 초대 링크는 요청 호스트로 만든다
 - UI: 바닐라 CSS(`assets/style.css`) + 바닐라 JS, Pretendard CDN(막혀도 시스템 폰트로 대체). 차트는 CSS 막대 + PHP 생성 SVG(외부 차트 라이브러리 없음)
+- **색(0.16.1, 리뉴얼 6단계 2026-11-21 — sbm.ai.kr 기획서 6-2)**: `assets/style.css` 맨 위 `--color-main`(맑은 바이올렛 #6B4EDB, 홈과 같은 값)·`--color-big5`(회색) 한 곳에서만 바꾼다. `--accent`·상단 줄 `--gnb-accent` 는 이 변수를 쓴다. 다섯 요인 색은 `--c-*` 와 `data/content/domains.json` 의 `color` 를 같게(C 초록 #4F7F3A · E 주황 · A 분홍 · O 바이올렛 · N 회색 — 청록·파랑 없음). 글꼴·짜임은 그대로
 - **상단은 공부력 진단과 같은 `.gnb`(0.10.1~, 0.15.1부터 홈의 '맑은 하늘' 모양(홈 0.13.0) — `assets/style.css` 끝 '상단 줄' 블록 `--gnb-*`)** — SBM 표식 = 사이트 홈(`/`), 'Dial' = 다이얼 시작, 메뉴 'SBM 진단 검사 홈'·내 기록·타인 평가·다이얼 기록, [내 계정]/[로그인]. 상단 글꼴은 Pretendard(0.15.1부터 Noto Serif KR 을 싣지 않는다). `.topbar` 이름은 인쇄 숨김용으로 함께 둔다. 가입 문구는 '익명으로 가입'(이름·연락처 없음)
 
 ## 파일 구조 원칙

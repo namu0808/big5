@@ -3,7 +3,7 @@
   "version": "content-ko-v0.1",
   "C": {
     "name": "성실성",
-    "color": "#2F6F5E",
+    "color": "#4F7F3A",
     "high": {
       "summary_line": "계획하고, 맡은 일을 끝까지 해내는 쪽으로 분명하게 기울어 있어요.",
       "body": [
@@ -180,7 +180,7 @@
   },
   "O": {
     "name": "개방성",
-    "color": "#4C6EB1",
+    "color": "#6B4EDB",
     "high": {
       "summary_line": "새로운 생각과 경험, 아름다움에 활짝 열려 있는 쪽으로 분명하게 기울어 있어요.",
       "body": [
@@ -239,7 +239,7 @@
   },
   "N": {
     "name": "신경성",
-    "color": "#7A6A9B",
+    "color": "#6A7385",
     "high": {
       "summary_line": "마음의 경보 장치가 예민해서, 불편한 감정을 쉽고 크게 느끼는 쪽으로 기울어 있어요.",
       "body": [
